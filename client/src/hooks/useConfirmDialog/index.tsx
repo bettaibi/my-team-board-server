@@ -4,7 +4,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Button
 } from '@material-ui/core';
 import useToggle from '../useToggle';
@@ -19,9 +18,6 @@ const useConfirmDialog = (obj: ConfirmDialogProps) => {
 
     const ConfirmDialog = useCallback(() => (
         <Dialog open={show} onClose={handleClose} maxWidth="xs">
-            {/* <DialogTitle style={{padding: '10px 24px'}}>
-                Confirm
-            </DialogTitle> */}
             <DialogContent dividers style={{padding: '1rem'}}>
                 <Typography variant="subtitle1" >
                     Confirm
@@ -36,7 +32,7 @@ const useConfirmDialog = (obj: ConfirmDialogProps) => {
                     onClick={onConfirmClick}>Confirm</Button>
             </DialogActions>
         </Dialog>
-    ), [show]);
+    ), [show, message, handleClose, onConfirmClick]);
 
     return {
         handleClose,

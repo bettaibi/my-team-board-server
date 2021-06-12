@@ -6,19 +6,19 @@ import {
 import useToggle from '../useToggle';
 
 const useDialog = () => {
-    const { handleClose, handleOpen, show } = useToggle();
+    const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
 
     const DialogComponent: React.FC = ({children}) => {
         return(
-        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-content" open={show}>
+        <Dialog onClose={onDialogClose} aria-labelledby="customized-dialog-content" open={show}>
             {children}
         </Dialog> )
     }
 
     return {
         DialogComponent,
-        handleOpen,
-        handleClose
+        onDialogClose,
+        onDialogOpen
     }
 };
 
