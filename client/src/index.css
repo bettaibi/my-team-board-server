@@ -2,3 +2,37 @@ html,body {
   margin: 0;
   scroll-behavior: smooth;
 }
+
+/*  SHARED STYLED */
+.bgColor{
+  background-color: #0f172a;
+}
+.bg-text-primary{
+  color: #0f172a;
+}
+.bg-secondary{
+  background-color: #475569;
+}
+.bg-text-secondary{
+  color: #1E293B;
+}
+.bg-active{
+  background-color: #2c3344;
+}
+.text-light-gray{
+  color: #f8fafc;
+}
+.fw-700{
+  font-weight: 700 !important;
+}
+.form-group{
+  margin-bottom: 1rem;
+}
+.form-group label{
+  display: block;
+  margin-bottom: .25rem;
+  font-weight: 500;
+}
+.w-100{
+  width: 100% !important;
+}
