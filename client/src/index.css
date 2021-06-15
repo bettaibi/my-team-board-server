@@ -2,6 +2,9 @@ html,body {
   margin: 0;
   scroll-behavior: smooth;
 }
+body{
+  background-color: #f1f5f9 !important;
+}
 
 /*  SHARED STYLED */
 .bgColor{
@@ -35,4 +38,14 @@ html,body {
 }
 .w-100{
   width: 100% !important;
+}
+.text-right{
+  text-align: right;
+}
+a{
+  color: #6366F1;
+  text-decoration: none;
+}
+a:hover{
+  text-decoration: underline;
 }
