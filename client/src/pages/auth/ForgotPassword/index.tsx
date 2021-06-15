@@ -4,12 +4,9 @@ import {
     Grid,
     Box,
     Typography,
-    TextField,
-    IconButton,
-    InputAdornment
+    TextField
 
 } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 import { useTheme } from '@material-ui/core/styles';
 import Welcome from '../../../components/Welcome';
@@ -17,17 +14,15 @@ import logo from '../../../assets/logo64.png';
 import { Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-import useToggle from '../../../hooks/useToggle';
 import RoundedButton from '../../../components/RoundedButton';
 
 const schema = yup.object().shape({
-    email: yup.string().required('Email is required').email('Invalid Email'),
-    password: yup.string().required('Password is required').min(6, 'password is too short')
+    email: yup.string().required('Email is required').email('Invalid Email')
 });
 
-const initialValue = { email: '', password: '' };
+const initialValue = { email: '' };
 
-const Login = () => {
+const ForgotPassword = () => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
     const gridBasicStyle = {  minHeight: '100vh', height: '100%'}
@@ -38,14 +33,13 @@ const Login = () => {
                 <Box width="100%" pr={{ xs: 0, sm: 3, md: 5 }} height="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="flex-start">
                     <img src={logo} alt="app logo" /> <br />
                     <Typography variant="h4" className="fw-700 bg-text-primary" gutterBottom>
-                        Sign in
+                         Forgot password?
                     </Typography>
                     <Typography variant="subtitle2" gutterBottom>
-                        Don't have an account? &nbsp;
-                        <Link to="/register">Sign up</Link>
+                       Fill in the form to reset your password
                     </Typography>
                     <Box mt={1} width="100%">
-                        <LoginForm />
+                        <ForgotPasswordForm />
                     </Box>
                 </Box>
             </Grid>
@@ -56,8 +50,7 @@ const Login = () => {
     )
 }
 
-const LoginForm = () => {
-    const { show, toggle } = useToggle();
+const ForgotPasswordForm = () => {
 
     return (
         <Formik initialValues={initialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
@@ -78,33 +71,12 @@ const LoginForm = () => {
                                 error = {touched.email && !!errors.email} 
                                 helperText = {touched.email && errors.email} />
                         </div>
-                        <div className="form-group">
-                            <label className="bg-text-secondary">Password *</label>
-                            <TextField
-                                className="w-100"
-                                placeholder="Enter your password"
-                                variant="outlined"
-                                size="small"
-                                type={show?'text': 'password'}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                name="password"
-                                value={values.password} 
-                                error = {touched.password && !!errors.password} 
-                                helperText = {touched.password && errors.password}
-                                InputProps={{
-                                    endAdornment: <InputAdornment position="end">
-                                        <IconButton size="small" onClick={toggle}>
-                                            {show ? <Visibility fontSize="small"/> : <VisibilityOff fontSize="small"/>}
-                                        </IconButton>
-                                    </InputAdornment>,
-                                }}/>
-                        </div>
-                        <Box className="text-right" mb={2}>
-                          <Link to='/forgot-password'>Forgot password?</Link>
-                        </Box>
-
-                        <RoundedButton type="submit" textContent="Sign in" variant="contained" color="primary" size="large" className="w-100"/>
+                        <br />
+                        <RoundedButton type="submit" textContent="Send reset link" variant="contained" color="primary" size="large" className="w-100"/>
+                        <br /> <br /> 
+                        <Typography variant="subtitle2">
+                            Return to <Link to="/login">sign in</Link>
+                        </Typography>
                     </Form>
                 )
             }
@@ -112,4 +84,4 @@ const LoginForm = () => {
     )
 }
 
-export default Login;
+export default ForgotPassword;

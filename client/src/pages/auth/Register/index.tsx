@@ -20,7 +20,7 @@ const schema = yup.object().shape({
     username: yup.string().required('Username is required'),
     email: yup.string().required('Email is required').email('Invalid Email'),
     password: yup.string().required('Password is required').min(6, 'password is too short'),
-    confirmPassword: yup.string().required('Password is required').oneOf([yup.ref('password')], 'Password not match')
+    confirmPassword: yup.string().required('Confirm your password').oneOf([yup.ref('password')], 'Password not match')
 });
 
 const initialValue = { email: '', password: '', username: '', confirmPassword:'' };
@@ -28,12 +28,12 @@ const initialValue = { email: '', password: '', username: '', confirmPassword:''
 const Register = () => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
-
+    const gridBasicStyle = {  minHeight: '100vh', height: '100%'}
     return (
         <Grid container>
-            <Grid item xs style={matches ? { padding: '3rem' } : { padding: '1.5rem', height: '100vh'}}>
+            <Grid item xs style={matches ? { padding: '3rem', ...gridBasicStyle } : { padding: '1.5rem', ...gridBasicStyle}}>
                 <Box width="100%" pr={{ xs: 0, sm: 3, md: 5 }} height="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="flex-start">
-                    <img src={logo} alt="app logo" />
+                    <img src={logo} alt="app logo" /> <br />
                     <Typography variant="h4" className="fw-700 bg-text-primary" gutterBottom>
                         Sign up
                     </Typography>
@@ -73,7 +73,7 @@ const RegisterForm = () => {
                                 value={values.username}
                                 error = {touched.username && !!errors.username} 
                                 helperText = {touched.username && errors.username} />
-                        </div>username
+                        </div>
                         <div className="form-group">
                             <label className="bg-text-secondary">Email Address *</label>
                             <TextField
@@ -104,7 +104,7 @@ const RegisterForm = () => {
                                 helperText = {touched.password && errors.password}/>
                         </div>
                         <div className="form-group">
-                            <label className="bg-text-secondary">Password *</label>
+                            <label className="bg-text-secondary">Confirm password *</label>
                             <TextField
                                 className="w-100"
                                 placeholder="Confirm password"
