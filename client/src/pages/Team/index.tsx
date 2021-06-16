@@ -8,7 +8,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 const Scrumboard = React.lazy(() => import('./Scrumboard'));
 
-const drawerWidth = 260;
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

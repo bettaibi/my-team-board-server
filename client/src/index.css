@@ -52,6 +52,9 @@ a{
 a:hover{
   text-decoration: underline;
 }
+.icons{
+  color: '#94a3b8'; 
+}
 .px1{
   padding: 0 0.5rem;
 }
