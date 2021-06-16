@@ -13,7 +13,7 @@ import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 import { useTheme } from '@material-ui/core/styles';
 import Welcome from '../../../components/Welcome';
-import logo from '../../../assets/logo64.png';
+import logo from '../../../assets/logo48.png';
 import { Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';

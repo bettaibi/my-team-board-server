@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-const useToggle = () => {
-    const [show, setShow] = useState<boolean>(false);
+const useToggle = (state?: boolean) => {
+    const [show, setShow] = useState<boolean>(state || false);
 
     const toggle = () => {
         setShow(state => !state);

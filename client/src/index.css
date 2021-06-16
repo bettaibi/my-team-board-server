@@ -39,6 +39,9 @@ body{
 .w-100{
   width: 100% !important;
 }
+.vh-100{
+  height: 100vh !important;
+}
 .text-right{
   text-align: right;
 }
@@ -48,4 +51,7 @@ a{
 }
 a:hover{
   text-decoration: underline;
+}
+.px1{
+  padding: 0 0.5rem;
 }

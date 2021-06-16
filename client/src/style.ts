@@ -42,6 +42,9 @@ const globalStyle = makeStyles((theme) => ({
     },
     bgDanger:{
         backgroundColor: '#ef4444'
+    },
+    icons: {
+        color: '#64748B'
     }
 }));
 
