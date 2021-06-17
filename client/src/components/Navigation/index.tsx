@@ -6,13 +6,15 @@ import {
     Avatar,
     Typography,
     Badge,
-    Button
+    MenuItem,
+    Divider
 } from '@material-ui/core';
 import { Theme, makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
 
-import { Add, AccountCircleOutlined, AssignmentIndOutlined, CreateOutlined } from '@material-ui/icons';
+import { Add, ExitToAppOutlined, AccountCircleOutlined, AssignmentOutlined, CreateOutlined, SettingsApplicationsOutlined, PeopleOutline } from '@material-ui/icons';
 
 import userAvatar from '../../assets/avatars/Henderson.jpg';
+import useMenu from '../../hooks/useMenu';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -50,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#0f172a',
         height: '100%',
         minHeight: '100vh',
-        overflowY: 'hidden' ,
+        overflowY: 'hidden',
         '&:hover': {
             overflowY: 'auto'
         }
@@ -107,12 +109,16 @@ const useStyles = makeStyles((theme) => ({
     activeItem: {
         backgroundColor: '#475569',
         padding: theme.spacing(1),
+    },
+    menuItem:{
+        padding: '0.8rem '
     }
 
 }));
 
 const Navigation = () => {
     const classes = useStyles();
+    const { handleClick, onMenuClose, MenuComponent } = useMenu();
 
     return (
         <Grid container className={classes.root}>
@@ -130,12 +136,42 @@ const Navigation = () => {
             <Grid item xs>
                 <Box p={1} borderBottom="1px solid #2c3344">
                     <Box display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
-                        <IconButton size="small" style={{marginRight:'.25rem'}}>
+                        <IconButton size="small" style={{ marginRight: '.25rem' }}>
                             <CreateOutlined className={classes.icons} />
                         </IconButton>
-                        <IconButton size="small">
-                            <AccountCircleOutlined className={classes.icons} />
-                        </IconButton>
+
+                        <MenuComponent
+                            control = "account-menu"
+                            handler={
+                                <IconButton aria-controls="account-menu" aria-haspopup="true" size="small" onClick={handleClick}>
+                                    <AccountCircleOutlined className={classes.icons} />
+                                </IconButton>
+                            }
+                            content={
+                                <div id= "account-menu">
+                                    <Box py={1} mx={2}>
+                                    <Typography variant="subtitle2">
+                                        Signed in as 
+                                    </Typography>
+                                    <small>bettaibinidhal00@gmail.com</small>
+                                    </Box>
+                                    <Divider />
+                                    <MenuItem onClick={onMenuClose} className={classes.menuItem}>
+                                        <AccountCircleOutlined className={classes.icons} />
+                                        <span style={{marginLeft:'0.8rem'}}>Profile</span>
+                                    </MenuItem>
+                                    <MenuItem onClick={onMenuClose} className={classes.menuItem}>
+                                        <SettingsApplicationsOutlined  className={classes.icons} />   
+                                        <span style={{marginLeft:'0.8rem'}}>Setting</span> 
+                                    </MenuItem>
+                                    <Divider />
+                                    <MenuItem onClick={onMenuClose} className={classes.menuItem}>
+                                        <ExitToAppOutlined  className={classes.icons} />   
+                                        <span style={{marginLeft:'0.8rem'}}>Logout</span> 
+                                    </MenuItem>
+                                </div>
+                            }
+                        />
                     </Box>
                     <Box my={1} textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
                         <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />
@@ -158,22 +194,22 @@ const Navigation = () => {
 
                     <Box className={classes.navItem}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                        <AssignmentIndOutlined className={classes.textWhite} />
-                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Project</span>
+                        <AssignmentOutlined className={classes.textWhite} />
+                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Scrumboard</span>
                     </Box>
                     <Box className={classes.navItem}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                        <AssignmentIndOutlined className={classes.textWhite} />
-                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Project</span>
+                        <PeopleOutline className={classes.textWhite} />
+                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Members</span>
                     </Box>
                 </Box>
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
-                        Members
+                        Team
                     </Typography>
                     <small className={classes.textSecondary}>
-                        Namespace's Members
+                        Team's Members
                     </small>
 
                     <Box className={classes.navItem}
