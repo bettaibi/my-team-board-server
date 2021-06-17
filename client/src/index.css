@@ -53,8 +53,35 @@ a:hover{
   text-decoration: underline;
 }
 .icons{
-  color: '#94a3b8'; 
+  color: #94a3b8; 
 }
 .px1{
   padding: 0 0.5rem;
+}
+
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px; 
+}
+
+::-webkit-scrollbar-track {
+   border-radius: 5px; 
+   background-color: transparent; 
+   
+}
+
+::-webkit-scrollbar-thumb {
+  border: 1px solid #94a3b8; 
+  background-color: #2c3344;
+  border-radius: 5px;
+  max-height: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background-color: #475569;
+}
+
+::-webkit-scrollbar-button {
+  height: 0;
 }

@@ -4,7 +4,7 @@ const Scrumboard = () => {
 
     return (
       <div>
-          ddd ff
+        lorem*50
       </div>
     )
 }

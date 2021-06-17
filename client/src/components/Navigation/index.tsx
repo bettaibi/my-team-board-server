@@ -2,20 +2,58 @@ import React from 'react';
 import {
     Box,
     Grid,
-    makeStyles,
     IconButton,
     Avatar,
     Typography,
-    Badge
+    Badge,
+    Button
 } from '@material-ui/core';
-import { Add, AccountCircleOutlined, AssignmentIndOutlined} from '@material-ui/icons';
+import { Theme, makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
+
+import { Add, AccountCircleOutlined, AssignmentIndOutlined, CreateOutlined } from '@material-ui/icons';
+
 import userAvatar from '../../assets/avatars/Henderson.jpg';
+
+const StyledBadge = withStyles((theme: Theme) =>
+    createStyles({
+        badge: {
+            backgroundColor: '#44b700',
+            color: '#44b700',
+            boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+            '&::after': {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                animation: '$ripple 1.2s infinite ease-in-out',
+                border: '1px solid currentColor',
+                content: '""',
+            },
+        },
+        '@keyframes ripple': {
+            '0%': {
+                transform: 'scale(.8)',
+                opacity: 1,
+            },
+            '100%': {
+                transform: 'scale(2.4)',
+                opacity: 0,
+            },
+        },
+    }),
+)(Badge);
 
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#0f172a',
         height: '100%',
-        minHeight: '100vh'
+        minHeight: '100vh',
+        overflowY: 'hidden' ,
+        '&:hover': {
+            overflowY: 'auto'
+        }
     },
     borderRight: {
         borderRight: '1px solid #2c3344'
@@ -30,7 +68,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#2c3344',
         cursor: 'pointer',
         fontSize: '14px',
-        color: '#868c94'
+        color: '#868c94',
+        '&:hover': {
+            backgroundColor: '#475569',
+        }
     },
     bgActive: {
         backgroundColor: '#475569',
@@ -58,10 +99,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        '&:hover':{
-            backgroundColor: '#475569',
+        '&:hover': {
+            backgroundColor: '#2c3344',
             padding: theme.spacing(1),
         }
+    },
+    activeItem: {
+        backgroundColor: '#475569',
+        padding: theme.spacing(1),
     }
 
 }));
@@ -85,8 +130,8 @@ const Navigation = () => {
             <Grid item xs>
                 <Box p={1} borderBottom="1px solid #2c3344">
                     <Box display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
-                        <IconButton size="small">
-                            <Add className={classes.icons} />
+                        <IconButton size="small" style={{marginRight:'.25rem'}}>
+                            <CreateOutlined className={classes.icons} />
                         </IconButton>
                         <IconButton size="small">
                             <AccountCircleOutlined className={classes.icons} />
@@ -105,37 +150,160 @@ const Navigation = () => {
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
-                            Namespaces
+                        Namespaces
                     </Typography>
                     <small className={classes.textSecondary}>
                         Namespace Managment
                     </small>
 
                     <Box className={classes.navItem}
-                     display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                         <AssignmentIndOutlined className={classes.textWhite} />
-                         <span className={classes.textWhite} style={{marginLeft: '8px'}} >Project</span>
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                        <AssignmentIndOutlined className={classes.textWhite} />
+                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Project</span>
                     </Box>
                     <Box className={classes.navItem}
-                     display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                         <AssignmentIndOutlined className={classes.textWhite} />
-                         <span className={classes.textWhite} style={{marginLeft: '8px'}} >Project</span>
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                        <AssignmentIndOutlined className={classes.textWhite} />
+                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Project</span>
                     </Box>
                 </Box>
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
-                            Members
+                        Members
                     </Typography>
                     <small className={classes.textSecondary}>
-                        Members Managment
+                        Namespace's Members
                     </small>
 
                     <Box className={classes.navItem}
-                     display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                         <AssignmentIndOutlined className={classes.textWhite} />
-                         <span className={classes.textWhite} style={{marginLeft: '8px'}} >Project</span>
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
                     </Box>
+                    <Box className={classes.navItem + ' ' + classes.activeItem}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
+                    </Box>
+                    <Box className={classes.navItem}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
+                    </Box>
+                    <Box className={classes.navItem}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
+                    </Box>
+                    <Box className={classes.navItem}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
+                    </Box>
+
+                    <Box className={classes.navItem}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
+                    </Box>
+                    <Box className={classes.navItem}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >Nidhal Bettaibi</span>
+                            <small >Developer</small>
+                        </Box>
+                    </Box>
+
                 </Box>
 
             </Grid>

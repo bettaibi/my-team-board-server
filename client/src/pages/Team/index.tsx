@@ -3,7 +3,6 @@ import { Switch, Route } from 'react-router-dom';
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
 import useSidenav from '../../hooks/useSidenav';
-
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 const Scrumboard = React.lazy(() => import('./Scrumboard'));
@@ -38,7 +37,7 @@ const Team = () => {
     return (
         <React.Fragment>
             <SidenavComponent>
-                <Navigation />
+                 <Navigation />
             </SidenavComponent>
 
             <main className = {show? classes.open: classes.close }>
