@@ -1,6 +1,5 @@
 import React from 'react';
-import Drawer from '@material-ui/core/Drawer';
-
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import useToggle from '../useToggle';
 import { Box } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -10,25 +9,26 @@ import { useTheme } from '@material-ui/core/styles';
 type Anchors = 'left' | 'right' | 'top' | 'bottom';
 type Variant = 'temporary' | 'permanent' | 'persistent';
 
-const useSidenav = (anchor: Anchors, variant: Variant, width: number) => {
+const useSwipeableSidenav = (anchor: Anchors, variant: Variant, width: number) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
     const { handleClose: onSidenavClose, handleOpen: onSidenavOpen, show, toggle: onSidenavToggle } = useToggle(matches);
 
-    const SidenavComponent: React.FC = ({ children }) => {
+    const SwipeableSidenav: React.FC = ({ children }) => {
 
         return (
-            <Drawer
+            <SwipeableDrawer
                 variant={matches ? variant : 'temporary'}
                 anchor={anchor}
                 open={show}
+                onOpen={onSidenavOpen}
                 onClose={onSidenavClose}
             >
                 <Box width={width} overflow="hidden">
                     {children}
                 </Box>
-            </Drawer>
+            </SwipeableDrawer>
         )
     };
 
@@ -36,10 +36,10 @@ const useSidenav = (anchor: Anchors, variant: Variant, width: number) => {
         onSidenavClose,
         onSidenavOpen,
         onSidenavToggle,
-        SidenavComponent,
+        SwipeableSidenav,
         show
     };
 
 };
 
-export default useSidenav;
+export default useSwipeableSidenav;

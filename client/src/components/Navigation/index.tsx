@@ -2,19 +2,14 @@ import React from 'react';
 import {
     Box,
     Grid,
-    IconButton,
     Avatar,
     Typography,
     Badge,
-    MenuItem,
-    Divider
 } from '@material-ui/core';
 import { Theme, makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
-
-import { Add, ExitToAppOutlined, AccountCircleOutlined, AssignmentOutlined, CreateOutlined, SettingsApplicationsOutlined, PeopleOutline } from '@material-ui/icons';
-
+import { AssignmentOutlined, PeopleOutline } from '@material-ui/icons';
+import NewWorkspace from './NewWorkspace';
 import userAvatar from '../../assets/avatars/Henderson.jpg';
-import useMenu from '../../hooks/useMenu';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -109,16 +104,12 @@ const useStyles = makeStyles((theme) => ({
     activeItem: {
         backgroundColor: '#475569',
         padding: theme.spacing(1),
-    },
-    menuItem:{
-        padding: '0.8rem '
     }
 
 }));
 
 const Navigation = () => {
     const classes = useStyles();
-    const { handleClick, onMenuClose, MenuComponent } = useMenu();
 
     return (
         <Grid container className={classes.root}>
@@ -127,69 +118,28 @@ const Navigation = () => {
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces + ' ' + classes.bgActive}>IT</Avatar>
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>MN</Avatar>
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>H</Avatar>
-
-                    <IconButton className={classes.mb}>
-                        <Add className={classes.icons} />
-                    </IconButton>
+                    
+                    <NewWorkspace />
                 </Box>
             </Grid>
             <Grid item xs>
-                <Box p={1} borderBottom="1px solid #2c3344">
-                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
-                        <IconButton size="small" style={{ marginRight: '.25rem' }}>
-                            <CreateOutlined className={classes.icons} />
-                        </IconButton>
-
-                        <MenuComponent
-                            control = "account-menu"
-                            handler={
-                                <IconButton aria-controls="account-menu" aria-haspopup="true" size="small" onClick={handleClick}>
-                                    <AccountCircleOutlined className={classes.icons} />
-                                </IconButton>
-                            }
-                            content={
-                                <div id= "account-menu">
-                                    <Box py={1} mx={2}>
-                                    <Typography variant="subtitle2">
-                                        Signed in as 
-                                    </Typography>
-                                    <small>bettaibinidhal00@gmail.com</small>
-                                    </Box>
-                                    <Divider />
-                                    <MenuItem onClick={onMenuClose} className={classes.menuItem}>
-                                        <AccountCircleOutlined className={classes.icons} />
-                                        <span style={{marginLeft:'0.8rem'}}>Profile</span>
-                                    </MenuItem>
-                                    <MenuItem onClick={onMenuClose} className={classes.menuItem}>
-                                        <SettingsApplicationsOutlined  className={classes.icons} />   
-                                        <span style={{marginLeft:'0.8rem'}}>Setting</span> 
-                                    </MenuItem>
-                                    <Divider />
-                                    <MenuItem onClick={onMenuClose} className={classes.menuItem}>
-                                        <ExitToAppOutlined  className={classes.icons} />   
-                                        <span style={{marginLeft:'0.8rem'}}>Logout</span> 
-                                    </MenuItem>
-                                </div>
-                            }
-                        />
-                    </Box>
-                    <Box my={1} textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                        <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />
-                        <Typography variant="subtitle2" className={classes.textWhite} gutterBottom>
-                            Bettaibi Nidhal
-                        </Typography>
-                        <small className={classes.textSecondary}>
-                            bettaibinidhal00@gmail.com
-                        </small>
-                    </Box>
+                <Box borderBottom="1px solid #2c3344" textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center"
+                    style={{ padding: '1.5rem 1rem' }}>
+                    <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />
+                    <Typography variant="subtitle2" className={classes.textWhite} gutterBottom>
+                        Bettaibi Nidhal
+                    </Typography>
+                    <small className={classes.textSecondary}>
+                        bettaibinidhal00@gmail.com
+                    </small>
                 </Box>
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
-                        Namespaces
+                        Workspaces
                     </Typography>
                     <small className={classes.textSecondary}>
-                        Namespace Managment
+                        Workspace Managment
                     </small>
 
                     <Box className={classes.navItem}
@@ -206,10 +156,10 @@ const Navigation = () => {
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
-                        Team
+                        Members
                     </Typography>
                     <small className={classes.textSecondary}>
-                        Team's Members
+                        Workspace's Members
                     </small>
 
                     <Box className={classes.navItem}

@@ -2,8 +2,8 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
-import useSidenav from '../../hooks/useSidenav';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 
 const Scrumboard = React.lazy(() => import('./Scrumboard'));
 
@@ -31,14 +31,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const Team = () => {
-    const { SidenavComponent, onSidenavToggle, show } = useSidenav('left', 'persistent', drawerWidth, true);
+    const { SwipeableSidenav, onSidenavToggle, show } = useSwipeableSidenav('left', 'persistent', drawerWidth);
     const classes = useStyles();
     
     return (
         <React.Fragment>
-            <SidenavComponent>
+            <SwipeableSidenav>
                  <Navigation />
-            </SidenavComponent>
+            </SwipeableSidenav>
 
             <main className = {show? classes.open: classes.close }>
                 <Header onSidenavToggle = {onSidenavToggle} />
