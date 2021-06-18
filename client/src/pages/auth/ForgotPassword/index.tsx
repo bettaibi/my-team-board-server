@@ -3,7 +3,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
     Grid,
     Box,
-    Typography
+    Typography,
+    Fab
 } from '@material-ui/core';
 
 import { useTheme } from '@material-ui/core/styles';
@@ -12,7 +13,6 @@ import logo from '../../../assets/logo48.png';
 import { Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-import RoundedButton from '../../../components/RoundedButton';
 import MyTextField from '../../../components/MyTextField';
 
 
@@ -72,7 +72,9 @@ const ForgotPasswordForm = () => {
                                 helperText = {touched.email && errors.email} />
                         </div>
                         <br />
-                        <RoundedButton type="submit" textContent="Send reset link" variant="contained" color="primary" size="large" className="w-100"/>
+                        <Fab type="submit" className="w-100" variant="extended" color="primary">
+                         Send reset link
+                        </Fab>
                         <br /> <br /> 
                         <Typography variant="subtitle2">
                             Return to <Link to="/login">sign in</Link>

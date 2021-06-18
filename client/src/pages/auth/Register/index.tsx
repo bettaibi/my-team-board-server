@@ -3,7 +3,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
     Grid,
     Box,
-    Typography
+    Typography,
+    Fab
 } from '@material-ui/core';
 
 import { useTheme } from '@material-ui/core/styles';
@@ -12,7 +13,6 @@ import logo from '../../../assets/logo48.png';
 import { Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-import RoundedButton from '../../../components/RoundedButton';
 import MyTextField from '../../../components/MyTextField';
 
 const schema = yup.object().shape({
@@ -120,8 +120,9 @@ const RegisterForm = () => {
                         <Box className="text-right" mb={2}>
                           <Link to='/forgot-password'>Forgot password?</Link>
                         </Box>
-
-                        <RoundedButton type="submit" textContent="Create your free account" variant="contained" color="primary" size="large" className="w-100"/>
+                        <Fab type="submit" className="w-100" variant="extended" color="primary">
+                             Create your free account
+                        </Fab>
                     </Form>
                 )
             }

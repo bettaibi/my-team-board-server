@@ -5,7 +5,8 @@ import {
     Box,
     Typography,
     IconButton,
-    InputAdornment
+    InputAdornment,
+    Fab
 
 } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
@@ -17,7 +18,6 @@ import { Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import useToggle from '../../../hooks/useToggle';
-import RoundedButton from '../../../components/RoundedButton';
 import MyTextField from '../../../components/MyTextField';
 
 const schema = yup.object().shape({
@@ -104,7 +104,7 @@ const LoginForm = () => {
                           <Link to='/forgot-password'>Forgot password?</Link>
                         </Box>
 
-                        <RoundedButton type="submit" textContent="Sign in" variant="contained" color="primary" size="large" className="w-100"/>
+                        <Fab type="submit" className="w-100" variant="extended" color="primary">Sign in</Fab>
                     </Form>
                 )
             }
