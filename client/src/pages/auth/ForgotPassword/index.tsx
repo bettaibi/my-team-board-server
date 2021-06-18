@@ -3,9 +3,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
     Grid,
     Box,
-    Typography,
-    TextField
-
+    Typography
 } from '@material-ui/core';
 
 import { useTheme } from '@material-ui/core/styles';
@@ -15,6 +13,8 @@ import { Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import RoundedButton from '../../../components/RoundedButton';
+import MyTextField from '../../../components/MyTextField';
+
 
 const schema = yup.object().shape({
     email: yup.string().required('Email is required').email('Invalid Email')
@@ -59,7 +59,7 @@ const ForgotPasswordForm = () => {
                     <Form onSubmit={handleSubmit} autoComplete="off">
                         <div className="form-group">
                             <label className="bg-text-secondary">Email Address *</label>
-                            <TextField
+                            <MyTextField
                                 className="w-100"
                                 placeholder="Enter your email"
                                 variant="outlined"

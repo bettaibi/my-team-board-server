@@ -15,17 +15,18 @@ const useSwipeableSidenav = (anchor: Anchors, variant: Variant, width: number) =
 
     const { handleClose: onSidenavClose, handleOpen: onSidenavOpen, show, toggle: onSidenavToggle } = useToggle(matches);
 
-    const SwipeableSidenav: React.FC = ({ children }) => {
 
+    const SwipeableSidenav: React.FC = ({ children }) => {
         return (
             <SwipeableDrawer
                 variant={matches ? variant : 'temporary'}
                 anchor={anchor}
                 open={show}
                 onOpen={onSidenavOpen}
-                onClose={onSidenavClose}
-            >
+                onClose={onSidenavClose}>
+
                 <Box width={width} overflow="hidden">
+                    {console.log(matches)}
                     {children}
                 </Box>
             </SwipeableDrawer>

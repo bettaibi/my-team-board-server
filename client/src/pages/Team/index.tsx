@@ -6,6 +6,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 
 const Scrumboard = React.lazy(() => import('./Scrumboard'));
+const Members = React.lazy(() => import('./Members'));
 
 const drawerWidth = 280;
 
@@ -36,7 +37,7 @@ const Team = () => {
     
     return (
         <React.Fragment>
-            <SwipeableSidenav>
+            <SwipeableSidenav >
                  <Navigation />
             </SwipeableSidenav>
 
@@ -44,6 +45,7 @@ const Team = () => {
                 <Header onSidenavToggle = {onSidenavToggle} />
                 <Switch>
                     <Route path="/team" exact component = {Scrumboard} />
+                    <Route path="/team/members" exact component = {Members} />
                 </Switch>
             </main>
         </React.Fragment>

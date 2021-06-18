@@ -3,7 +3,7 @@ import {
     Typography,
     Tooltip
 } from '@material-ui/core';
-import { withStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { withStyles, Theme } from '@material-ui/core/styles';
 
 const HtmlTooltip = withStyles((theme: Theme) => ({
     tooltip: {

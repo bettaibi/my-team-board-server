@@ -10,6 +10,8 @@ import { Theme, makeStyles, withStyles, createStyles } from '@material-ui/core/s
 import { AssignmentOutlined, PeopleOutline } from '@material-ui/icons';
 import NewWorkspace from './NewWorkspace';
 import userAvatar from '../../assets/avatars/Henderson.jpg';
+import { useHistory } from 'react-router-dom';
+import clsx from 'clsx';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -110,6 +112,12 @@ const useStyles = makeStyles((theme) => ({
 
 const Navigation = () => {
     const classes = useStyles();
+    const history = useHistory();
+
+    const navigateTo = (path: string) => {
+        history.push(path);
+    };
+    let path = history.location.pathname;
 
     return (
         <Grid container className={classes.root}>
@@ -142,16 +150,18 @@ const Navigation = () => {
                         Workspace Managment
                     </small>
 
-                    <Box className={classes.navItem}
+                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team'})} onClick = {() => navigateTo('/team')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
                         <AssignmentOutlined className={classes.textWhite} />
                         <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Scrumboard</span>
                     </Box>
-                    <Box className={classes.navItem}
+
+                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team/members'})} onClick = {() => navigateTo('/team/members')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
                         <PeopleOutline className={classes.textWhite} />
                         <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Members</span>
                     </Box>
+
                 </Box>
 
                 <Box p={2} >

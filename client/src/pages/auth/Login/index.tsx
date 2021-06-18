@@ -4,7 +4,6 @@ import {
     Grid,
     Box,
     Typography,
-    TextField,
     IconButton,
     InputAdornment
 
@@ -19,6 +18,7 @@ import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import useToggle from '../../../hooks/useToggle';
 import RoundedButton from '../../../components/RoundedButton';
+import MyTextField from '../../../components/MyTextField';
 
 const schema = yup.object().shape({
     email: yup.string().required('Email is required').email('Invalid Email'),
@@ -66,7 +66,7 @@ const LoginForm = () => {
                     <Form onSubmit={handleSubmit} autoComplete="off">
                         <div className="form-group">
                             <label className="bg-text-secondary">Email Address *</label>
-                            <TextField
+                            <MyTextField
                                 className="w-100"
                                 placeholder="Enter your email"
                                 variant="outlined"
@@ -80,7 +80,7 @@ const LoginForm = () => {
                         </div>
                         <div className="form-group">
                             <label className="bg-text-secondary">Password *</label>
-                            <TextField
+                            <MyTextField
                                 className="w-100"
                                 placeholder="Enter your password"
                                 variant="outlined"
