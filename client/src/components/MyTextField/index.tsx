@@ -5,6 +5,12 @@ import { withStyles, fade, Theme } from '@material-ui/core/styles';
 const CssTextField = withStyles((theme: Theme) =>({
     root: {
       '& .MuiOutlinedInput-root': {
+        '& .MuiOutlinedInput-inputAdornedStart': {
+          zIndex: theme.zIndex.drawer,
+        },
+        '& .MuiInputAdornment-positionStart': {
+          zIndex: theme.zIndex.drawer,
+        },
         '& fieldset': {
         backgroundColor: theme.palette.common.white,
         border: '1px solid #ced4da',

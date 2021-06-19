@@ -1,12 +1,12 @@
-import React from 'react';
+import React, {lazy, Suspense} from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 
-const Scrumboard = React.lazy(() => import('./Scrumboard'));
-const Members = React.lazy(() => import('./Members'));
+const Scrumboard = lazy(() => import('./Scrumboard'));
+const Members = lazy(() => import('./Members'));
 
 const drawerWidth = 280;
 
@@ -43,10 +43,12 @@ const Team = () => {
 
             <main className = {show? classes.open: classes.close }>
                 <Header onSidenavToggle = {onSidenavToggle} />
-                <Switch>
-                    <Route path="/team" exact component = {Scrumboard} />
-                    <Route path="/team/members" exact component = {Members} />
-                </Switch>
+                <Suspense fallback={<span>loading content .....</span>}>
+                    <Switch>
+                        <Route path="/team" exact component = {Scrumboard} />
+                        <Route path="/team/members" exact component = {Members} />
+                    </Switch>
+                </Suspense>
             </main>
         </React.Fragment>
     )

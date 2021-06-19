@@ -8,14 +8,16 @@ import {
     ListItemText,
     Divider,
     ListItemAvatar,
-    Avatar
+    Avatar,
+    InputAdornment
 } from '@material-ui/core';
 
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 import MyTextField from '../../../components/MyTextField';
-import { Add } from '@material-ui/icons';
+import { Add, SearchOutlined } from '@material-ui/icons';
 import userAvatar from '../../../assets/avatars/Henderson.jpg'
+import useSidenav from '../../../hooks/useSidenav';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -29,6 +31,17 @@ const useStyles = makeStyles((theme: Theme) =>
             '&:hover': {
                 backgroundColor: '#f1f5f9'
             }
+        },
+        search: {
+            [theme.breakpoints.down('xs')]: {
+                flexDirection: 'column'
+            },
+        },
+        searchFabButton: {
+            [theme.breakpoints.down('xs')]: {
+                marginLeft: '0 !important',
+                width: '100%',
+            },
         }
     }),
 );
@@ -40,18 +53,22 @@ const Members = () => {
     return (
         <Box className="bg-white" width="100%" height="100%">
             <Box p={3}>
-                <Typography variant="h4" className="bg-text-primary">
+                <Typography variant="h4" className="bg-text-primary fw-700">
                     Members
                 </Typography>
                 <Typography variant="subtitle2" color="textSecondary">
                     80 contacts
                 </Typography>
-                <Box display="flex" flexDirection="row" alignItems="center" my={2}>
-                    <MyTextField fullWidth variant="outlined" placeholder="Search members" size="small" />
-                    <Fab variant="extended" color="primary" size="medium" style={{ marginLeft: '1rem' }}>
-                        <Add style={{ marginRight: '0.4rem' }} />
-                        <span>Add</span>
-                    </Fab>
+                <Box display="flex" flexDirection="row" my={2} className={classes.search}>
+                    <MyTextField style={{ marginBottom: '0.5rem' }} fullWidth variant="outlined" placeholder="Search members" size="small"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchOutlined color="disabled" />
+                                </InputAdornment>
+                            ),
+                        }} />
+                    <AddMember />
                 </Box>
             </Box>
 
@@ -73,5 +90,26 @@ const Members = () => {
         </Box>
     )
 }
+
+const AddMember = () => {   
+    const classes = useStyles();
+    const { onSidenavClose, onSidenavOpen, SidenavComponent} = useSidenav('right', 'persistent'); 
+
+    return (
+        <React.Fragment>
+            <Fab onClick={onSidenavOpen} className={classes.searchFabButton} variant="extended" color="primary" size="medium" style={{ marginLeft: '1rem' }}>
+                <Add style={{ marginRight: '0.4rem' }}/>
+                <span>Add</span>
+            </Fab>
+
+            <SidenavComponent>
+               <div style={{ marginTop: '56px'}}>
+               this is content
+                <button onClick={onSidenavClose}>close</button>
+               </div>
+            </SidenavComponent>
+        </React.Fragment>
+    )
+};
 
 export default Members;

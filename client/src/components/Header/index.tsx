@@ -14,6 +14,7 @@ import useMenu from '../../hooks/useMenu';
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
+            zIndex: theme.zIndex.drawer + 1,
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'row',
