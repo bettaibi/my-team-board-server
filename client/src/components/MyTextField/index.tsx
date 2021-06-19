@@ -4,6 +4,9 @@ import { withStyles, fade, Theme } from '@material-ui/core/styles';
 
 const CssTextField = withStyles((theme: Theme) =>({
     root: {
+      '& .MuiOutlinedInput-input' : {
+        zIndex: theme.zIndex.drawer
+      },
       '& .MuiOutlinedInput-root': {
         '& .MuiOutlinedInput-inputAdornedStart': {
           zIndex: theme.zIndex.drawer,

@@ -44,8 +44,7 @@ const useSidenav = (anchor: Anchors, variant: Variant, state?: boolean) => {
                       [classes.drawerOpen]: show,
                       [classes.drawerClose]: !show,
                     }),
-                  }}
-            >
+                  }} >
                 <Box overflow="hidden">
                     {children}
                 </Box>

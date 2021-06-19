@@ -11,6 +11,7 @@ import {
     Avatar,
     InputAdornment
 } from '@material-ui/core';
+import NewMember from './NewMember';
 
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
@@ -103,9 +104,8 @@ const AddMember = () => {
             </Fab>
 
             <SidenavComponent>
-               <div style={{ marginTop: '56px'}}>
-               this is content
-                <button onClick={onSidenavClose}>close</button>
+               <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px',}}>
+                 <NewMember onSidenavClose = {onSidenavClose} />
                </div>
             </SidenavComponent>
         </React.Fragment>
