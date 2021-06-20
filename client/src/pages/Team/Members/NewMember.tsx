@@ -43,9 +43,9 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                             <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
                                 Cancel
                             </RoundedButton>
-                                <RoundedButton  size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
-                                    Save
-                                </RoundedButton>
+                            <RoundedButton  size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
+                                Save
+                            </RoundedButton>
                             </Box>
                         </Box>
                         <Box style={{ padding: '2rem 2rem 0 2rem' }}>
@@ -87,7 +87,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                             </Typography>
                             <div className="form-group">
                                 <label>Address</label>
-                                <MyTextField fullWidth name="address" variant="outlined" size="small" placeholder="member's address"
+                                <MyTextField multiline rows={3} fullWidth name="address" variant="outlined" size="small" placeholder="member's address"
                                     onChange={handleChange} onBlur={handleBlur} />
                             </div>
                             <div className="form-group">

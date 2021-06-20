@@ -172,7 +172,7 @@ const Navigation = () => {
                         Workspace's Members
                     </small>
 
-                    <Box className={classes.navItem}
+                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team/chat/members1'})} onClick = {() => navigateTo('/team/chat/members1')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
                         <StyledBadge
@@ -190,98 +190,7 @@ const Navigation = () => {
                             <small >Developer</small>
                         </Box>
                     </Box>
-                    <Box className={classes.navItem + ' ' + classes.activeItem}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
-                    <Box className={classes.navItem}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
-                    <Box className={classes.navItem}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
-                    <Box className={classes.navItem}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
-
-                    <Box className={classes.navItem}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
-                    <Box className={classes.navItem}
+                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team/chat/members2'})} onClick = {() => navigateTo('/team/chat/members2')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
                         <StyledBadge

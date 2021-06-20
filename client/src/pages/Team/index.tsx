@@ -7,6 +7,7 @@ import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 
 const Scrumboard = lazy(() => import('./Scrumboard'));
 const Members = lazy(() => import('./Members'));
+const Chat = lazy(() => import('./Chat'));
 
 const drawerWidth = 280;
 
@@ -47,6 +48,7 @@ const Team = () => {
                     <Switch>
                         <Route path="/team" exact component = {Scrumboard} />
                         <Route path="/team/members" exact component = {Members} />
+                        <Route path="/team/chat/:roomID" exact component = {Chat} />
                     </Switch>
                 </Suspense>
             </main>
