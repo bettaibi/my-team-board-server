@@ -7,18 +7,22 @@ import {
     Typography,
     IconButton,
     InputBase,
-    Tooltip
+    Tooltip,
+    Divider
 } from '@material-ui/core';
 import {
     InfoOutlined,
     CropOriginal,
     AttachFile,
-    SentimentDissatisfiedOutlined,
-    SendOutlined
+    SendOutlined,
+    SentimentVerySatisfiedOutlined,
+    PhoneOutlined,
+    VideoCallOutlined
 } from '@material-ui/icons';
-import clsx from 'clsx';
 import userAvatar from '../../../assets/avatars/Henderson.jpg';
 import { Picker } from 'emoji-mart';
+import useToggle from '../../../hooks/useToggle';
+import "./chat.css";
 
 const useStyles = makeStyles((theme: Theme) => ({
     iconColor: {
@@ -29,17 +33,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     bgLightBlue: {
         backgroundColor: "#f1f5f9"
-    },
-    flexGrow: {
-        flexGrow: 1
     }
+
 }));
 
 const Chat = () => {
     const classes = useStyles();
 
     return (
-        <Box display='flex' flexDirection="column" height="calc(100vh - 56px)">
+        <Box display='flex' flexDirection="column" height="calc(100vh - 56px)" position="relative">
             <Box p={2} borderBottom="1px solid lightgray" display='flex' flexDirection="row"
                 alignItems="center" justifyContent="space-between">
 
@@ -56,9 +58,8 @@ const Chat = () => {
                     <InfoOutlined className={classes.iconColor} />
                 </IconButton>
             </Box>
-            <Box p={2} flexGrow={1} className="bg-white" overflow="auto">
-                dslldsl
-                lorem*50
+            <Box p={2} display="flex" flexDirection="Column" flexGrow={1} className="bg-white" overflow="auto">
+                <Messages />
             </Box>
             <Box style={{ padding: '0.5rem 1rem' }} className="bg-white">
                 <MessageEditor />
@@ -70,6 +71,12 @@ const Chat = () => {
 
 const MessageEditor = () => {
     const classes = useStyles();
+    const { show, toggle: toggleImoji } = useToggle();
+
+    function displayEmoji(emoji: any) {
+        console.log(emoji);
+        toggleImoji();
+    }
 
     return (
         <Box borderRadius={5} border="1px solid lightgray" overflow="hidden">
@@ -78,15 +85,17 @@ const MessageEditor = () => {
                     multiline
                     rowsMax={3}
                     fullWidth
-                    placeholder="enter a message here.."
+                    placeholder="enter your message right here.."
                     inputProps={{ 'aria-label': 'naked' }} />
             </Box>
             <Box className={classes.bgLightBlue} borderTop="1px solid lightgray" p={1} display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                 <div>
-                    <Picker set='apple'
-                    style={{ position: 'absolute', bottom: '60px', left: '1.5rem', zIndex: 99999,  width: '280px' }} />
-                    <IconButton className={classes.mr} size="small">
-                        <SentimentDissatisfiedOutlined className={classes.iconColor} />
+                    {show && <Picker set='twitter' onSelect={(emoji) => displayEmoji(emoji)}
+                        style={{ position: 'absolute', bottom: '60px', left: '1.5rem', zIndex: 99999, width: '280px' }} />
+                    }
+
+                    <IconButton className={classes.mr} size="small" onClick={toggleImoji}>
+                        <SentimentVerySatisfiedOutlined className={classes.iconColor} />
                     </IconButton>
                     <Tooltip title="send images">
                         <IconButton className={classes.mr} size="small">
@@ -100,14 +109,62 @@ const MessageEditor = () => {
                         </IconButton>
                     </Tooltip>
                 </div>
-                <Tooltip title="send">
-                    <IconButton className={classes.mr} size="small">
-                        <SendOutlined className={classes.iconColor} />
-                    </IconButton>
-                </Tooltip>
+                <div style={{display:'flex'}}>
+                    <Tooltip title="audio call">
+                        <IconButton className={classes.mr} size="small">
+                            <PhoneOutlined className={classes.iconColor} />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="video call">
+                        <IconButton size="small">
+                            <VideoCallOutlined className={classes.iconColor} />
+                        </IconButton>
+                    </Tooltip>
+                    <Divider orientation="vertical" flexItem style={{margin:'0 0.6rem', width:'2px'}} />
+                    <Tooltip title="send">
+                        <IconButton size="small">
+                            <SendOutlined className={classes.iconColor} />
+                        </IconButton>
+                    </Tooltip>
+                </div>
             </Box>
         </Box>
     )
+};
+
+const Messages = () => {
+
+    return (
+        <React.Fragment>
+            <div className="mine messages">
+                <div className="message last">
+                    Dude
+                </div>
+                <div className="message last">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut a id labore impedit natus nisi tempora voluptates maiores similique accusantium illum, sint error, dicta consequuntur voluptatum voluptatibus porro facilis. Et!
+                </div>
+            </div>
+            <div className="yours messages">
+                <div className="message">
+                    Hey!
+                </div>
+                <div className="message">
+                    You there?
+                </div>
+                <div className="message last">
+                    Hello, how's it going?
+                </div>
+            </div>
+            <div className="mine messages">
+                <div className="message">
+                    Great thanks!
+                </div>
+                <div className="message last">
+                    How about you?
+                </div>
+            </div>
+        </React.Fragment>
+    );
 };
 
 export default Chat;
