@@ -20,7 +20,7 @@ body{
   background-color: #475569;
 }
 .bg-text-secondary{
-  color: #475569;
+  color: #475569 !important;
 }
 .bg-active{
   background-color: #2c3344;

@@ -2,11 +2,12 @@ import React from 'react';
 import { Formik, Form } from "formik";
 import {
     Typography,
-    Fab,
-    Box
+    Box,
+    Hidden
 } from '@material-ui/core';
 import * as yup from "yup";
 import MyTextField from '../../../components/MyTextField';
+import RoundedButton from '../../../components/RoundedButton';
 
 const InitialValue = {
     fullName: '',
@@ -27,6 +28,7 @@ const schema = yup.object().shape({
 interface NewMemberProps {
     onSidenavClose: () => void;
 }
+
 const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
 
     return (
@@ -34,72 +36,80 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
             {
                 ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
-                        <Box textAlign="right" style={{backgroundColor: '#f1f5f9', padding:'2.5rem 2rem'}} borderBottom="1px solid #fafafa">
-                            <Fab size="small" variant="extended" color="secondary"
-                            onClick={onSidenavClose}>
-                                Cancel
-                            </Fab>
-                            <Fab size="small" type="submit" style={{marginLeft: '0.5rem'}} variant="extended" color="primary">
-                                Save
-                            </Fab>
+                        <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 2rem' }} borderBottom="1px solid #fafafa"
+                            display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
+                            <Hidden xsDown>
+                                <Typography variant="subtitle1" className="bg-text-primary fw-700">
+                                    CREATE NEW
+                                </Typography>
+                            </Hidden>
+                            <div></div>
+                            <Box>
+                                <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
+                                    Cancel
+                                </RoundedButton>
+                                <RoundedButton  size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
+                                    Save
+                                </RoundedButton>
+                            </Box>
                         </Box>
-                        <Box style={{padding: '2rem 2rem 0 2rem'}}>
-                        <Typography variant="subtitle1" className="bg-text-primary fw-700">
-                            Basic Information
-                        </Typography>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                            All infos are required
-                        </Typography>
-                        <div className="form-group">
-                            <label>Full name</label>
-                            <MyTextField fullWidth name="fullName" variant="outlined" size="small" placeholder="member's name"
-                            onChange={handleChange} onBlur={handleBlur} 
-                            value={values.fullName}
-                            error = {touched.fullName && !!errors.fullName} 
-                            helperText = {touched.fullName && errors.fullName}/>
-                        </div>
-                        <div className="form-group">
-                            <label>Email</label>
-                            <MyTextField fullWidth name="email" variant="outlined" size="small" placeholder="member's Email"
-                            onChange={handleChange} onBlur={handleBlur} 
-                            value={values.email}
-                            error = {touched.email && !!errors.email} 
-                            helperText = {touched.email && errors.email}/>
-                        </div>
-                        <div className="form-group">
-                            <label>Title</label>
-                            <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's title"
-                            onChange={handleChange} onBlur={handleBlur} 
-                            value={values.title}
-                            error = {touched.title && !!errors.title} 
-                            helperText = {touched.title && errors.title}/>
-                        </div>
-                        <Typography variant="subtitle1" className="bg-text-primary fw-700">
-                            Extra Information
-                        </Typography>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                            Optional Infos
-                        </Typography>
-                        <div className="form-group">
-                            <label>Address</label>
-                            <MyTextField fullWidth name="address" variant="outlined" size="small" placeholder="member's address"
-                            onChange={handleChange} onBlur={handleBlur} />
-                        </div>
-                        <div className="form-group">
-                            <label>Country</label>
-                            <MyTextField fullWidth name="country" variant="outlined" size="small" placeholder="member's country"
-                            onChange={handleChange} onBlur={handleBlur} />
-                        </div>
-                        <div className="form-group">
-                            <label>City</label>
-                            <MyTextField fullWidth name="city" variant="outlined" size="small" placeholder="member's city"
-                            onChange={handleChange} onBlur={handleBlur} />
-                        </div>
-                        <div className="form-group">
-                            <label>Phone</label>
-                            <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's phone"
-                            onChange={handleChange} onBlur={handleBlur} />
-                        </div>
+                        <Box style={{ padding: '2rem 2rem 0 2rem' }}>
+                            <Typography variant="subtitle1" className="bg-text-primary fw-700">
+                                Basic Information
+                            </Typography>
+                            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                                All infos are required
+                            </Typography>
+                            <div className="form-group">
+                                <label>Full name</label>
+                                <MyTextField fullWidth name="fullName" variant="outlined" size="small" placeholder="member's name"
+                                    onChange={handleChange} onBlur={handleBlur}
+                                    value={values.fullName}
+                                    error={touched.fullName && !!errors.fullName}
+                                    helperText={touched.fullName && errors.fullName} />
+                            </div>
+                            <div className="form-group">
+                                <label>Email</label>
+                                <MyTextField fullWidth name="email" variant="outlined" size="small" placeholder="member's Email"
+                                    onChange={handleChange} onBlur={handleBlur}
+                                    value={values.email}
+                                    error={touched.email && !!errors.email}
+                                    helperText={touched.email && errors.email} />
+                            </div>
+                            <div className="form-group">
+                                <label>Title</label>
+                                <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's title"
+                                    onChange={handleChange} onBlur={handleBlur}
+                                    value={values.title}
+                                    error={touched.title && !!errors.title}
+                                    helperText={touched.title && errors.title} />
+                            </div>
+                            <Typography variant="subtitle1" className="bg-text-primary fw-700">
+                                Extra Information
+                            </Typography>
+                            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                                Optional Infos
+                            </Typography>
+                            <div className="form-group">
+                                <label>Address</label>
+                                <MyTextField fullWidth name="address" variant="outlined" size="small" placeholder="member's address"
+                                    onChange={handleChange} onBlur={handleBlur} />
+                            </div>
+                            <div className="form-group">
+                                <label>Country</label>
+                                <MyTextField fullWidth name="country" variant="outlined" size="small" placeholder="member's country"
+                                    onChange={handleChange} onBlur={handleBlur} />
+                            </div>
+                            <div className="form-group">
+                                <label>City</label>
+                                <MyTextField fullWidth name="city" variant="outlined" size="small" placeholder="member's city"
+                                    onChange={handleChange} onBlur={handleBlur} />
+                            </div>
+                            <div className="form-group">
+                                <label>Phone</label>
+                                <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's phone"
+                                    onChange={handleChange} onBlur={handleBlur} />
+                            </div>
                         </Box>
                     </Form>
                 )
