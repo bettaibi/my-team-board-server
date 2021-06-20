@@ -3,7 +3,6 @@ import { Formik, Form } from "formik";
 import {
     Typography,
     Box,
-    Hidden
 } from '@material-ui/core';
 import * as yup from "yup";
 import MyTextField from '../../../components/MyTextField';
@@ -38,16 +37,12 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                     <Form onSubmit={handleSubmit} autoComplete="off" >
                         <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 2rem' }} borderBottom="1px solid #fafafa"
                             display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
-                            <Hidden xsDown>
-                                <Typography variant="subtitle1" className="bg-text-primary fw-700">
-                                    CREATE NEW
-                                </Typography>
-                            </Hidden>
+                            
                             <div></div>
                             <Box>
-                                <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
-                                    Cancel
-                                </RoundedButton>
+                            <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
+                                Cancel
+                            </RoundedButton>
                                 <RoundedButton  size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                     Save
                                 </RoundedButton>

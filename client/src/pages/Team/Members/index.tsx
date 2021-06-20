@@ -98,7 +98,7 @@ const AddMember = () => {
 
     return (
         <React.Fragment>
-            <Fab onClick={onSidenavOpen} className={classes.searchFabButton} variant="extended" color="primary" size="medium" style={{ marginLeft: '1rem' }}>
+            <Fab onClick={onSidenavOpen} className={classes.searchFabButton} variant="extended" color="primary" size="medium" style={{ marginLeft: '1rem', minWidth:'120px' }}>
                 <Add style={{ marginRight: '0.4rem' }}/>
                 <span>Add</span>
             </Fab>
