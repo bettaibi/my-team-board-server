@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-
+import 'emoji-mart/css/emoji-mart.css';
 
 ReactDOM.render(
   <React.Fragment>
