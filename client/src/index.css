@@ -11,7 +11,7 @@ body{
   background-color: #0f172a;
 }
 .bg-white{
-  background-color: #fff;
+  background-color: #fff !important;
 }
 .bg-text-primary{
   color: #1E293B;

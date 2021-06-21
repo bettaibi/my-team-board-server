@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
     Box,
     makeStyles,
@@ -17,12 +17,14 @@ import {
     SendOutlined,
     SentimentVerySatisfiedOutlined,
     PhoneOutlined,
-    VideoCallOutlined
+    VideoCallOutlined,
+    DescriptionOutlined
 } from '@material-ui/icons';
 import userAvatar from '../../../assets/avatars/Henderson.jpg';
 import { Picker } from 'emoji-mart';
 import useToggle from '../../../hooks/useToggle';
 import "./chat.css";
+import useSidenav from '../../../hooks/useSidenav';
 
 const useStyles = makeStyles((theme: Theme) => ({
     iconColor: {
@@ -33,6 +35,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     bgLightBlue: {
         backgroundColor: "#f1f5f9"
+    },
+    fileAttachment: {
+        cursor: "pointer",
+        '&:hover': {
+            backgroundColor: "#eee"
+        }
     }
 
 }));
@@ -42,26 +50,30 @@ const Chat = () => {
 
     return (
         <Box display='flex' flexDirection="column" height="calc(100vh - 56px)" position="relative">
-            <Box p={2} borderBottom="1px solid lightgray" display='flex' flexDirection="row"
-                alignItems="center" justifyContent="space-between">
 
-                <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                    <Avatar src={userAvatar} alt="user" />
-                    <Box display="flex" flexDirection="column" ml={1}>
-                        <Typography variant="subtitle2" className="bg-text-primary">
-                            Nidhal Bettaibi
-                        </Typography>
-                        <small className="bg-text-secondary">2 hours ago</small>
+            <Box flexGrow={1} >
+                <Box boxShadow="0 .125rem .25rem rgba(0,0,0,.075)" p={2} display='flex' flexDirection="row" className={classes.bgLightBlue}
+                    alignItems="center" justifyContent="space-between" position="sticky" top={0} zIndex={999999999} >
+
+                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                        <Avatar src={userAvatar} alt="user" />
+                        <Box display="flex" flexDirection="column" ml={1}>
+                            <Typography variant="subtitle2" className="bg-text-primary">
+                                Nidhal Bettaibi
+                            </Typography>
+                            <small className="bg-text-secondary">2 hours ago</small>
+                        </Box>
+                    </Box>
+                    <Box>
+                    <ChatDetails />
                     </Box>
                 </Box>
-                <IconButton>
-                    <InfoOutlined className={classes.iconColor} />
-                </IconButton>
+                <Box className="bg-white" p={2} display="flex" flexDirection="Column">
+                    <Messages />
+                </Box>
             </Box>
-            <Box p={2} display="flex" flexDirection="Column" flexGrow={1} className="bg-white" overflow="auto">
-                <Messages />
-            </Box>
-            <Box style={{ padding: '0.5rem 1rem' }} className="bg-white">
+
+            <Box style={{ padding: '0.5rem 1rem' }} className="bg-white" position="sticky" bottom={0}>
                 <MessageEditor />
             </Box>
         </Box>
@@ -72,6 +84,8 @@ const Chat = () => {
 const MessageEditor = () => {
     const classes = useStyles();
     const { show, toggle: toggleImoji } = useToggle();
+    let fileRef = useRef<any>();
+    let imageRef = useRef<any>();
 
     function displayEmoji(emoji: any) {
         console.log(emoji);
@@ -97,19 +111,26 @@ const MessageEditor = () => {
                     <IconButton className={classes.mr} size="small" onClick={toggleImoji}>
                         <SentimentVerySatisfiedOutlined className={classes.iconColor} />
                     </IconButton>
-                    <Tooltip title="send images">
-                        <IconButton className={classes.mr} size="small">
-                            <CropOriginal className={classes.iconColor} />
-                        </IconButton>
-                    </Tooltip>
 
-                    <Tooltip title="send attachments">
-                        <IconButton className={classes.mr} size="small">
-                            <AttachFile className={classes.iconColor} />
-                        </IconButton>
-                    </Tooltip>
+                    <React.Fragment>
+                        <Tooltip title="send images">
+                            <IconButton className={classes.mr} size="small" onClick={() => imageRef.current.click()}>
+                                <CropOriginal className={classes.iconColor} />
+                            </IconButton>
+                        </Tooltip>
+                        <input ref={imageRef} hidden multiple accept="image/*" type="file" />
+                    </React.Fragment>
+
+                    <React.Fragment>
+                        <Tooltip title="send attachments">
+                            <IconButton className={classes.mr} size="small" onClick={() => fileRef.current.click()}>
+                                <AttachFile className={classes.iconColor} />
+                            </IconButton>
+                        </Tooltip>
+                        <input ref={fileRef} hidden type="file" />
+                    </React.Fragment>
                 </div>
-                <div style={{display:'flex'}}>
+                <div style={{ display: 'flex' }}>
                     <Tooltip title="audio call">
                         <IconButton className={classes.mr} size="small">
                             <PhoneOutlined className={classes.iconColor} />
@@ -120,7 +141,7 @@ const MessageEditor = () => {
                             <VideoCallOutlined className={classes.iconColor} />
                         </IconButton>
                     </Tooltip>
-                    <Divider orientation="vertical" flexItem style={{margin:'0 0.6rem', width:'2px'}} />
+                    <Divider orientation="vertical" flexItem style={{ margin: '0 0.6rem', width: '2px' }} />
                     <Tooltip title="send">
                         <IconButton size="small">
                             <SendOutlined className={classes.iconColor} />
@@ -137,12 +158,13 @@ const Messages = () => {
     return (
         <React.Fragment>
             <div className="mine messages">
-                <div className="message last">
+                <div className="message">
                     Dude
                 </div>
                 <div className="message last">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut a id labore impedit natus nisi tempora voluptates maiores similique accusantium illum, sint error, dicta consequuntur voluptatum voluptatibus porro facilis. Et!
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 </div>
+                <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">11:02</small>
             </div>
             <div className="yours messages">
                 <div className="message">
@@ -151,9 +173,11 @@ const Messages = () => {
                 <div className="message">
                     You there?
                 </div>
+                <FileAttachment />
                 <div className="message last">
                     Hello, how's it going?
                 </div>
+                {/* <small style={{marginLeft:'0.5rem'}} className="bg-text-secondary">11:02</small> */}
             </div>
             <div className="mine messages">
                 <div className="message">
@@ -162,9 +186,47 @@ const Messages = () => {
                 <div className="message last">
                     How about you?
                 </div>
+                <small style={{ marginLeft: '0.5rem' }} className="bg-text-secondary">11:02</small>
             </div>
         </React.Fragment>
     );
 };
+
+const FileAttachment = () => {
+    const classes = useStyles();
+
+    return (
+        <Box display="flex" flexDirection="row" alignItems="center" minWidth="260px"
+            border="1px solid lightgray" p={2} m={1} borderRadius={5} className={classes.fileAttachment}>
+            <DescriptionOutlined fontSize="large" className={classes.iconColor} />
+            <Box mx={1}>
+                <Typography variant="subtitle2" className="bg-text-primary"> File name here</Typography>
+                <span className="bg-text-secondary">Sent At: 14 sep 14:25</span>
+            </Box>
+        </Box>
+    )
+}
+
+const ChatDetails = () => {
+    const classes = useStyles();
+    const { SidenavComponent, onSidenavClose, onSidenavOpen } = useSidenav('right', 'persistent');
+
+    return (
+        <React.Fragment>
+            <IconButton onClick={onSidenavOpen}>
+                <InfoOutlined className={classes.iconColor} />
+            </IconButton>
+
+            <SidenavComponent>
+                <Box mt="50px">
+                    kdsjfklj sdkfklsdf sdkfjdsk
+                    <button onClick={onSidenavClose}>close</button>
+                </Box>
+            </SidenavComponent>
+        </React.Fragment>
+    )
+}
+
+
 
 export default Chat;
