@@ -43,7 +43,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                             <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
                                 Cancel
                             </RoundedButton>
-                            <RoundedButton  size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
+                            <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                 Save
                             </RoundedButton>
                             </Box>

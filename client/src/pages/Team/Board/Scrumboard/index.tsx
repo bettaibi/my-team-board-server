@@ -4,14 +4,18 @@ import {
     Typography,
     makeStyles,
     IconButton,
-    Badge
+    Badge,
+    Button,
+    MenuItem
 } from '@material-ui/core';
 import RoundedButton from '../../../../components/RoundedButton';
 import clsx from 'clsx';
 import {
     AppsOutlined,
     EditOutlined,
-    MoreVertOutlined
+    MoreVertOutlined,
+    AddCircleOutline,
+    DeleteOutline
 } from "@material-ui/icons";
 import { useHistory } from 'react-router-dom';
 import UsePopover from '../../../../hooks/usePopover';
@@ -21,40 +25,40 @@ const aspects = [
     {
         title: 'aspect 1',
         cards: [
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.'},
-            {value: 'Lorem ipsum dolor sit amet consectetur'},
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.'},
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. '},
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { value: 'Lorem ipsum dolor sit amet consectetur' },
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
     {
         title: 'aspect 2',
         cards: [
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.'},
-            {value: 'Lorem ipsum dolor sit amet consectetur'},
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { value: 'Lorem ipsum dolor sit amet consectetur' },
         ]
     },
     {
         title: 'aspect 1',
         cards: [
-            {value: 'Lorem ipsum dolor sit amet consectetur'},
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.'},
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. '},
+            { value: 'Lorem ipsum dolor sit amet consectetur' },
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
     {
         title: 'aspect 1',
         cards: [
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.'}
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
         ]
     },
     {
         title: 'aspect 1',
         cards: [
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.'},
-            {value: 'Lorem ipsum dolor sit amet consectetur'},
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.'},
-            {value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. '},
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { value: 'Lorem ipsum dolor sit amet consectetur' },
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
 ]
@@ -88,6 +92,12 @@ const useStyle = makeStyles((theme) => ({
         padding: theme.spacing(2),
         marginTop: theme.spacing(1),
         borderRadius: 10,
+    },
+    addCardButton: {
+        marginTop: theme.spacing(1),
+        width: '100%',
+        borderRadius: 10,
+        color: '#64748B'
     }
 }));
 
@@ -123,7 +133,7 @@ const Scrumboard = () => {
             <Box p={2} display="flex" flexDirection="row" overflow="auto">
                 {
                     aspects.map((item: any) => (
-                        <Aspect key={item} cards = {item.cards} />
+                        <Aspect key={item} cards={item.cards} />
                     ))
                 }
             </Box>
@@ -131,25 +141,26 @@ const Scrumboard = () => {
     )
 };
 
-const Aspect = ({cards}: {cards: any[]}) => {
+const Aspect = ({ cards }: { cards: any[] }) => {
     const classes = useStyle();
-    const { PopoverComponent, handleClick} = UsePopover();
+    const { PopoverComponent, handleClick, handleClose } = UsePopover();
 
     return (
         <Box className={classes.aspect}>
             <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                 <Typography variant="subtitle2">Aspect</Typography>
                 <Box>
-                    <Badge badgeContent={cards.length} color="primary" style={{marginRight:'1rem'}} />
-                      
+                    <Badge badgeContent={cards.length} color="primary" style={{ marginRight: '1rem' }} />
+
                     <IconButton size="small" aria-describedby="simple_menu" onClick={handleClick}>
                         <MoreVertOutlined />
                     </IconButton>
 
                     <PopoverComponent id="simple_menu">
-                        <Box>
-                            qsdkl qsdk slkdlqs qsldk qsqlkd lks lsq,ld qlsdk
-                        </Box>
+                        <MenuItem onClick={handleClose} style={{padding: '1rem'}}> 
+                                <DeleteOutline  className={classes.iconColor} />
+                                <span style={{ marginLeft: '0.8rem' }}>Delete List</span>
+                        </MenuItem>
                     </PopoverComponent>
                 </Box>
             </Box>
@@ -159,13 +170,17 @@ const Aspect = ({cards}: {cards: any[]}) => {
                         <Card key={item.value} value={item.value} />
                     ))
                 }
+                <Button className={classes.addCardButton} size="small">
+                    <AddCircleOutline className={classes.mr} />
+                    <span>Add another card</span>
+                </Button>
             </React.Fragment>
         </Box>
     )
 };
 
 
-const Card = ({value}: {value: string}) => {
+const Card = ({ value }: { value: string }) => {
     const classes = useStyle();
 
     return (
