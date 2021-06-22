@@ -11,6 +11,7 @@ import {
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import RoundedButton from '../../../components/RoundedButton';
 import clsx from 'clsx';
+import { useHistory } from 'react-router-dom'; 
 
 import avatar1 from '../../../assets/avatars/Abbott.jpg';
 import avatar2 from '../../../assets/avatars/Christy.jpg';
@@ -40,9 +41,14 @@ const useStyle = makeStyles((theme) => ({
   }
 }));
 
-const Scrumboard = () => {
+const Board = () => {
   const projects = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const classes = useStyle();
+  const history = useHistory();
+
+  const goToScrumboard = () => {
+    history.push('/team/scrumboard');
+  }
 
   return (
     <Box className={classes.root} overflow="auto" height="100%" minHeight="80vh"  display="flex" flexDirection="column" alignItems="center" justifyContent="center">
@@ -56,7 +62,8 @@ const Scrumboard = () => {
       <Grid container spacing={2} className={classes.gridContainer}>
         {
           projects.map((item: number) => (
-            <Grid key={item} item xs={12} sm={6} md={4} lg={4}
+            <Grid key={item} item xs={12} sm={6} md={4} lg={4} 
+            onClick={goToScrumboard}
             >
               <Paper elevation={3} className={clsx('bg-white', classes.paper)}>
                 <Typography variant="subtitle1" className="bg-text-primary">
@@ -87,4 +94,4 @@ const Scrumboard = () => {
   )
 }
 
-export default Scrumboard;
+export default Board;

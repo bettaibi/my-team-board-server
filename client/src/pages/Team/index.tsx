@@ -5,7 +5,8 @@ import Navigation from '../../components/Navigation';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 
-const Scrumboard = lazy(() => import('./Scrumboard'));
+const Board = lazy(() => import('./Board'));
+const Scrumboard = lazy(() => import('./Board/Scrumboard'));
 const Members = lazy(() => import('./Members'));
 const Chat = lazy(() => import('./Chat'));
 
@@ -46,7 +47,8 @@ const Team = () => {
                 <Header onSidenavToggle = {onSidenavToggle} />
                 <Suspense fallback={<span>loading content .....</span>}>
                     <Switch>
-                        <Route path="/team" exact component = {Scrumboard} />
+                        <Route path="/team" exact component = {Board} /> 
+                        <Route path="/team/scrumboard" exact component = {Scrumboard} /> 
                         <Route path="/team/members" exact component = {Members} />
                         <Route path="/team/chat/:roomID" exact component = {Chat} />
                     </Switch>

@@ -227,6 +227,4 @@ const ChatDetails = () => {
     )
 }
 
-
-
 export default Chat;
