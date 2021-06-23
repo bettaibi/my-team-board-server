@@ -20,6 +20,8 @@ import {
 import { useHistory } from 'react-router-dom';
 import UsePopover from '../../../../hooks/usePopover';
 
+import { DragDropContext, Droppable, Draggable, DroppableProvided, DroppableStateSnapshot, DraggableStateSnapshot, DraggableProvided } from "react-beautiful-dnd";
+
 
 const aspects = [
     {
@@ -86,12 +88,16 @@ const useStyle = makeStyles((theme) => ({
         minWidth: '288px',
         marginRight: '1rem',
         height: 'fit-content',
+        '&:last-child': {
+            marginRight: 0,
+        }
     },
     card: {
         backgroundColor: 'white',
         padding: theme.spacing(2),
         marginTop: theme.spacing(1),
         borderRadius: 10,
+        cursor: 'pointer'
     },
     addCardButton: {
         marginTop: theme.spacing(1),
@@ -108,6 +114,10 @@ const Scrumboard = () => {
     const goBack = () => {
         history.goBack();
     }
+
+    const handleDragEnd = () => {
+
+    };
 
     return (
         <Box display="flex" flexDirection="column" overflow="hidden">
@@ -131,12 +141,26 @@ const Scrumboard = () => {
 
             {/* Cards */}
             <Box p={2} display="flex" flexDirection="row" overflow="auto">
-                {
-                    aspects.map((item: any) => (
-                        <Aspect key={item} cards={item.cards} />
-                    ))
-                }
+                <DragDropContext onDragEnd={handleDragEnd} >
+                    {
+                        aspects.map((item: any, index: number) => (
+                            <Droppable droppableId={index + 'tre'}>
+                                {
+                                    (provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+                                        <div key={index + 'ddkdssd'}
+                                            ref={provided.innerRef || undefined}
+                                            {...provided.droppableProps}
+                                        >
+                                            <Aspect cards={item.cards} />
+                                        </div>
+                                    )
+                                }
+                            </Droppable>
+                        ))
+                    }
+                </DragDropContext>
             </Box>
+
         </Box>
     )
 };
@@ -157,17 +181,29 @@ const Aspect = ({ cards }: { cards: any[] }) => {
                     </IconButton>
 
                     <PopoverComponent id="simple_menu">
-                        <MenuItem onClick={handleClose} style={{padding: '1rem'}}> 
-                                <DeleteOutline  className={classes.iconColor} />
-                                <span style={{ marginLeft: '0.8rem' }}>Delete List</span>
+                        <MenuItem onClick={handleClose} style={{ padding: '1rem' }}>
+                            <DeleteOutline className={classes.iconColor} />
+                            <span style={{ marginLeft: '0.8rem' }}>Delete List</span>
                         </MenuItem>
                     </PopoverComponent>
                 </Box>
             </Box>
             <React.Fragment>
                 {
-                    cards.map((item: any) => (
-                        <Card key={item.value} value={item.value} />
+                    cards.map((item: any, index: number) => (
+                        <Draggable key={index + 'oop'} index={index} draggableId={index + 'oop'}>
+                            {
+                                (providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
+                                    <div key={index + 'yyy'}
+                                        ref={providedDraggable.innerRef}
+                                        {...providedDraggable.draggableProps}
+                                        {...providedDraggable.dragHandleProps}>
+                                        <Card value={item.value} />
+                                    </div>
+                                )
+                            }
+
+                        </Draggable>
                     ))
                 }
                 <Button className={classes.addCardButton} size="small">
