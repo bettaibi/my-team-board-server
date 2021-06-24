@@ -25,7 +25,7 @@ const FadeTransition = React.forwardRef(function Transition(
 const useDialog = () => {
     const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
     const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
     const DialogComponent: React.FC = ({children}) => {
         return(

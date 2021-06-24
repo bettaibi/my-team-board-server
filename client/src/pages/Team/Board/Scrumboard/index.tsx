@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Typography,
@@ -20,49 +20,46 @@ import {
 import { useHistory } from 'react-router-dom';
 import UsePopover from '../../../../hooks/usePopover';
 
-import { DragDropContext, Droppable, Draggable, DroppableProvided, DroppableStateSnapshot, DraggableStateSnapshot, DraggableProvided } from "react-beautiful-dnd";
-
+import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, DroppableStateSnapshot, DraggableStateSnapshot, DraggableProvided } from "react-beautiful-dnd";
+import useDialog from '../../../../hooks/useDialog';
+import CardDetails from './CardDetails';
+import { v4 } from 'uuid';
 
 const aspects = [
     {
+        id: v4(),
         title: 'aspect 1',
         cards: [
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { value: 'Lorem ipsum dolor sit amet consectetur' },
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
     {
+        id: v4(),
         title: 'aspect 2',
         cards: [
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { value: 'Lorem ipsum dolor sit amet consectetur' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
         ]
     },
     {
+        id: v4(),
         title: 'aspect 1',
         cards: [
-            { value: 'Lorem ipsum dolor sit amet consectetur' },
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
     {
+        id: v4(),
         title: 'aspect 1',
         cards: [
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
+            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
         ]
-    },
-    {
-        title: 'aspect 1',
-        cards: [
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { value: 'Lorem ipsum dolor sit amet consectetur' },
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
-        ]
-    },
+    }
 ]
 
 const useStyle = makeStyles((theme) => ({
@@ -97,7 +94,8 @@ const useStyle = makeStyles((theme) => ({
         padding: theme.spacing(2),
         marginTop: theme.spacing(1),
         borderRadius: 10,
-        cursor: 'pointer'
+        cursor: 'pointer',
+        boxShadow: "rgb(0 0 0 / 20%) 0px 3px 1px -2px, rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px"
     },
     addCardButton: {
         marginTop: theme.spacing(1),
@@ -110,14 +108,37 @@ const useStyle = makeStyles((theme) => ({
 const Scrumboard = () => {
     const classes = useStyle();
     const history = useHistory();
+    const [state, setState] = useState<any[]>(aspects);
 
     const goBack = () => {
         history.goBack();
     }
 
-    const handleDragEnd = () => {
-
-    };
+    const handleDragEnd = ({destination, source}: DropResult) => {
+        if (!destination) {
+          return
+        }
+    
+        if (destination.index === source.index && destination.droppableId === source.droppableId) {
+          return
+        }
+        
+        // const dropbaleId: string = source.droppableId;
+        // // Creating a copy of item before removing it from state
+        // const itemCopy = state[dropbaleId].cards[source.index]
+    
+        // setState(prev => {
+        //   prev = {...prev}
+        //   // Remove from previous items array
+        //   prev[source.droppableId].items.splice(source.index, 1)
+    
+    
+        //   // Adding to new items array location
+        //   prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
+    
+        //   return prev
+        // })
+      }
 
     return (
         <Box display="flex" flexDirection="column" overflow="hidden">
@@ -143,15 +164,21 @@ const Scrumboard = () => {
             <Box p={2} display="flex" flexDirection="row" overflow="auto">
                 <DragDropContext onDragEnd={handleDragEnd} >
                     {
-                        aspects.map((item: any, index: number) => (
-                            <Droppable droppableId={index + 'tre'}>
+                        state.map((item: any, index: number) => (
+                            <Droppable droppableId={item.id} key={item.id}>
                                 {
                                     (provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                                        <div key={index + 'ddkdssd'}
-                                            ref={provided.innerRef || undefined}
+                                        <div className={classes.aspect}
+                                            ref={provided.innerRef}
                                             {...provided.droppableProps}
                                         >
                                             <Aspect cards={item.cards} />
+                                            {provided.placeholder}
+
+                                            <Button className={classes.addCardButton} size="small">
+                                                <AddCircleOutline className={classes.mr} />
+                                                <span>Add another card</span>
+                                            </Button>
                                         </div>
                                     )
                                 }
@@ -170,7 +197,7 @@ const Aspect = ({ cards }: { cards: any[] }) => {
     const { PopoverComponent, handleClick, handleClose } = UsePopover();
 
     return (
-        <Box className={classes.aspect}>
+        <>
             <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                 <Typography variant="subtitle2">Aspect</Typography>
                 <Box>
@@ -191,38 +218,42 @@ const Aspect = ({ cards }: { cards: any[] }) => {
             <React.Fragment>
                 {
                     cards.map((item: any, index: number) => (
-                        <Draggable key={index + 'oop'} index={index} draggableId={index + 'oop'}>
+                        <Draggable key={item.id} index={index} draggableId={item.id}>
                             {
                                 (providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
-                                    <div key={index + 'yyy'}
-                                        ref={providedDraggable.innerRef}
-                                        {...providedDraggable.draggableProps}
-                                        {...providedDraggable.dragHandleProps}>
-                                        <Card value={item.value} />
-                                    </div>
+                                    <Card value={item.value} providedDraggable={providedDraggable} />
                                 )
                             }
 
                         </Draggable>
                     ))
                 }
-                <Button className={classes.addCardButton} size="small">
-                    <AddCircleOutline className={classes.mr} />
-                    <span>Add another card</span>
-                </Button>
             </React.Fragment>
-        </Box>
+        </>
     )
 };
 
-
-const Card = ({ value }: { value: string }) => {
+interface CardProps {
+    providedDraggable: DraggableProvided;
+    value: string;
+}
+const Card: React.FC<CardProps> = ({ providedDraggable, value }) => {
     const classes = useStyle();
+    const { DialogComponent, onDialogClose, onDialogOpen } = useDialog();
 
     return (
-        <Box boxShadow={2} className={classes.card} >
-            {value}
-        </Box>
+        <React.Fragment>
+            <div className={classes.card} onClick={onDialogOpen}
+                ref={providedDraggable.innerRef}
+                {...providedDraggable.draggableProps}
+                {...providedDraggable.dragHandleProps}>
+                {value}
+            </div>
+
+            <DialogComponent>
+                <CardDetails onDialogClose={onDialogClose} />
+            </DialogComponent>
+        </React.Fragment>
     )
 }
 
