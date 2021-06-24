@@ -21,6 +21,8 @@ import * as yup from 'yup';
 import MyTextField from '../../../../components/MyTextField';
 import usePopover from '../../../../hooks/usePopover';
 import clsx from 'clsx';
+import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided } from "react-beautiful-dnd";
+
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
@@ -46,9 +48,17 @@ const useStyle = makeStyles((theme) => ({
     root: {
         overflow: 'hidden',
         minWidth: "540px",
+        height: '64px',
         [theme.breakpoints.down('xs')]: {
             minWidth: "100%"
         },
+    },
+    content: {
+        overflow: "auto",
+        height: "520px",
+        [theme.breakpoints.down('xs')]: {
+            height: 'calc(100vh - 64px)',
+        }
     },
     checklist: {
         boxShadow: '0 1px 2px 0 #0000000d',
@@ -56,7 +66,10 @@ const useStyle = makeStyles((theme) => ({
         borderRadius: 4,
         border: '1px solid #ced4da',
         marginTop: theme.spacing(1),
-        padding: '0.4rem 0'
+        padding: '0.4rem 0',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center"
     },
     todo: {
         color: '#333',
@@ -65,7 +78,7 @@ const useStyle = makeStyles((theme) => ({
         [theme.breakpoints.down('xs')]: {
             fontSize: '13px'
         },
-        '&.done':{
+        '&.done': {
             textDecoration: 'line-through'
         }
     }
@@ -75,9 +88,12 @@ interface CardDetailsProps {
     onDialogClose: () => void;
 }
 const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
-    const { PopoverComponent, handleClick } = usePopover();
     const classes = useStyle();
-    console.log('slsksqksqk')
+
+    const ondragend = (result: DropResult) => {
+        console.log(result);
+    };
+
     return (
         <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
             {
@@ -86,14 +102,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
                         <Box p={2} borderBottom="1px solid lightgray" className={classes.root}
                             display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                             <div>
-                                <IconButton aria-describedby="card_menu" size="small" onClick={handleClick}>
-                                    <MoreHorizOutlined />
-                                </IconButton>
-                                <PopoverComponent id="card_menu">
-                                    <MenuItem style={{ padding: '1rem' }}>
-                                        Remove Card
-                                    </MenuItem>
-                                </PopoverComponent>
+                                <CardMenu />
                             </div>
 
                             <div>
@@ -103,7 +112,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
                             </div>
                         </Box>
 
-                        <Box p={2} overflow="auto" height="500px" className="content-scroll">
+                        <Box p={2} className={clsx('content-scroll', classes.content)} >
                             <div className="form-group">
                                 <label>Title *</label>
                                 <MyTextField name="title" size="small" fullWidth placeholder="Card title"
@@ -142,8 +151,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
                                     </label>
                                     <NewCheckList />
                                 </Box>
-
-                                <CheckList />
+                                <DragDropContext onDragEnd={ondragend}>
+                                    <CheckList />
+                                </DragDropContext>
                             </div>
                         </Box>
                     </Form>
@@ -158,7 +168,7 @@ const CheckList = () => {
     const [checked, setChecked] = React.useState<boolean>(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setChecked(event.target.checked);
+        setChecked(event.target.checked);
     };
 
     return (
@@ -168,26 +178,48 @@ const CheckList = () => {
                 20%
             </Typography>
 
-            {
-                list.map((item: any, index: number)=> (
-                    <Box key={index+'ddj'} className={classes.checklist}
-                    display="flex" flex-direction="row" alignItems="center">
-                        <Checkbox
-                            checked={checked}
-                            onChange={handleChange}
-                            color="primary"
-                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                        />
-                        <span className= {clsx(classes.todo, {
-                            'done': checked })} >
-                            {item.value}
-                        </span>
-                        <IconButton >
-                         <DragHandleOutlined />
-                        </IconButton>
-                    </Box>
-                ))
-            }
+            <Droppable droppableId="reorderlist">
+                {
+                    (provided: DroppableProvided) => (
+                        <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}>
+
+                            {
+                                list.map((item: any, index: number) => (
+                                    <Draggable key={index + 'ddj'} index={index} draggableId={index+'item'}>
+                                       {
+                                            (providedDraggable: DraggableProvided) => (
+                                                <div className={classes.checklist}
+                                                    ref={providedDraggable.innerRef}
+                                                    {...providedDraggable.draggableProps}
+                                                    {...providedDraggable.dragHandleProps}>
+                                                    <Checkbox
+                                                        checked={checked}
+                                                        onChange={handleChange}
+                                                        color="primary"
+                                                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                    />
+                                                    <span className={clsx(classes.todo, {
+                                                        'done': checked
+                                                    })} >
+                                                        {item.value}
+                                                    </span>
+                                                    <IconButton >
+                                                        <DragHandleOutlined />
+                                                    </IconButton>
+                                                </div>
+                                            )
+                                       }
+                                    </Draggable>
+                                ))
+                            }
+
+                            {provided.placeholder}
+                        </div>
+                    )
+                }
+            </Droppable>
         </React.Fragment>
     )
 }
@@ -205,17 +237,34 @@ const NewCheckList = () => {
             <PopoverComponent id="new_checklist">
                 <Box p={2}>
                     <div className="form-group">
-                    <label>Add new item</label>
-                    <MyTextField name="checklist" size="small" fullWidth placeholder="new Item"
+                        <label>Add new item</label>
+                        <MyTextField name="checklist" size="small" fullWidth placeholder="new Item"
                             type="text"
                             variant="outlined"
                             required={true}
-                     />
+                        />
                     </div>
                     <Button variant="contained" color="primary" size="small" fullWidth>Add</Button>
                 </Box>
             </PopoverComponent>
         </>
+    )
+};
+
+const CardMenu = () => {
+    const { PopoverComponent, handleClick } = usePopover();
+
+    return (
+        <React.Fragment>
+            <IconButton aria-describedby="card_menu" size="small" onClick={handleClick}>
+                <MoreHorizOutlined />
+            </IconButton>
+            <PopoverComponent id="card_menu">
+                <MenuItem style={{ padding: '1rem' }}>
+                    Remove Card
+                </MenuItem>
+            </PopoverComponent>
+        </React.Fragment>
     )
 };
 
