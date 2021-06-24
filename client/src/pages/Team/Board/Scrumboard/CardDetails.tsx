@@ -92,6 +92,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
 
     const ondragend = (result: DropResult) => {
         console.log(result);
+        const { source, destination } = result;
+
+        
     };
 
     return (

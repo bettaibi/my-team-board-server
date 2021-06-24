@@ -6,7 +6,8 @@ import {
     IconButton,
     Badge,
     Button,
-    MenuItem
+    MenuItem,
+    Chip
 } from '@material-ui/core';
 import RoundedButton from '../../../../components/RoundedButton';
 import clsx from 'clsx';
@@ -15,7 +16,8 @@ import {
     EditOutlined,
     MoreVertOutlined,
     AddCircleOutline,
-    DeleteOutline
+    DeleteOutline,
+    CheckBoxOutlined
 } from "@material-ui/icons";
 import { useHistory } from 'react-router-dom';
 import UsePopover from '../../../../hooks/usePopover';
@@ -24,40 +26,31 @@ import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, D
 import useDialog from '../../../../hooks/useDialog';
 import CardDetails from './CardDetails';
 import { v4 } from 'uuid';
+import Moment from 'react-moment';
 
 const aspects = [
     {
         id: v4(),
-        title: 'aspect 1',
-        cards: [
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
-        ]
-    },
-    {
-        id: v4(),
         title: 'aspect 2',
         cards: [
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
+            { dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
         ]
     },
     {
         id: v4(),
         title: 'aspect 1',
         cards: [
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
+            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
+            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
     {
         id: v4(),
         title: 'aspect 1',
         cards: [
-            { id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
+            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
         ]
     }
 ]
@@ -167,7 +160,7 @@ const Scrumboard = () => {
                         state.map((item: any, index: number) => (
                             <Droppable droppableId={item.id} key={item.id}>
                                 {
-                                    (provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+                                    (provided: DroppableProvided) => (
                                         <div className={classes.aspect}
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
@@ -220,11 +213,10 @@ const Aspect = ({ cards }: { cards: any[] }) => {
                     cards.map((item: any, index: number) => (
                         <Draggable key={item.id} index={index} draggableId={item.id}>
                             {
-                                (providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
+                                (providedDraggable: DraggableProvided) => (
                                     <Card value={item.value} providedDraggable={providedDraggable} />
                                 )
                             }
-
                         </Draggable>
                     ))
                 }
@@ -248,6 +240,20 @@ const Card: React.FC<CardProps> = ({ providedDraggable, value }) => {
                 {...providedDraggable.draggableProps}
                 {...providedDraggable.dragHandleProps}>
                 {value}
+                <Box mt={1} display="flex" flexDirection="row" alignItems="center" justifyContent="space-between"
+                width="100%">
+                    <Typography variant="body2" color="secondary" >
+                        <Moment format="YYYY/MM/DD">
+                        {new Date()}
+                        </Moment>
+                    </Typography>
+                    <Chip
+                            size="small"
+                            icon={<CheckBoxOutlined />}
+                            label="1 / 3"
+                            color="primary"
+                     />
+                </Box>
             </div>
 
             <DialogComponent>
