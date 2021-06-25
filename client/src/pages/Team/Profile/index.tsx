@@ -17,6 +17,7 @@ import RoundedButton from '../../../components/RoundedButton';
 import BasicInfos from './BasicInfos';
 import MyWorkspaces from './MyWorkspaces';
 import clsx from 'clsx';
+import SwipeableViews from 'react-swipeable-views';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -94,6 +95,9 @@ const TabContainer = () => {
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
         setValue(newValue);
     };
+    const handleChangeIndex = (index: number) => {
+        setValue(index);
+    };
 
     const TabIcon = (
         <label>
@@ -102,7 +106,7 @@ const TabContainer = () => {
                 <Chip
                     size="small"
                     label="12"
-                    color="secondary"
+                    color="primary"
                 />
             </Hidden>
         </label>
@@ -111,18 +115,26 @@ const TabContainer = () => {
     return (
         <>
             <Box className="bg-white" borderBottom="1px solid lightgray">
-                <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" >
+                <Tabs value={value} onChange={handleChange} aria-label="simple tabs example"
+                    indicatorColor="primary" textColor="primary">
                     <Tab label="Basic information" {...a11yProps(0)}></Tab>
                     <Tab label={TabIcon} {...a11yProps(1)} />
                 </Tabs>
             </Box>
-            <TabPanel value={value} index={0}>
-                <BasicInfos />
-            </TabPanel>
 
-            <TabPanel value={value} index={1}>
-                <MyWorkspaces />
-            </TabPanel>
+            <SwipeableViews
+                axis='x'
+                index={value}
+                onChangeIndex={handleChangeIndex} >
+                <TabPanel value={value} index={0}>
+                    <BasicInfos />
+                </TabPanel>
+
+                <TabPanel value={value} index={1}>
+                    <MyWorkspaces />
+                </TabPanel>
+            </SwipeableViews>
+
         </>
     )
 };

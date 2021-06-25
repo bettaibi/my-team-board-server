@@ -7,7 +7,7 @@ import {
     Divider,
     Typography
 } from '@material-ui/core'
-import { Menu, NotificationsOutlined, MailOutline, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined } from '@material-ui/icons';
+import { Menu, NotificationsOutlined, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined } from '@material-ui/icons';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import UsePopover from '../../hooks/usePopover';
 import { useHistory } from 'react-router-dom';
@@ -61,12 +61,9 @@ const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
                 <IconButton edge="start" color="inherit" aria-label="Search" className={classes.menuButton}>
                     <SearchOutlined className={classes.icons} />
                 </IconButton>
-                <IconButton edge="start" color="inherit" aria-label="notifications" className={classes.menuButton}>
-                    <NotificationsOutlined className={classes.icons} />
-                </IconButton>
                 <IconButton edge="start" color="inherit" aria-label="messages" className={classes.menuButton}>
                     <Badge badgeContent={4} color="secondary">
-                        <MailOutline className={classes.icons} />
+                        <NotificationsOutlined className={classes.icons} />
                     </Badge>
                 </IconButton>
                 <IconButton aria-describedby="account-menu" color="inherit" aria-label="profile" onClick={handleClick}>
@@ -82,11 +79,11 @@ const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
                             <small>bettaibinidhal00@gmail.com</small>
                         </Box>
                         <Divider />
-                        <MenuItem onClick={()=> navigateTo('/team/profile')} className={classes.menuItem}>
+                        <MenuItem onClick={() => navigateTo('/team/profile')} className={classes.menuItem}>
                             <AccountCircleOutlined className={classes.icons} />
                             <span style={{ marginLeft: '0.8rem' }}>Profile</span>
                         </MenuItem>
-                        <MenuItem onClick={handleClose} className={classes.menuItem}>
+                        <MenuItem onClick={() => navigateTo('/team/setting')} className={classes.menuItem}>
                             <SettingsApplicationsOutlined className={classes.icons} />
                             <span style={{ marginLeft: '0.8rem' }}>Setting</span>
                         </MenuItem>

@@ -10,6 +10,7 @@ const Scrumboard = lazy(() => import('./Board/Scrumboard'));
 const Members = lazy(() => import('./Members'));
 const Chat = lazy(() => import('./Chat'));
 const Profile = lazy(() => import('./Profile'));
+const Setting = lazy(() => import('./Setting'));
 
 const drawerWidth = 280;
 
@@ -40,7 +41,7 @@ const Team = () => {
     
     return (
         <React.Fragment>
-            <SwipeableSidenav >
+            <SwipeableSidenav>
                  <Navigation />
             </SwipeableSidenav>
 
@@ -49,10 +50,11 @@ const Team = () => {
                 <Suspense fallback={<span>loading content .....</span>}>
                     <Switch>
                         <Route path="/team" exact component = {Board} /> 
-                        <Route path="/team/scrumboard" exact component = {Scrumboard} /> 
-                        <Route path="/team/members" exact component = {Members} />
-                        <Route path="/team/profile" exact component = {Profile} />
-                        <Route path="/team/chat/:roomID" exact component = {Chat} />
+                        <Route path="/team/scrumboard" component = {Scrumboard} /> 
+                        <Route path="/team/members" component = {Members} />
+                        <Route path="/team/profile" component = {Profile} />
+                        <Route path="/team/setting" component = {Setting} />
+                        <Route path="/team/chat/:roomID" component = {Chat} />
                     </Switch>
                 </Suspense>
             </main>

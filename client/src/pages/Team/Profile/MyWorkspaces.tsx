@@ -64,8 +64,8 @@ const MyWorkspaces = () => {
                             <TableCell>
                                 <AvatarGroup max={3}>
                                     {
-                                        row.members.map((item) => (
-                                            <Avatar alt="Remy Sharp" src={avatar2} />
+                                        row.members.map((item, index) => (
+                                            <Avatar key={index} alt="Remy Sharp" src={avatar2} />
                                         ))
                                     }
                                 </AvatarGroup>

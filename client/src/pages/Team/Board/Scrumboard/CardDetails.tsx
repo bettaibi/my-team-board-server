@@ -19,6 +19,7 @@ import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 
 import MyTextField from '../../../../components/MyTextField';
+import RoundedButton from '../../../../components/RoundedButton';
 import usePopover from '../../../../hooks/usePopover';
 import clsx from 'clsx';
 import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided } from "react-beautiful-dnd";
@@ -81,7 +82,10 @@ const useStyle = makeStyles((theme) => ({
         '&.done': {
             textDecoration: 'line-through'
         }
-    }
+    },
+    iconColor: {
+        color: '#64748B'
+    },
 }));
 
 interface CardDetailsProps {
@@ -109,9 +113,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
                             </div>
 
                             <div>
-                                <Button variant="outlined" color="default" size="medium"
-                                    onClick={onDialogClose} style={{ marginRight: '0.5rem' }}>Cancel</Button>
-                                <Button variant="outlined" color="primary" size="medium" type="submit">Save</Button>
+                                <RoundedButton variant="outlined" className={classes.iconColor} size="medium"
+                                    onClick={onDialogClose} style={{ marginRight: '0.5rem' }}>Cancel</RoundedButton>
+                                <RoundedButton disableElevation variant="contained" color="primary" size="medium" type="submit">Save</RoundedButton>
                             </div>
                         </Box>
 

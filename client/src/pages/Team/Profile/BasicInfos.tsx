@@ -134,7 +134,7 @@ const ProfileDetails = () => {
                         <Box className={classes.card} overflow="hidden">
                             <Box p={2} borderBottom="1px solid lightgray">
                                 <Typography variant="subtitle1">
-                                Contact
+                                       Contact
                                 </Typography>
                             </Box>
                             <Box p={2}>
