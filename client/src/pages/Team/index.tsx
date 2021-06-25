@@ -9,6 +9,7 @@ const Board = lazy(() => import('./Board'));
 const Scrumboard = lazy(() => import('./Board/Scrumboard'));
 const Members = lazy(() => import('./Members'));
 const Chat = lazy(() => import('./Chat'));
+const Profile = lazy(() => import('./Profile'));
 
 const drawerWidth = 280;
 
@@ -50,6 +51,7 @@ const Team = () => {
                         <Route path="/team" exact component = {Board} /> 
                         <Route path="/team/scrumboard" exact component = {Scrumboard} /> 
                         <Route path="/team/members" exact component = {Members} />
+                        <Route path="/team/profile" exact component = {Profile} />
                         <Route path="/team/chat/:roomID" exact component = {Chat} />
                     </Switch>
                 </Suspense>

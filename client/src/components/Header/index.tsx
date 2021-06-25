@@ -10,7 +10,7 @@ import {
 import { Menu, NotificationsOutlined, MailOutline, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined } from '@material-ui/icons';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import UsePopover from '../../hooks/usePopover';
-
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -43,6 +43,12 @@ const useStyles = makeStyles((theme: Theme) =>
 const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
     const classes = useStyles();
     const { PopoverComponent, handleClick, handleClose } = UsePopover();
+    const history = useHistory();
+
+    const navigateTo = (path: string) => {
+        history.push(path);
+        handleClose();
+    };
 
     return (
         <header className={classes.root}>
@@ -76,7 +82,7 @@ const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
                             <small>bettaibinidhal00@gmail.com</small>
                         </Box>
                         <Divider />
-                        <MenuItem onClick={handleClose} className={classes.menuItem}>
+                        <MenuItem onClick={()=> navigateTo('/team/profile')} className={classes.menuItem}>
                             <AccountCircleOutlined className={classes.icons} />
                             <span style={{ marginLeft: '0.8rem' }}>Profile</span>
                         </MenuItem>
