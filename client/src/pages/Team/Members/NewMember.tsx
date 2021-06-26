@@ -35,7 +35,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
             {
                 ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
-                        <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 2rem' }} borderBottom="1px solid #fafafa"
+                        <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 1rem' }} borderBottom="1px solid #fafafa"
                             display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
                             
                             <div></div>
@@ -48,7 +48,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                             </RoundedButton>
                             </Box>
                         </Box>
-                        <Box style={{ padding: '2rem 2rem 0 2rem' }}>
+                        <Box style={{ padding: '1rem 1rem 0 1rem' }}>
                             <Typography variant="subtitle1" className="bg-text-primary fw-700">
                                 Basic Information
                             </Typography>

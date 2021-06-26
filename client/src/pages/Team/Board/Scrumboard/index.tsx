@@ -146,7 +146,7 @@ const Scrumboard = () => {
                         <AppsOutlined className={classes.mr}></AppsOutlined>
                         <span>Boards</span>
                     </RoundedButton>
-                    <RoundedButton variant="outlined" className={classes.iconColor} size="medium">
+                    <RoundedButton disableElevation variant="contained" color="primary" size="medium">
                         <EditOutlined className={classes.mr}></EditOutlined>
                         <span>Edit Board</span>
                     </RoundedButton>

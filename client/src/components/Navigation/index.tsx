@@ -6,12 +6,13 @@ import {
     Typography,
     Badge,
 } from '@material-ui/core';
-import { Theme, makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
+import { Theme, makeStyles, withStyles, createStyles, useTheme } from '@material-ui/core/styles';
 import { AssignmentOutlined, PeopleOutline } from '@material-ui/icons';
-import NewWorkspace from './NewWorkspace';
+import NewWorkspaceDialog from './NewWorkspace';
 import userAvatar from '../../assets/avatars/Henderson.jpg';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -110,12 +111,18 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const Navigation = () => {
+const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
     const classes = useStyles();
     const history = useHistory();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
 
     const navigateTo = (path: string) => {
         history.push(path);
+        if(!matches){
+            onSidenavClose();
+        }
     };
     let path = history.location.pathname;
 
@@ -127,10 +134,11 @@ const Navigation = () => {
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>MN</Avatar>
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>H</Avatar>
                     
-                    <NewWorkspace />
+                    <NewWorkspaceDialog />
                 </Box>
             </Grid>
             <Grid item xs>
+
                 <Box borderBottom="1px solid #2c3344" textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center"
                     style={{ padding: '1.5rem 1rem' }}>
                     <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />

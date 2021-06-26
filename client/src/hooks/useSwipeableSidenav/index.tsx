@@ -22,7 +22,7 @@ const useSwipeableSidenav = (anchor: Anchors, variant: Variant, width: number) =
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
-    const { handleClose: onSidenavClose, handleOpen: onSidenavOpen, show, toggle: onSidenavToggle } = useToggle(matches);
+    const { handleClose: onSidenavClose, handleOpen: onSidenavOpen, show, toggle: onSidenavToggle } = useToggle(true);
 
 
     const SwipeableSidenav: React.FC = ({ children }) => {
@@ -35,7 +35,6 @@ const useSwipeableSidenav = (anchor: Anchors, variant: Variant, width: number) =
                 onClose={onSidenavClose}>
 
                 <Box width={width} overflow="hidden" className = {classes.boxWidth}>
-                    {console.log(matches)}
                     {children}
                 </Box>
             </SwipeableDrawer>

@@ -77,7 +77,7 @@ const Profile = () => {
                     <ArrowBackIosOutlined className={classes.mr}></ArrowBackIosOutlined>
                     <span>Go back</span>
                 </RoundedButton>
-                <RoundedButton variant="contained" color="primary" size="medium">
+                <RoundedButton disableElevation variant="contained" color="primary" size="medium">
                     <Check className={classes.mr}></Check>
                     <span>Save</span>
                 </RoundedButton>
