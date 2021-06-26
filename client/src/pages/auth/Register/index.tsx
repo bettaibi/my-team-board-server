@@ -16,13 +16,13 @@ import * as yup from 'yup';
 import MyTextField from '../../../components/MyTextField';
 
 const schema = yup.object().shape({
-    username: yup.string().required('Username is required'),
+    name: yup.string().required('Default namespaces is required'),
     email: yup.string().required('Email is required').email('Invalid Email'),
     password: yup.string().required('Password is required').min(6, 'password is too short'),
     confirmPassword: yup.string().required('Confirm your password').oneOf([yup.ref('password')], 'Password not match')
 });
 
-const initialValue = { email: '', password: '', username: '', confirmPassword:'' };
+const initialValue = { email: '', password: '', name: '', confirmPassword:'' };
 
 const Register = () => {
     const theme = useTheme();
@@ -60,18 +60,18 @@ const RegisterForm = () => {
                 ({ handleSubmit, handleChange, handleBlur, errors, values, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off">
                                                 <div className="form-group">
-                            <label className="bg-text-secondary">Username *</label>
+                            <label className="bg-text-secondary">Default namespace *</label>
                             <MyTextField
                                 className="w-100"
-                                placeholder="Enter your username"
+                                placeholder="A default namespace should be created"
                                 variant="outlined"
                                 size="small"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                name="username"
-                                value={values.username}
-                                error = {touched.username && !!errors.username} 
-                                helperText = {touched.username && errors.username} />
+                                name="name"
+                                value={values.name}
+                                error = {touched.name && !!errors.name} 
+                                helperText = {touched.name && errors.name} />
                         </div>
                         <div className="form-group">
                             <label className="bg-text-secondary">Email Address *</label>

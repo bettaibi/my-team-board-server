@@ -88,7 +88,7 @@ const Board = () => {
                   <span>2 days ago</span>
                 </div>
               </Paper>
-            </Grid>
+          </Grid>
           ))
         }
       </Grid>
