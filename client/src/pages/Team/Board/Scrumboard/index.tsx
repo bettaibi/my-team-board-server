@@ -27,13 +27,15 @@ import useDialog from '../../../../hooks/useDialog';
 import CardDetails from './CardDetails';
 import { v4 } from 'uuid';
 import Moment from 'react-moment';
+import useSidenav from '../../../../hooks/useSidenav';
+import EditProject from './EditProject';
 
 const aspects = [
     {
         id: v4(),
         title: 'aspect 2',
         cards: [
-            { dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
             { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
         ]
     },
@@ -41,16 +43,16 @@ const aspects = [
         id: v4(),
         title: 'aspect 1',
         cards: [
-            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
-            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
+            { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur' },
+            { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
+            { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
         ]
     },
     {
         id: v4(),
         title: 'aspect 1',
         cards: [
-            {dueDate: new Date(),  id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
+            { dueDate: new Date(), id: v4(), value: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
         ]
     }
 ]
@@ -107,31 +109,31 @@ const Scrumboard = () => {
         history.goBack();
     }
 
-    const handleDragEnd = ({destination, source}: DropResult) => {
+    const handleDragEnd = ({ destination, source }: DropResult) => {
         if (!destination) {
-          return
+            return
         }
-    
+
         if (destination.index === source.index && destination.droppableId === source.droppableId) {
-          return
+            return
         }
-        
+
         // const dropbaleId: string = source.droppableId;
         // // Creating a copy of item before removing it from state
         // const itemCopy = state[dropbaleId].cards[source.index]
-    
+
         // setState(prev => {
         //   prev = {...prev}
         //   // Remove from previous items array
         //   prev[source.droppableId].items.splice(source.index, 1)
-    
-    
+
+
         //   // Adding to new items array location
         //   prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
-    
+
         //   return prev
         // })
-      }
+    }
 
     return (
         <Box display="flex" flexDirection="column" overflow="hidden">
@@ -146,10 +148,7 @@ const Scrumboard = () => {
                         <AppsOutlined className={classes.mr}></AppsOutlined>
                         <span>Boards</span>
                     </RoundedButton>
-                    <RoundedButton disableElevation variant="contained" color="primary" size="medium">
-                        <EditOutlined className={classes.mr}></EditOutlined>
-                        <span>Edit Board</span>
-                    </RoundedButton>
+                    <EditProjectDialog />
                 </Box>
             </Box>
 
@@ -241,18 +240,18 @@ const Card: React.FC<CardProps> = ({ providedDraggable, value }) => {
                 {...providedDraggable.dragHandleProps}>
                 {value}
                 <Box mt={1} display="flex" flexDirection="row" alignItems="center" justifyContent="space-between"
-                width="100%">
+                    width="100%">
                     <Typography variant="body2" color="secondary" >
                         <Moment format="YYYY/MM/DD">
-                        {new Date()}
+                            {new Date()}
                         </Moment>
                     </Typography>
                     <Chip
-                            size="small"
-                            icon={<CheckBoxOutlined />}
-                            label="1 / 3"
-                            color="primary"
-                     />
+                        size="small"
+                        icon={<CheckBoxOutlined />}
+                        label="1 / 3"
+                        color="primary"
+                    />
                 </Box>
             </div>
 
@@ -262,5 +261,25 @@ const Card: React.FC<CardProps> = ({ providedDraggable, value }) => {
         </React.Fragment>
     )
 }
+
+const EditProjectDialog = () => {
+    const { onSidenavClose, onSidenavOpen, SidenavComponent } = useSidenav('right', 'persistent');
+    const classes = useStyle();
+
+    return (
+        <React.Fragment>
+            <RoundedButton onClick={onSidenavOpen}
+             disableElevation variant="contained" color="primary" size="medium">
+                <EditOutlined className={classes.mr}></EditOutlined>
+                <span>Edit Board</span>
+            </RoundedButton>
+            <SidenavComponent>
+                <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px', }}>
+                    <EditProject onSidenavClose={onSidenavClose} />
+                </div>
+            </SidenavComponent>
+        </React.Fragment>
+    )
+};
 
 export default Scrumboard;

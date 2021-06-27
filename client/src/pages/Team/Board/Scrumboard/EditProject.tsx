@@ -16,20 +16,20 @@ const InitialValue = {
     description: '',
     members: [],
 };
+const options = [{name: 'Bettaibi Nidhal'}, {name: 'Bettaibi Ridha'}, {name: 'Bettaibi Najet'}];
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
     description: yup.string().required('Description is required'),
     members: yup.array().required("No member is chosen")
 });
-const options = [{name: 'Bettaibi Nidhal'}, {name: 'Bettaibi Ridha'}, {name: 'Bettaibi Najet'}];
 
-interface NewProjectProps {
+
+interface EditProjectProps {
     onSidenavClose: () => void;
 }
-
-const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
-
+const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
+ 
     return (
         <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
             {
@@ -51,7 +51,7 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
 
                         <Box style={{ padding: '1rem 1rem 0 1rem' }}>
                             <Typography variant="h6" gutterBottom>
-                                New Project
+                                Edit Project
                             </Typography>
                             <div className="form-group">
                                 <label>Title</label>
@@ -112,4 +112,4 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
     )
 }
 
-export default NewProject;
+export default EditProject;
