@@ -12,6 +12,8 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import RoundedButton from '../../../components/RoundedButton';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom'; 
+import useSidenav from '../../../hooks/useSidenav';
+import NewProject from './NewProject';
 
 import avatar1 from '../../../assets/avatars/Abbott.jpg';
 import avatar2 from '../../../assets/avatars/Christy.jpg';
@@ -57,9 +59,7 @@ const Board = () => {
       <Typography align="center" variant="h4" className="bg-text-primary fw-700" gutterBottom>
         Workspace's projects
       </Typography>
-      <RoundedButton variant="outlined" color="default" size="large" className={clsx('bg-text-secondary', classes.mb)}>
-        CREATE NEW PROJECT
-      </RoundedButton>
+      <NewProjectDialog />
 
       <Grid container spacing={2} className={classes.gridContainer}>
         {
@@ -95,5 +95,25 @@ const Board = () => {
     </Box>
   )
 }
+
+const NewProjectDialog = () => {
+  const classes = useStyle();
+  const { onSidenavClose, onSidenavOpen, SidenavComponent} = useSidenav('right', 'persistent'); 
+
+  return (
+    <React.Fragment>
+        <RoundedButton  onClick={onSidenavOpen} variant="outlined" color="default" size="large" 
+        className={clsx('bg-text-secondary', classes.mb)}>
+         CREATE NEW PROJECT
+      </RoundedButton>
+
+      <SidenavComponent>
+               <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px',}}>
+                  <NewProject onSidenavClose = {onSidenavClose} />
+               </div>
+      </SidenavComponent>
+    </React.Fragment>
+  )
+};
 
 export default Board;
