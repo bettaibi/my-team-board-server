@@ -18,15 +18,31 @@ import {
     SentimentVerySatisfiedOutlined,
     PhoneOutlined,
     VideoCallOutlined,
-    DescriptionOutlined
+    ArrowDropDownCircleOutlined
 } from '@material-ui/icons';
 import userAvatar from '../../../assets/avatars/Henderson.jpg';
 import { Picker } from 'emoji-mart';
 import useToggle from '../../../hooks/useToggle';
-import "./chat.css";
 import useSidenav from '../../../hooks/useSidenav';
+import ChatDetails from './ChatDetails';
+import clsx from 'clsx';
+import bgImage from '../../../assets/chat/bg1.svg';
+
+import "./chat.css";
 
 const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        height: 'calc(100vh - 56px)',
+        position: "relative",
+        display: 'flex',
+        flexDirection: "column",
+        backgroundRepeat: "no-repeat",
+        backgroundImage: `url(${bgImage})`,
+        backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
+        width: '100%',
+        overflow: 'hidden'
+    },
     iconColor: {
         color: '#64748B'
     },
@@ -38,8 +54,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     fileAttachment: {
         cursor: "pointer",
+        backgroundColor: "#3f51b5",
+        color: '#fff !important',
+        padding: "8px 15px",
+        marginBottom: '5px',
+        marginTop: '5px',
         '&:hover': {
-            backgroundColor: "#eee"
+           backgroundColor: "#556adc"
         }
     }
 
@@ -49,31 +70,31 @@ const Chat = () => {
     const classes = useStyles();
 
     return (
-        <Box display='flex' flexDirection="column" height="calc(100vh - 56px)" position="relative">
+        <Box className={classes.root}>
+            
+            <Box height="70px" boxShadow="0 .125rem .25rem rgba(0,0,0,.075)" p={2} display='flex' flexDirection="row" className="bg-white"
+                alignItems="center" justifyContent="space-between">
 
-            <Box flexGrow={1} >
-                <Box boxShadow="0 .125rem .25rem rgba(0,0,0,.075)" p={2} display='flex' flexDirection="row" className={classes.bgLightBlue}
-                    alignItems="center" justifyContent="space-between" position="sticky" top={0} zIndex={999999999} >
-
-                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                        <Avatar src={userAvatar} alt="user" />
-                        <Box display="flex" flexDirection="column" ml={1}>
-                            <Typography variant="subtitle2" className="bg-text-primary">
-                                Nidhal Bettaibi
-                            </Typography>
-                            <small className="bg-text-secondary">2 hours ago</small>
-                        </Box>
-                    </Box>
-                    <Box>
-                    <ChatDetails />
+                <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                    <Avatar src={userAvatar} alt="user" />
+                    <Box display="flex" flexDirection="column" ml={1}>
+                        <Typography variant="subtitle2" className="bg-text-primary">
+                            Nidhal Bettaibi
+                        </Typography>
+                        <small className="bg-text-secondary">2 hours ago</small>
                     </Box>
                 </Box>
-                <Box className="bg-white" p={2} display="flex" flexDirection="Column">
-                    <Messages />
+                <Box>
+                    <ChatDetailsDialog />
                 </Box>
             </Box>
 
-            <Box style={{ padding: '0.5rem 1rem' }} className="bg-white" position="sticky" bottom={0}>
+            <Box flexGrow={1} p={2} display="flex" flexDirection="Column" overflow="auto"
+            className="content-scroll">
+                <Messages />
+            </Box>
+
+            <Box style={{ padding: '0.5rem 1rem' }} position="sticky" bottom={0} >
                 <MessageEditor />
             </Box>
         </Box>
@@ -93,7 +114,7 @@ const MessageEditor = () => {
     }
 
     return (
-        <Box borderRadius={5} border="1px solid lightgray" overflow="hidden">
+        <Box borderRadius={5} border="1px solid lightgray" overflow="hidden" className="bg-white">
             <Box p={1}>
                 <InputBase
                     multiline
@@ -196,18 +217,20 @@ const FileAttachment = () => {
     const classes = useStyles();
 
     return (
-        <Box display="flex" flexDirection="row" alignItems="center" minWidth="260px"
-            border="1px solid lightgray" p={2} m={1} borderRadius={5} className={classes.fileAttachment}>
-            <DescriptionOutlined fontSize="large" className={classes.iconColor} />
+      <Tooltip title="download">
+            <Box display="flex" flexDirection="row" alignItems="center" minWidth="260px"
+            borderRadius={20} className={clsx('', classes.fileAttachment)}>
+            <ArrowDropDownCircleOutlined />
             <Box mx={1}>
-                <Typography variant="subtitle2" className="bg-text-primary"> File name here</Typography>
-                <span className="bg-text-secondary">Sent At: 14 sep 14:25</span>
+                <Typography variant="subtitle2"> File name here</Typography>
+                <small >Sent At: 14 sep 14:25</small>
             </Box>
         </Box>
+      </Tooltip>
     )
 }
 
-const ChatDetails = () => {
+const ChatDetailsDialog = () => {
     const classes = useStyles();
     const { SidenavComponent, onSidenavClose, onSidenavOpen } = useSidenav('right', 'persistent');
 
@@ -218,10 +241,9 @@ const ChatDetails = () => {
             </IconButton>
 
             <SidenavComponent>
-                <Box mt="50px">
-                    kdsjfklj sdkfklsdf sdkfjdsk
-                    <button onClick={onSidenavClose}>close</button>
-                </Box>
+                <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px'}}>
+                  <ChatDetails onSidenavClose = {onSidenavClose} />
+               </div>
             </SidenavComponent>
         </React.Fragment>
     )
