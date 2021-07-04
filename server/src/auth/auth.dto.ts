@@ -10,11 +10,14 @@ export class LoginDto{
 
 export class RegisterDto{
     @ApiProperty()
-    workspace:string;
+    name: string;
 
     @ApiProperty()
-    email:string;
+    workspace: string;
 
     @ApiProperty()
-    password:string;
+    email: string;
+
+    @ApiProperty()
+    password: string;
 }
