@@ -49,7 +49,8 @@ export class AuthService {
             if(!workspace){
                 return toJson(false, 'Failed to create a default workspace!');
             }
-            return await this.login({email: payload.email, password: payload.password});
+            const jwt  = await this.jwtService.signAsync({id: saved.id});
+            return toJson(true, 'user registred');
         }
         catch(err){
             throw err;
