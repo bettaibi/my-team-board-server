@@ -1,16 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
+import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
-
-const PORT = process.env.PORT || 5000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   app.use(helmet());
-  app.enableCors();
+  app.use(cookieParser());
+  app.enableCors({
+    origin: configService.get('ORIGIN'),
+    credentials: true
+  });
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
@@ -21,7 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(PORT);
+  await app.listen(configService.get('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

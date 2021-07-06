@@ -13,21 +13,11 @@ export class MemberController {
 
     @Get()
     async getMembers(): Promise<any>{
-        try{
-            return await this.memberService.all();
-        }
-        catch(err){
-            throw err;
-        }
+        return await this.memberService.all();
     }
 
     @Post()
     async create(@Body() payload: MemberDto): Promise<any>{
-        try{
-            return await this.memberService.create(payload);
-        }
-        catch(err){
-            throw err;
-        }
+        return await this.memberService.create(payload);
     }
 }
