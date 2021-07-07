@@ -39,9 +39,13 @@ export class AuthController{
 
     @Get('/user')
     async currentUser(@Req() req: Request): Promise<any>{
-        const cookie = req.cookies['jwt'];
-
-        return await this.authService.currentUser(cookie);
+       try{
+            const cookie = req.cookies['jwt'];
+            return await this.authService.currentUser(cookie);
+       }
+       catch(err){
+           throw err;
+       }
     }
 
     @Post('/logout')
