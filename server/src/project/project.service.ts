@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { WorkspaceDto } from './workspace.dto';
+import { ProjectDto } from './project.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Workspace, WorkspaceDocument } from 'src/models/workspace.model';
-import { toJson, toObjectID } from 'src/helpers';
+import { Project, ProjectDocument } from 'src/models/project.model';
+import { toJson } from 'src/helpers';
 
 @Injectable()
-export class WorkspaceService{
+export class ProjectService{
 
     constructor(
-        @InjectModel(Workspace.name) private readonly WorkspaceModel: Model<WorkspaceDocument>
+        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>
     ){};
 
-    async myWorkspaces(userID: string): Promise<any>{
+    async all(): Promise<any>{
         try{
-            const list = await this.WorkspaceModel.find();
-
+            const list = await this.ProjectModel.find();
             if(!list){
                 return toJson(false, 'Failed to get workspace list');
             }
@@ -26,9 +25,9 @@ export class WorkspaceService{
         }
     }
 
-    async create(payload: WorkspaceDto): Promise<any>{
+    async create(payload: ProjectDto): Promise<any>{
         try{
-            const saved = await this.WorkspaceModel.create(payload);
+            const saved = await this.ProjectModel.create(payload);
             if(!saved){
                 return toJson(false, 'Failed to create workspace');
             }

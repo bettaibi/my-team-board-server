@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { toJson } from 'src/helpers';
+import { toJson, toObjectID } from 'src/helpers';
 import { InjectModel } from '@nestjs/mongoose';
 import { Member, MemberDocument } from 'src/models/member.model';
 import { Model } from 'mongoose';
@@ -37,5 +37,35 @@ export class MemberService {
             throw err;
         }
     };
+
+    async update(id: string, payload: MemberDto): Promise<any>{
+        try{
+            const updated = await this.MemberModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
+                ...payload
+            }}, {new: true});
+
+            if(!updated){
+                return toJson(false, 'Failed to update');
+            }
+            return toJson(true, 'Member has been updated successfully');
+        }
+        catch(err){
+            throw err;
+        }
+    }
+    
+    async delete(id: string): Promise<any>{
+        try{
+            const removed = await this.MemberModel.findByIdAndDelete({_id: toObjectID(id)});
+
+            if(!removed){
+                return toJson(false, 'Failed to remove');
+            }
+            return toJson(true, 'Member has been deleted successfully');
+        }
+        catch(err){
+            throw err;
+        }
+    }
 
 }

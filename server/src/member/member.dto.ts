@@ -2,12 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class MemberDto{
     @ApiProperty()
-    name: string;
+    name?: string;
+    
     @ApiProperty()
-    title: string;
-}
+    title?: string;
 
-export interface MemberProps{
-    name: string;
-    title: string;
+    @ApiProperty()
+    email?: string;
+
+    @ApiProperty()
+    address?: string;
+
+    @ApiProperty()
+    country?: string;
+
+    @ApiProperty()
+    city?: string;
 }

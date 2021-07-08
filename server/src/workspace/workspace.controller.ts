@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from 'src/decorators/user.decorator';
 import { WorkspaceDto } from './workspace.dto';
 import { WorkspaceService } from './workspace.service';
 
@@ -12,9 +13,9 @@ export class WorkspaceController{
     ){}
 
     @Get()
-    async list(): Promise<any>{
+    async myWorkspaces(@User() userID: string): Promise<any>{
         try{
-            return this.workspaceService.all();
+            return this.workspaceService.myWorkspaces(userID);
         }
         catch(err){
             throw err;
@@ -30,4 +31,6 @@ export class WorkspaceController{
             throw err;
         }
     }
+
+
 }

@@ -17,8 +17,17 @@ export class Member {
     @Prop()
     password: string;
 
-    @Prop()
+    @Prop({default: ''})
     avatar: string;
+
+    @Prop()
+    address: string;
+
+    @Prop()
+    country: string;
+
+    @Prop()
+    city: string;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);
