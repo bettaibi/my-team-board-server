@@ -3,7 +3,7 @@ import { ProjectDto } from './project.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from 'src/models/project.model';
-import { toJson } from 'src/helpers';
+import { toJson, toObjectID } from 'src/helpers';
 
 @Injectable()
 export class ProjectService{
@@ -12,9 +12,9 @@ export class ProjectService{
         @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>
     ){};
 
-    async all(): Promise<any>{
+    async all(workspaceID: string): Promise<any>{
         try{
-            const list = await this.ProjectModel.find();
+            const list = await this.ProjectModel.find({workspace: toObjectID(workspaceID)});
             if(!list){
                 return toJson(false, 'Failed to get workspace list');
             }
@@ -32,6 +32,36 @@ export class ProjectService{
                 return toJson(false, 'Failed to create workspace');
             }
             return toJson(true, 'A new Workspace has been created', saved);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    async update(id: string, payload: ProjectDto): Promise<any>{
+        try{
+            const updated = await this.ProjectModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
+                ...payload
+            }}, {new: true});
+
+            if(!updated){
+                return toJson(false, 'Failed to update');
+            }
+            return toJson(true, 'Project has been updated successfully');
+        }
+        catch(err){
+            throw err;
+        }
+    }
+    
+    async delete(id: string): Promise<any>{
+        try{
+            const removed = await this.ProjectModel.findByIdAndDelete({_id: toObjectID(id)});
+
+            if(!removed){
+                return toJson(false, 'Failed to delete');
+            }
+            return toJson(true, 'Project has been deleted successfully');
         }
         catch(err){
             throw err;

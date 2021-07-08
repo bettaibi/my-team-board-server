@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProjectDto } from './project.dto';
 import { ProjectService } from './project.service';
@@ -11,10 +11,10 @@ export class ProjectController{
         private projectService: ProjectService
     ){}
 
-    @Get()
-    async list(): Promise<any>{
+    @Get(':workspaceID')
+    async list(@Param('workspaceID') workspaceID: string): Promise<any>{
         try{
-            return this.projectService.all();
+            return this.projectService.all(workspaceID);
         }
         catch(err){
             throw err;
@@ -29,5 +29,15 @@ export class ProjectController{
         catch(err){
             throw err;
         }
+    }
+
+    @Put(':id')
+    async update(@Param('id') id: string, @Body() payload: ProjectDto): Promise<any>{
+        return await this.projectService.update(id, payload);
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: string): Promise<any>{
+        return await this.projectService.delete(id);
     }
 }

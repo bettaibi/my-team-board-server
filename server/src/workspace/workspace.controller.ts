@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Delete, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/decorators/user.decorator';
 import { WorkspaceDto } from './workspace.dto';
@@ -32,5 +32,14 @@ export class WorkspaceController{
         }
     }
 
+    @Put(':id')
+    async update(@Param('id') id: string, @Body() payload: WorkspaceDto): Promise<any>{
+        return await this.workspaceService.update(id, payload);
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: string): Promise<any>{
+        return await this.workspaceService.delete(id);
+    }
 
 }

@@ -59,7 +59,7 @@ export class MemberService {
             const removed = await this.MemberModel.findByIdAndDelete({_id: toObjectID(id)});
 
             if(!removed){
-                return toJson(false, 'Failed to remove');
+                return toJson(false, 'Failed to delete');
             }
             return toJson(true, 'Member has been deleted successfully');
         }

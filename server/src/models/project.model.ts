@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { Document,  Schema as MongooseSchema } from "mongoose";
+import { Document,  Schema as MongooseSchema, Types } from "mongoose";
 import { Workspace } from "./workspace.model";
 
 export type ProjectDocument = Document & Project;
@@ -16,7 +16,7 @@ export class Project {
     createdAt: Date;
 
     @Prop({required: true, type: MongooseSchema.Types.ObjectId, ref: 'Workspace'})
-    workspace: Workspace;
+    workspace: Types.ObjectId;
 
 }
 

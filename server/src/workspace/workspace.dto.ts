@@ -6,4 +6,7 @@ export class WorkspaceDto{
 
     @ApiProperty()
     owner: string;
+
+    @ApiProperty()
+    members?: string[];
 };

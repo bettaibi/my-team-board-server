@@ -1,6 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Member } from './member.model';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 type WorkspaceDocument = Document & Workspace;
 
@@ -10,10 +9,10 @@ class Workspace {
     name: string;
 
     @Prop({required: true, type: MongooseSchema.Types.ObjectId, ref: 'Member'})
-    owner: Member;
+    owner: Types.ObjectId;
 
     @Prop({default: [], type: [{type: MongooseSchema.Types.ObjectId, ref: 'Member'}]})
-    members: Member[];
+    members: string[];
 
 };
 
