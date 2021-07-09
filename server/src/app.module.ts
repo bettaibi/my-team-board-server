@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { MemberModule } from './member/member.module';
 import { ProjectModule } from './project/project.module';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
     MemberModule,
     WorkspaceModule,
     ProjectModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

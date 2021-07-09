@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 
-Module({
+@Module({
     imports: [
         MongooseModule.forFeature([
             {name: Workspace.name, schema: WorkspaceSchema},
