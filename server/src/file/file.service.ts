@@ -27,4 +27,13 @@ export class FileService {
             throw err;
         }
     }
+
+    async uploadFiles(): Promise<any>{
+        try{
+            return;
+        }
+        catch(err){
+            throw err;
+        }
+    }
 }

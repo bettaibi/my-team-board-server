@@ -1,7 +1,5 @@
-import { Controller, Get, Patch, UploadedFile, UseInterceptors, Param, Res } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { createReadStream } from 'fs';
-import { join } from 'path';
+import { Controller, Get, Patch, UploadedFile, UploadedFiles, UseInterceptors, Param, Res } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { toJson } from 'src/helpers';
 import { FileService } from './file.service';
@@ -16,7 +14,7 @@ export class FileController {
     ){}
     
     @Patch('avatar/:id')
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('picture'))
     async updateUserAvatar(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) : Promise<any>{
         try{
             if(file){
@@ -31,13 +29,21 @@ export class FileController {
         }
     }
 
+    @Patch()
+    @UseInterceptors(FilesInterceptor('files'))
+    async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>): Promise<any>{
+        try{
+            console.log(files)
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     @Get(':filename')
     getFile(@Param('filename') filename: string, @Res() res: Response) {
         try{
-            const file = createReadStream(join(process.cwd(), `upload/${filename}`));
-            if(file){
-                file.pipe(res);
-            }
+            return res.sendFile(filename, { root: './upload' });
         }
         catch(err){
             throw err;

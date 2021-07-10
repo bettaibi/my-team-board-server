@@ -26,33 +26,33 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-interface ChatDetailsProps{
+interface ChatDetailsProps {
     onSidenavClose: () => void;
 }
-const ChatDetails: React.FC<ChatDetailsProps> = ({onSidenavClose}) => {
+const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose }) => {
     const classes = useStyles();
     return (
         <React.Fragment>
             <Box height="70px" p={2} boxShadow="0 .125rem .25rem rgba(0,0,0,.075)" display="flex" flex-direction="row" alignItems="center" justifyContent="space-between">
                 <Box>
                     <Typography variant="h6" className="bg-text-primary">
-                            Details
+                        Details
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                         #bettaibi-nidhal
+                        #bettaibi-nidhal
                     </Typography>
                 </Box>
 
                 <Tooltip title="Close">
                     <IconButton className={classes.lightGrayIcons} size="small"
-                    onClick={onSidenavClose}>
+                        onClick={onSidenavClose}>
                         <CloseOutlined />
                     </IconButton>
                 </Tooltip>
             </Box>
 
             <Box p={2} display="flex" flexDirection="row"
-            alignItems="center" justifyContent="center">
+                alignItems="center" justifyContent="center">
                 <Tooltip title="Audio call">
                     <IconButton className={clsx(classes.lightGrayIcons, classes.mr)}>
                         <PhoneOutlined />
@@ -60,15 +60,15 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({onSidenavClose}) => {
                 </Tooltip>
 
                 <Tooltip title="Video chat">
-                <IconButton className={clsx(classes.lightGrayIcons, classes.mr)}>
-                    <VideoCallOutlined />
-                </IconButton>
+                    <IconButton className={clsx(classes.lightGrayIcons, classes.mr)}>
+                        <VideoCallOutlined />
+                    </IconButton>
                 </Tooltip>
 
                 <Tooltip title="Search in conversation">
-                <IconButton className={clsx(classes.lightGrayIcons, classes.mr)}>
-                    <FindInPageOutlined />
-                </IconButton>
+                    <IconButton className={clsx(classes.lightGrayIcons, classes.mr)}>
+                        <FindInPageOutlined />
+                    </IconButton>
                 </Tooltip>
             </Box>
 

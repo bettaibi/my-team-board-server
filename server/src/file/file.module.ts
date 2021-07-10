@@ -4,11 +4,16 @@ import { FileService } from './file.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Member, MemberSchema } from 'src/models/member.model';
+import { diskStorage } from 'multer';
+import { CustomFile } from 'src/shared/customFile';
 
 @Module({
   imports: [
     MulterModule.register({
-        dest: './upload'
+       storage: diskStorage({
+        destination: CustomFile.destinationPath,
+        filename: CustomFile.customFileName,
+      }),
     }),
     MongooseModule.forFeature([
       {name: Member.name, schema: MemberSchema}
