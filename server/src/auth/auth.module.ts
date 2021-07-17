@@ -13,7 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
             {name: Member.name, schema: MemberSchema}
         ]),
         JwtModule.register({
-            secret: process.env.JWTSECRET,
+            secret: 'bettaibi',
             signOptions: {expiresIn: "7d"}
         })
     ],

@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
     origin: configService.get('ORIGIN'),
     credentials: true
   });
+  app.use(compression());
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()

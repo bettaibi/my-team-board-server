@@ -2,8 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import axios from 'axios';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import 'emoji-mart/css/emoji-mart.css';
+
+axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
 ReactDOM.render(
   <React.Fragment>

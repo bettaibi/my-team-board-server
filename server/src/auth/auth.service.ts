@@ -6,7 +6,7 @@ import { Member, MemberDocument } from 'src/models/member.model';
 import { Workspace, WorkspaceDocument } from 'src/models/workspace.model';
 import { Model } from 'mongoose';
 import { toJson, toObjectID } from 'src/helpers';
-import { compare, genSalt } from './util';
+import { onCompare, onCrypt } from './util';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,7 @@ export class AuthService {
             if(!found){
                 return toJson(false, 'No such Account');
             }
-            const isMatch = await compare(payload.password, found.password);
+            const isMatch = await onCompare(payload.password, found.password);
             if(!isMatch){
                 return toJson(false, 'Password mismatch');
             }
@@ -41,13 +41,13 @@ export class AuthService {
             const found = await this.MemberModel.findOne({email: payload.email});
             if(found){
                 // return toJson(false, 'Email already in use!');
-                throw new BadRequestException('Email already in use!')
+                throw new BadRequestException('Email already in use!');
             }
-            const hash = await genSalt(payload.password);
-            const saved = await this.MemberModel.create({password: hash, ...payload});
+            const hash = await onCrypt(payload.password);
+            const saved = await this.MemberModel.create({...payload, password: hash});
             if(!saved){
                 // return toJson(false, 'Failed to register!');
-                throw new BadRequestException('Failed to register')
+                throw new BadRequestException('Failed to register');
             }
             const workspace = await this.WorkspaceModel.create({name: payload.workspace, owner: saved.id, members: [saved.id]});
             if(!workspace){

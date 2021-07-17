@@ -19,6 +19,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import UsePopover from '../../hooks/usePopover';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -121,6 +122,21 @@ const AccountMenu = () => {
         handleClose();
     };
 
+    const logout = async () => {
+        try{
+            const { data } = await axios.post(`/auth/logout`);
+            if(data.success){
+                history.push('/login');
+            }
+            else{
+                handleClose();
+            }
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     return (
         <React.Fragment>
             <IconButton aria-describedby="account-menu" color="inherit" aria-label="profile" onClick={handleClick}>
@@ -145,7 +161,7 @@ const AccountMenu = () => {
                         <span style={{ marginLeft: '0.8rem' }}>Setting</span>
                     </MenuItem>
                     <Divider />
-                    <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    <MenuItem onClick={logout} className={classes.menuItem}>
                         <ExitToAppOutlined className={classes.icons} />
                         <span style={{ marginLeft: '0.8rem' }}>Logout</span>
                     </MenuItem>

@@ -1,20 +1,19 @@
-import bcrypt from 'bcrypt';
+import {genSalt, hash, compare} from 'bcrypt';
 
-
-const genSalt = async (password: string): Promise<string> => {
+const onCrypt = async (password: string): Promise<string> => {
     try{
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-        return hash;
+        const salt = await genSalt(10);
+        const hashed = await hash(password, salt);
+        return hashed;
     }
     catch(err){
         throw err;
     }
 };
 
-const compare = async (candidatePassword: string, hash: string): Promise<boolean> => {
+const onCompare = async (candidatePassword: string, hash: string): Promise<boolean> => {
     try{
-        const isMatch = await bcrypt.compare(candidatePassword, hash);
+        const isMatch = await compare(candidatePassword, hash);
         return isMatch;
     }
     catch(err){
@@ -22,6 +21,6 @@ const compare = async (candidatePassword: string, hash: string): Promise<boolean
     }
 };
 
-export { genSalt, compare };
+export { onCrypt, onCompare };
 
 
