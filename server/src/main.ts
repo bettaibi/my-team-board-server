@@ -2,13 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   let configService = app.get(ConfigService);
 
   app.use(helmet());
@@ -27,6 +29,10 @@ async function bootstrap() {
   .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
 
   await app.listen(configService.get('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);

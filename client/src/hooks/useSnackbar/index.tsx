@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { 
     Snackbar
 } from '@material-ui/core';
-import {Alert} from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 import Slide from '@material-ui/core/Slide';
 
 type Severity = 'error' | 'warning' | 'info' | 'success';

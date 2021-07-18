@@ -21,11 +21,13 @@ export class AuthService {
         try{
             const found = await this.MemberModel.findOne({email: payload.email});
             if(!found){
-                return toJson(false, 'No such Account');
+                throw new BadRequestException('No such Account');
+                // return toJson(false, 'No such Account');
             }
             const isMatch = await onCompare(payload.password, found.password);
             if(!isMatch){
-                return toJson(false, 'Password mismatch');
+                throw new BadRequestException('Password mismatch');
+                // return toJson(false, 'Password mismatch');
             }
             // Generate jwt token
             const jwt  = await this.jwtService.signAsync({id: found.id});
@@ -62,13 +64,13 @@ export class AuthService {
         }
     }
 
-    async currentUser(cookie: any): Promise<any>{
+    async currentUser(cookie: string): Promise<any>{
         try{
-            const {id} = await this.jwtService.verifyAsync(cookie);
-            if(!id){
+            const data = await this.jwtService.verifyAsync(cookie);
+            if(!data){
                 throw new UnauthorizedException();
             }
-            const found = await this.MemberModel.findOne({_id: toObjectID(id)}, {password: 0});
+            const found = await this.MemberModel.findOne({_id: toObjectID(data.id)}, {password: 0});
             if(!found){
                 throw new UnauthorizedException();
             }

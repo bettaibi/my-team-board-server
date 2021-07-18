@@ -70,10 +70,16 @@ const LoginForm = () => {
                 if(data.success) {
                     showMsg(data.message, 'success');
                     resetForm();
+                    setTimeout(()=> {
+                        history.push('/team')
+                    },1000);
                 }
                 else{
                     showMsg(data.message, 'error');
                 }
+
+                // const { data } = await axios.get(`/auth/user`);
+                // console.log(data)
         }
         catch (err) {
             console.log(err)

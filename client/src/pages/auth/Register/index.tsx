@@ -67,6 +67,9 @@ const RegisterForm = () => {
                 if(data.success) {
                     showMsg(data.message, 'success');
                     resetForm();
+                    setTimeout(()=> {
+                        history.push('/team');
+                    },1000);
                 }
                 else{
                     showMsg(data.message, 'error');
