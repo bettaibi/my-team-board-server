@@ -73,14 +73,8 @@ export class AuthController{
 
     @Post('/resetPassword')
     async confirmResetPassword(@Body() payload: ResetPasswordDto, @Res() res: Response): Promise<any> {
-        try{
-            console.log(payload);
-            if(payload.password.length < 6){
-                res.render('reset-password', { error: true, success: false, userEmail: payload.email, errorMessage: 'The Password must be at least 8 characters long.' })
-            }
-            else{
-                res.render('reset-password', { error: false, success: true, userEmail: payload.email });
-            }
+        try{ 
+            return await this.authService.forgotPassword(res, payload);
         }
         catch(err){
             throw err;

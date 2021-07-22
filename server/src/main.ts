@@ -22,6 +22,10 @@ async function bootstrap() {
   app.use(compression());
   app.setGlobalPrefix('api');
 
+  // View Engine
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
+  // Swagger Config
   const config = new DocumentBuilder()
   .setTitle('Team board API')
   .setDescription('Team Management App')
@@ -29,10 +33,6 @@ async function bootstrap() {
   .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
-
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
 
   await app.listen(configService.get('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);

@@ -1,12 +1,13 @@
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, RegisterDto } from './auth.dto';
+import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Member, MemberDocument } from 'src/models/member.model';
 import { Workspace, WorkspaceDocument } from 'src/models/workspace.model';
 import { Model } from 'mongoose';
 import { toJson, toObjectID } from 'src/helpers';
 import { onCompare, onCrypt } from './util';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -81,12 +82,32 @@ export class AuthService {
         }
     }
 
-    async forgotPassword(): Promise<any>{
+    async forgotPassword(res: Response, payload: ResetPasswordDto): Promise<any>{
         try{
+            if(payload.password.length < 6){
+                return res.render('reset-password', { error: true, success: false, userEmail: payload.email, errorMessage: 'The Password must be at least 8 characters long.' })
+            }
+            else{
+                const found = await this.MemberModel.findOne({ email: payload.email});
+                if(!found){
+                    return res.render('reset-password', { error: true, success: false, userEmail: payload.email, errorMessage: `No such account! ${payload.email} not found`})
+                }
+                const hash = await onCrypt(payload.password);
 
+                const updated = await this.MemberModel.findByIdAndUpdate({_id: toObjectID(found.id)}, {$set:{
+                    password: hash
+                }}, {new: true});
+
+                if(!updated){
+                    return res.render('reset-password', { error: true, success: false, userEmail: payload.email, errorMessage: 'Failed to reset password' })
+                }
+
+                return res.render('reset-password', { error: false, success: true, userEmail: payload.email });
+            }
         }
         catch(err){
             throw err;
         }
     }
+
 }

@@ -11,7 +11,9 @@ import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
     DatabaseModule,
     AuthModule,
     MemberModule,
