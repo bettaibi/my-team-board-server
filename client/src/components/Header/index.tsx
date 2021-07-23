@@ -126,6 +126,7 @@ const AccountMenu = () => {
         try{
             const { data } = await axios.post(`/auth/logout`);
             if(data.success){
+                document.cookie = "jwt=;";
                 history.push('/login');
             }
             else{

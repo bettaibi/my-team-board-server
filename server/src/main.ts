@@ -14,13 +14,13 @@ async function bootstrap() {
   let configService = app.get(ConfigService);
 
   app.use(helmet());
-  app.use(cookieParser());
   app.enableCors({
     origin: configService.get('ORIGIN'),
     credentials: true
   });
   app.use(compression());
   app.setGlobalPrefix('api');
+  app.use(cookieParser());
 
   // View Engine
   app.setBaseViewsDir(join(__dirname, '..', 'views'));

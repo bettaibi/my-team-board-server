@@ -7,6 +7,7 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import 'emoji-mart/css/emoji-mart.css';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
+axios.defaults.withCredentials = true;
 
 ReactDOM.render(
   <React.Fragment>

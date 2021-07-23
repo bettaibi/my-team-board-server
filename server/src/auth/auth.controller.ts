@@ -1,9 +1,11 @@
-import { Controller, Post, Body, Get, Res, Req, Render, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Res, Req, Render, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { toJson } from 'src/helpers';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/decorators/user.decorator';
 
 @ApiTags('Auth')
 @Controller('/auth')
@@ -18,7 +20,7 @@ export class AuthController{
         try{
             const jwt = await this.authService.login(payload);
             response.cookie('jwt', jwt, {maxAge: 6.048e+8});
-            response.json({success: true, message: 'Welcome back'});
+            return response.json({success: true, message: 'Welcome back'});
         }
         catch(err){
             throw err;
@@ -37,12 +39,11 @@ export class AuthController{
         }
     }
 
+    @UseGuards(AuthGuard)
     @Get('/user')
-    async currentUser(@Req() req: Request): Promise<any>{
+    async currentUser(@User() userId: string): Promise<any>{
        try{
-            const token = req.cookies['jwt'];
-            console.log(token);
-            return await this.authService.currentUser(token);
+            return await this.authService.currentUser(userId);
        }
        catch(err){
            throw err;

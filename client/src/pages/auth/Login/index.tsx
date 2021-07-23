@@ -77,7 +77,6 @@ const LoginForm = () => {
                 else{
                     showMsg(data.message, 'error');
                 }
-
                 // const { data } = await axios.get(`/auth/user`);
                 // console.log(data)
         }

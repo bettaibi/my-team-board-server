@@ -65,13 +65,9 @@ export class AuthService {
         }
     }
 
-    async currentUser(cookie: string): Promise<any>{
+    async currentUser(id: string): Promise<any>{
         try{
-            const data = await this.jwtService.verifyAsync(cookie);
-            if(!data){
-                throw new UnauthorizedException();
-            }
-            const found = await this.MemberModel.findOne({_id: toObjectID(data.id)}, {password: 0});
+            const found = await this.MemberModel.findOne({_id: toObjectID(id)}, {password: 0});
             if(!found){
                 throw new UnauthorizedException();
             }
