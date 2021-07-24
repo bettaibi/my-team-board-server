@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Team = () => {
     const classes = useStyles();
     const { SwipeableSidenav, onSidenavToggle, show, onSidenavClose } = useSwipeableSidenav('left', 'persistent', drawerWidth);
-
+    console.log("djdjdjjdjdj")
     return (
         <React.Fragment>
             <SwipeableSidenav>

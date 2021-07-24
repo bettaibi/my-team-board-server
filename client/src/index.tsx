@@ -4,15 +4,21 @@ import './index.css';
 import App from './App';
 import axios from 'axios';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import appReducer from './store';
+import { Provider } from 'react-redux';
+import { createStore } from "redux";
+
 import 'emoji-mart/css/emoji-mart.css';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 axios.defaults.withCredentials = true;
 
+const store = createStore(appReducer);
+
 ReactDOM.render(
-  <React.Fragment>
+  <Provider store = {store}>
     <App />
-  </React.Fragment>,
+  </Provider>,
   document.getElementById('root')
 );
 

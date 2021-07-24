@@ -1,0 +1,8 @@
+
+const ActionType = {
+    GET_CURRENT_USER: 'GET_CURRENT_USER',
+    UPDATE_CURRENT_USER: 'UPDATE_CURRENT_USER',
+    UPDATE_AVATAR: 'UPDATE_AVATAR',
+};
+
+export default ActionType;

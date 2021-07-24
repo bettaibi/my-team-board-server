@@ -13,6 +13,8 @@ import userAvatar from '../../assets/avatars/Henderson.jpg';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../models/app.model';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -111,16 +113,16 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
+const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
     const classes = useStyles();
     const history = useHistory();
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
-
+    console.log("navigation component")
     const navigateTo = (path: string) => {
         history.push(path);
-        if(!matches){
+        if (!matches) {
             onSidenavClose();
         }
     };
@@ -133,22 +135,13 @@ const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces + ' ' + classes.bgActive}>IT</Avatar>
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>MN</Avatar>
                     <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>H</Avatar>
-                    
+
                     <NewWorkspaceDialog />
                 </Box>
             </Grid>
             <Grid item xs>
 
-                <Box borderBottom="1px solid #2c3344" textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center"
-                    style={{ padding: '1.5rem 1rem' }}>
-                    <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />
-                    <Typography variant="subtitle2" className={classes.textWhite} gutterBottom>
-                        Bettaibi Nidhal
-                    </Typography>
-                    <small className={classes.textSecondary}>
-                        bettaibinidhal00@gmail.com
-                    </small>
-                </Box>
+                <CurrentUser />
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
@@ -158,13 +151,13 @@ const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
                         Workspace Managment
                     </small>
 
-                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team'})} onClick = {() => navigateTo('/team')}
+                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team' })} onClick={() => navigateTo('/team')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
                         <AssignmentOutlined className={classes.textWhite} />
                         <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Scrumboard</span>
                     </Box>
 
-                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team/members'})} onClick = {() => navigateTo('/team/members')}
+                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/members' })} onClick={() => navigateTo('/team/members')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
                         <PeopleOutline className={classes.textWhite} />
                         <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Members</span>
@@ -180,7 +173,7 @@ const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
                         Workspace's Members
                     </small>
 
-                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team/chat/members1'})} onClick = {() => navigateTo('/team/chat/members1')}
+                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/chat/members1' })} onClick={() => navigateTo('/team/chat/members1')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
                         <StyledBadge
@@ -198,7 +191,7 @@ const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
                             <small >Developer</small>
                         </Box>
                     </Box>
-                    <Box className={clsx(classes.navItem, {[classes.activeItem]: path === '/team/chat/members2'})} onClick = {() => navigateTo('/team/chat/members2')}
+                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/chat/members2' })} onClick={() => navigateTo('/team/chat/members2')}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
                         <StyledBadge
@@ -221,6 +214,26 @@ const Navigation = ({onSidenavClose}: {onSidenavClose: () => void}) => {
 
             </Grid>
         </Grid>
+    )
+}
+
+const CurrentUser = () => {
+    const classes = useStyles();
+    const user = useSelector((state: AppState) => state.user);
+
+    console.log(user);
+
+    return (
+        <Box borderBottom="1px solid #2c3344" textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center"
+            style={{ padding: '1.5rem 1rem' }}>
+            <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />
+            <Typography variant="subtitle2" className={classes.textWhite} gutterBottom>
+                Bettaibi Nidhal
+            </Typography>
+            <small className={classes.textSecondary}>
+                bettaibinidhal00@gmail.com
+            </small>
+        </Box>
     )
 }
 
