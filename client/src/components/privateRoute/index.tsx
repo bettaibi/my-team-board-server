@@ -1,10 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-interface PrivateRouteProps{
-    path: string;
-}
-
 function getCookie(cname: string) {
     let name = cname + "=";
     let ca = document.cookie.split(';');
@@ -20,8 +16,8 @@ function getCookie(cname: string) {
     return "";
 }
 
-function checkCookie(): boolean {
-    let token = getCookie("jwt");
+function checkCookie(cname: string): boolean {
+    let token = getCookie(cname);
     if (token !== "") {
       return true;
     } else {
@@ -29,16 +25,20 @@ function checkCookie(): boolean {
     }
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({path, children, ...rest}) => {
-    const token = checkCookie();
+interface PrivateRouteProps{
+  exact?: boolean;
+  path: string;
+  component: React.ComponentType<any>;
+}
+const PrivateRoute: React.FC<PrivateRouteProps> = ({path,  component: Component, ...rest}) => {
+    const token = checkCookie("jwt");
 
-    return (
-        <Route path= {path} {...rest}>
-            {
-                token? {children} : <Redirect to ="/login" />
-            }
-        </Route>
-    )
+    if (token) {
+      return <Route path={path} component={Component} {...rest} />
+    }
+    else{
+      return <Redirect to ="/login" />;
+    }
 };
 
 export default PrivateRoute;

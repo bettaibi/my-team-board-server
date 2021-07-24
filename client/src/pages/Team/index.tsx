@@ -1,9 +1,8 @@
-import React, {lazy, Suspense, useEffect} from 'react';
+import React, {lazy, Suspense} from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
-import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 
 const Board = lazy(() => import('./Board'));
@@ -38,47 +37,27 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Team = () => {
     const classes = useStyles();
+    const { SwipeableSidenav, onSidenavToggle, show, onSidenavClose } = useSwipeableSidenav('left', 'persistent', drawerWidth);
 
     return (
         <React.Fragment>
-
-            <DrawerContainer >
-                {
-                    (onSidenavToggle: () => void, show: boolean) => (
-                        <main className = {show? classes.open: classes.close }>
-                            <Header onSidenavToggle = {onSidenavToggle} />
-                            <Suspense fallback={<span>loading content .....</span>}>
-                                <Switch>
-                                    { console.log('dhhhhhhhhhhhhhhhhhhhhdhhdhdhdhdh')}
-                                    <Route path="/team" exact component = {Board} /> 
-                                    <Route path="/team/scrumboard" component = {Scrumboard} /> 
-                                    <Route path="/team/members" component = {Members} />
-                                    <Route path="/team/profile" component = {Profile} />
-                                    <Route path="/team/setting" component = {Setting} />
-                                    <Route path="/team/chat/:roomID" component = {Chat} />
-                                </Switch>
-                            </Suspense>
-                        </main>
-                    )   
-                }
-            </DrawerContainer>
-        </React.Fragment>
-    )
-};
-
-interface DrawerContainerProps{
-    children: (onSidenavToggle: ()=> void, show: boolean) => JSX.Element;
-}
-const DrawerContainer: React.FC<DrawerContainerProps> = ({children}) => {
-    const { SwipeableSidenav, onSidenavToggle, show, onSidenavClose } = useSwipeableSidenav('left', 'persistent', drawerWidth);
-    console.log('Drawer container component')
-    return (
-       <React.Fragment>
             <SwipeableSidenav>
                 <Navigation onSidenavClose = {onSidenavClose} />
             </SwipeableSidenav>
-            {children(onSidenavToggle, show)}
-       </React.Fragment>
+            <main className = {show? classes.open: classes.close }>
+                <Header onSidenavToggle = {onSidenavToggle} />
+                <Suspense fallback={<span>loading content .....</span>}>
+                    <Switch>
+                        <Route path="/team" exact component = {Board} /> 
+                        <Route path="/team/scrumboard" component = {Scrumboard} /> 
+                        <Route path="/team/members" component = {Members} />
+                        <Route path="/team/profile" component = {Profile} />
+                        <Route path="/team/setting" component = {Setting} />
+                        <Route path="/team/chat/:roomID" component = {Chat} />
+                    </Switch>
+                </Suspense>
+            </main>
+        </React.Fragment>
     )
 };
 

@@ -33,7 +33,7 @@ const InitialValue = {
 const schema = yup.object().shape({
     fullName: yup.string().required('Name is required'),
     email: yup.string().required('Email is required').email('Invalid Email'),
-    title: yup.string().required('Name is required')
+    title: yup.string().required('Title is required')
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -57,31 +57,31 @@ const BasicInfos = () => {
 
     return (
         <Grid container spacing={2}>
-            <Hidden smDown>
-                <Grid item xs={4}>
-                    <Box p={2} className={clsx(classes.card)}
-                        display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                        <Avatar alt="user profile" src={userAvatar} className={classes.largeAvatar} />
-                        <Typography variant="h6">
-                            Nidhal Bettaibi
-                        </Typography>
-                        <Typography variant="body2" className={classes.iconColor} gutterBottom>
-                            bettaibinidhal00@gmail.com
-                        </Typography>
-                        <Box mt={1}>
-                            <IconButton size="small" className={classes.iconColor}>
-                                <Facebook />
-                            </IconButton>
-                            <IconButton size="small" className={classes.iconColor}>
-                                <GitHub />
-                            </IconButton>
-                            <IconButton size="small" className={classes.iconColor}>
-                                <LinkedIn />
-                            </IconButton>
-                        </Box>
+
+            <Grid item xs={12} sm={4}>
+                <Box component="div" p={2} className={clsx(classes.card)}
+                    display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                    <Avatar alt="user profile" src={userAvatar} className={classes.largeAvatar} />
+                    <Typography variant="h6">
+                        Nidhal Bettaibi
+                    </Typography>
+                    <Typography variant="body2" className={classes.iconColor} gutterBottom>
+                        bettaibinidhal00@gmail.com
+                    </Typography>
+                    <Box mt={1}>
+                        <IconButton size="small" className={classes.iconColor}>
+                            <Facebook />
+                        </IconButton>
+                        <IconButton size="small" className={classes.iconColor}>
+                            <GitHub />
+                        </IconButton>
+                        <IconButton size="small" className={classes.iconColor}>
+                            <LinkedIn />
+                        </IconButton>
                     </Box>
-                </Grid>
-            </Hidden>
+                </Box>
+            </Grid>
+
             <Grid item xs>
                 <ProfileDetails />
             </Grid>
@@ -98,12 +98,12 @@ const ProfileDetails = () => {
                 ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
                         <Box className={clsx(classes.card)} mb={2} overflow="hidden">
-                            <Box p={2} borderBottom="1px solid lightgray">
+                            <Box p={2} borderBottom="1px solid lightgray" component="div">
                                 <Typography variant="subtitle1">
                                     General Information
                                 </Typography>
                             </Box>
-                            <Box p={2}>
+                            <Box p={2} component="div">
                                 <div className="form-group">
                                     <label>Full name</label>
                                     <MyTextField fullWidth name="fullName" variant="outlined" size="small" placeholder="member's name"
@@ -132,32 +132,32 @@ const ProfileDetails = () => {
                         </Box>
 
                         <Box className={classes.card} overflow="hidden">
-                            <Box p={2} borderBottom="1px solid lightgray">
+                            <Box p={2} borderBottom="1px solid lightgray" component="div">
                                 <Typography variant="subtitle1">
-                                       Contact
+                                    Contact
                                 </Typography>
                             </Box>
-                            <Box p={2}>
-                            <div className="form-group">
-                                <label>Address</label>
-                                <MyTextField multiline rows={3} fullWidth name="address" variant="outlined" size="small" placeholder="member's address"
-                                    onChange={handleChange} onBlur={handleBlur} />
-                            </div>
-                            <div className="form-group">
-                                <label>Country</label>
-                                <MyTextField fullWidth name="country" variant="outlined" size="small" placeholder="member's country"
-                                    onChange={handleChange} onBlur={handleBlur} />
-                            </div>
-                            <div className="form-group">
-                                <label>City</label>
-                                <MyTextField fullWidth name="city" variant="outlined" size="small" placeholder="member's city"
-                                    onChange={handleChange} onBlur={handleBlur} />
-                            </div>
-                            <div className="form-group">
-                                <label>Phone</label>
-                                <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's phone"
-                                    onChange={handleChange} onBlur={handleBlur} />
-                            </div>
+                            <Box p={2} component="div">
+                                <div className="form-group">
+                                    <label>Address</label>
+                                    <MyTextField multiline rows={3} fullWidth name="address" variant="outlined" size="small" placeholder="member's address"
+                                        onChange={handleChange} onBlur={handleBlur} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Country</label>
+                                    <MyTextField fullWidth name="country" variant="outlined" size="small" placeholder="member's country"
+                                        onChange={handleChange} onBlur={handleBlur} />
+                                </div>
+                                <div className="form-group">
+                                    <label>City</label>
+                                    <MyTextField fullWidth name="city" variant="outlined" size="small" placeholder="member's city"
+                                        onChange={handleChange} onBlur={handleBlur} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Phone</label>
+                                    <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's phone"
+                                        onChange={handleChange} onBlur={handleBlur} />
+                                </div>
                             </Box>
                         </Box>
                     </Form>

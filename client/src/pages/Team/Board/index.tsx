@@ -48,14 +48,14 @@ const Board = () => {
   const projects = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const classes = useStyle();
   const history = useHistory();
-  console.log("board component")
+
   const goToScrumboard = () => {
     history.push('/team/scrumboard');
   }
 
   return (
     <Box className={classes.root} overflow="auto" height="100%" minHeight="80vh"  display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-      {console.log("board view")}
+
       <Typography align="center" variant="h4" className="bg-text-primary fw-700" gutterBottom>
         Workspace's projects
       </Typography>

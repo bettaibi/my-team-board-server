@@ -10,7 +10,7 @@ import {
     Avatar,
     IconButton,
     MenuItem,
-    Divider,
+    Hidden,
     makeStyles
 } from '@material-ui/core';
 import {
@@ -49,7 +49,9 @@ const MyWorkspaces = () => {
                     <TableRow>
                         <TableCell>Workspace's Name</TableCell>
                         <TableCell>Role</TableCell>
-                        <TableCell>Members</TableCell>
+                        <Hidden xsDown>
+                            <TableCell>Members</TableCell>
+                        </Hidden>
                         <TableCell align="right"></TableCell>
 
                     </TableRow>
@@ -61,15 +63,17 @@ const MyWorkspaces = () => {
                                 {row.name}
                             </TableCell>
                             <TableCell>{row.role}</TableCell>
-                            <TableCell>
-                                <AvatarGroup max={3}>
-                                    {
-                                        row.members.map((item, index) => (
-                                            <Avatar key={index} alt="Remy Sharp" src={avatar2} />
-                                        ))
-                                    }
-                                </AvatarGroup>
-                            </TableCell>
+                            <Hidden xsDown>
+                                <TableCell>
+                                    <AvatarGroup max={3}>
+                                        {
+                                            row.members.map((item, index) => (
+                                                <Avatar key={index} alt="Remy Sharp" src={avatar2} />
+                                            ))
+                                        }
+                                    </AvatarGroup>
+                                </TableCell>
+                            </Hidden>
                             <TableCell align="right">
                                 <MenuActions />
                             </TableCell>
@@ -85,7 +89,7 @@ const MyWorkspaces = () => {
 const MenuActions = () => {
     const { PopoverComponent, handleClick, handleClose } = UsePopover();
     const classes = useStyles();
-    
+
     return (
         <React.Fragment>
             <IconButton aria-describedby="actions-menu" color="inherit" aria-label="profile" onClick={handleClick}>
@@ -95,10 +99,10 @@ const MenuActions = () => {
             <PopoverComponent id="actions-menu">
                 <React.Fragment>
                     <MenuItem className={classes.menuItem}>
-                        <EditOutlined  className={classes.icons} />
+                        <EditOutlined className={classes.icons} />
                         <span style={{ marginLeft: '0.8rem' }}>Edit</span>
                     </MenuItem>
-                   
+
                     <MenuItem className={classes.menuItem}>
                         <DeleteOutline className={classes.icons} />
                         <span style={{ marginLeft: '0.8rem' }}>Delete</span>
