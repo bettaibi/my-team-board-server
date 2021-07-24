@@ -237,4 +237,4 @@ const CurrentUser = () => {
     )
 }
 
-export default Navigation
+export default Navigation;

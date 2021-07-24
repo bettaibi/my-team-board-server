@@ -6,14 +6,15 @@ import axios from 'axios';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import appReducer from './store';
 import { Provider } from 'react-redux';
-import { createStore } from "redux";
+import ReduxThunk from 'redux-thunk';
+import { createStore, applyMiddleware } from "redux";
 
 import 'emoji-mart/css/emoji-mart.css';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 axios.defaults.withCredentials = true;
 
-const store = createStore(appReducer);
+const store = createStore(appReducer, applyMiddleware(ReduxThunk));
 
 ReactDOM.render(
   <Provider store = {store}>

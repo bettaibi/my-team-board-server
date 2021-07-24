@@ -19,6 +19,7 @@ import MyTextField from '../../../components/MyTextField';
 import { Add, SearchOutlined } from '@material-ui/icons';
 import userAvatar from '../../../assets/avatars/Henderson.jpg'
 import useSidenav from '../../../hooks/useSidenav';
+import { fetchCurrentUser } from '../../../store/actions/user.actions';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -51,6 +52,11 @@ const Members = () => {
     const classes = useStyles();
     const members = [1, 2, 3, 4];
 
+    const fire = () => {
+        console.log('fire')
+        fetchCurrentUser();
+    }
+
     return (
         <Box className="bg-white" width="100%" height="100%">
             <Box p={3}>
@@ -77,7 +83,7 @@ const Members = () => {
             <List component="nav" className={classes.root} aria-label="Members list">
                 {members.map((item: number) => (
                     <React.Fragment key={item}>
-                        <ListItem className={classes.listItem}>
+                        <ListItem className={classes.listItem} onClick={fire}>
                             <ListItemAvatar>
                                 <Avatar src={userAvatar} />
                             </ListItemAvatar>

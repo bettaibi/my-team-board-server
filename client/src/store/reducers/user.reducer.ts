@@ -10,10 +10,12 @@ const defaultState = {
     address: ''
 };
 
-const UserReducer = (state = {...defaultState}, action: {type: string, payload: any}) => {
+const UserReducer = (state = {...defaultState}, action: {type: string, payload?: any}) => {
 
     switch (action.type){
         case ActionType.GET_CURRENT_USER:
+            return {...state}
+        case ActionType.UPDATE_CURRENT_USER:
             return {...state, ...action.payload}
         default: return {...state}
     }
