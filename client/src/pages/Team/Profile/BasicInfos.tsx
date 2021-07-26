@@ -6,7 +6,6 @@ import {
     IconButton,
     makeStyles,
     Theme,
-    Hidden,
     Avatar
 } from '@material-ui/core';
 import {
@@ -19,9 +18,12 @@ import { Formik, Form } from "formik";
 import MyTextField from '../../../components/MyTextField';
 import * as yup from "yup";
 import clsx from 'clsx';
+import RoundedButton from '../../../components/RoundedButton';
+import { UserModel } from '../../../models/app.model';
+import axios from 'axios';
 
 const InitialValue = {
-    fullName: '',
+    name: '',
     email: '',
     country: '',
     city: '',
@@ -31,7 +33,7 @@ const InitialValue = {
 };
 
 const schema = yup.object().shape({
-    fullName: yup.string().required('Name is required'),
+    name: yup.string().required('Name is required'),
     email: yup.string().required('Email is required').email('Invalid Email'),
     title: yup.string().required('Title is required')
 });
@@ -92,29 +94,49 @@ const BasicInfos = () => {
 const ProfileDetails = () => {
     const classes = useStyles();
 
+    const updateUser = async (values: UserModel, resetForm: () => void) => {
+        try{
+            const {data} = await axios.put('/members');
+            if(data.success){
+                console.log(data)
+                resetForm();
+            }
+            else{
+                
+            }
+        }
+        catch(err){
+            throw err;
+        }
+    };
+
     return (
-        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values, { resetForm }) => updateUser(values, resetForm)}>
             {
                 ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
                         <Box className={clsx(classes.card)} mb={2} overflow="hidden">
-                            <Box p={2} borderBottom="1px solid lightgray" component="div">
+                            <Box p={2} display="flex" flexDirection="row" alignItems="center" justifyContent="space-between"
+                            borderBottom="1px solid lightgray" component="div">
                                 <Typography variant="subtitle1">
                                     General Information
                                 </Typography>
+                                <RoundedButton className={classes.iconColor} type="submit" disableElevation variant="outlined" color="default" size="small">
+                                    <span>Save</span>
+                                </RoundedButton>
                             </Box>
                             <Box p={2} component="div">
                                 <div className="form-group">
                                     <label>Full name</label>
-                                    <MyTextField fullWidth name="fullName" variant="outlined" size="small" placeholder="member's name"
+                                    <MyTextField fullWidth name="name" variant="outlined" size="small" placeholder="full name"
                                         onChange={handleChange} onBlur={handleBlur}
-                                        value={values.fullName}
-                                        error={touched.fullName && !!errors.fullName}
-                                        helperText={touched.fullName && errors.fullName} />
+                                        value={values.name}
+                                        error={touched.name && !!errors.name}
+                                        helperText={touched.name && errors.name} />
                                 </div>
                                 <div className="form-group">
                                     <label>Email</label>
-                                    <MyTextField fullWidth name="email" variant="outlined" size="small" placeholder="member's Email"
+                                    <MyTextField fullWidth name="email" variant="outlined" size="small" placeholder="email"
                                         onChange={handleChange} onBlur={handleBlur}
                                         value={values.email}
                                         error={touched.email && !!errors.email}
@@ -122,7 +144,7 @@ const ProfileDetails = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Title</label>
-                                    <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's title"
+                                    <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="title"
                                         onChange={handleChange} onBlur={handleBlur}
                                         value={values.title}
                                         error={touched.title && !!errors.title}
@@ -145,17 +167,17 @@ const ProfileDetails = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Country</label>
-                                    <MyTextField fullWidth name="country" variant="outlined" size="small" placeholder="member's country"
+                                    <MyTextField fullWidth name="country" variant="outlined" size="small" placeholder="country"
                                         onChange={handleChange} onBlur={handleBlur} />
                                 </div>
                                 <div className="form-group">
                                     <label>City</label>
-                                    <MyTextField fullWidth name="city" variant="outlined" size="small" placeholder="member's city"
+                                    <MyTextField fullWidth name="city" variant="outlined" size="small" placeholder="city"
                                         onChange={handleChange} onBlur={handleBlur} />
                                 </div>
                                 <div className="form-group">
                                     <label>Phone</label>
-                                    <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's phone"
+                                    <MyTextField fullWidth name="phone" variant="outlined" size="small" placeholder="phone"
                                         onChange={handleChange} onBlur={handleBlur} />
                                 </div>
                             </Box>

@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Body, Put, Delete, UseGuards, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-// import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/decorators/user.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { MemberDto } from './member.dto';
 import { MemberService } from './member.service';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @ApiTags('Members')
 @Controller('/members')
 export class MemberController {
@@ -23,13 +24,13 @@ export class MemberController {
         return await this.memberService.create(payload);
     }
 
-    @Put(':id')
-    async update(@Param('id') id: string, @Body() payload: MemberDto): Promise<any>{
-        return await this.memberService.update(id, payload);
+    @Put()
+    async update(@User() userID: string, @Body() payload: MemberDto): Promise<any>{
+        return await this.memberService.update(userID, payload);
     }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string): Promise<any>{
-        return await this.memberService.delete(id);
+    @Delete()
+    async delete(@User() userID: string): Promise<any>{
+        return await this.memberService.delete(userID);
     }
 }

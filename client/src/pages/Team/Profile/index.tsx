@@ -8,10 +8,6 @@ import {
     Chip,
     Hidden
 } from '@material-ui/core';
-import {
-    ArrowBackIosOutlined,
-    Check
-} from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import RoundedButton from '../../../components/RoundedButton';
 import BasicInfos from './BasicInfos';
@@ -74,12 +70,7 @@ const Profile = () => {
             <Box p={2} className="bg-white" display="flex" alignItems="center" justifyContent="flex-end">
                 <RoundedButton variant="outlined" className={clsx(classes.iconColor, classes.mr)} size="medium"
                     onClick={goBack}>
-                    <ArrowBackIosOutlined className={classes.mr}></ArrowBackIosOutlined>
                     <span>Go back</span>
-                </RoundedButton>
-                <RoundedButton disableElevation variant="contained" color="primary" size="medium">
-                    <Check className={classes.mr}></Check>
-                    <span>Save</span>
                 </RoundedButton>
             </Box>
 

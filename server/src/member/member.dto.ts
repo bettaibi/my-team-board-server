@@ -18,4 +18,7 @@ export class MemberDto{
 
     @ApiProperty()
     city?: string;
+    
+    @ApiProperty()
+    phone?: string;
 }

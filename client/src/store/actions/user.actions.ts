@@ -3,7 +3,8 @@ import axios from 'axios';
 import { Dispatch } from 'redux';
 
 export const fetchCurrentUser = () => {
-    return async function(dispatch: Dispatch<any>){
+    
+    return function(dispatch: Dispatch<any>){
         console.log("dkdk dkdk djsdjd dsjjd sjdjsd")
 
         axios.get(`/auth/user`).then((res)=> {

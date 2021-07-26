@@ -28,6 +28,9 @@ export class Member {
 
     @Prop()
     city: string;
+
+    @Prop()
+    phone: string;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);
