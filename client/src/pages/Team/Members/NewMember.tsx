@@ -9,10 +9,10 @@ import MyTextField from '../../../components/MyTextField';
 import RoundedButton from '../../../components/RoundedButton';
 import axios, { CancelTokenSource } from 'axios';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { UserModel } from '../../../models/app.model';
 
 const InitialValue = {
+    _id: '',
     name: '',
     email: '',
     title: '',
@@ -31,6 +31,7 @@ interface NewMemberProps {
 const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState<UserModel[]>([]);
+    const [selectedUser, setSelectedUser] = React.useState<UserModel>(InitialValue);
 
     const handleSeachChange = async (e: any) => {
         const term = e.target.value;
@@ -42,8 +43,8 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
         cancelToken = axios.CancelToken.source();
 
         try {
-            setLoading(true);
             if (term) {
+                setLoading(true);
                 const { data } = await axios.get(`/members/search/${term}`, { cancelToken: cancelToken.token });
                 console.log(data)
                 if(data.success) {
@@ -58,10 +59,21 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
         }
     };
 
+    function onEmailSelected(newValue: any){
+        if(newValue !== null){
+            setSelectedUser({...newValue, title: newValue.title || 'Title does not mention'});
+        }
+    }
+
+    function submitHandler(){
+        console.log(selectedUser);
+        setSelectedUser(InitialValue)
+    }
+
     return (
-        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={submitHandler}>
             {
-                ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
+                ({ handleSubmit, handleChange, handleBlur, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
                         <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 1rem' }} borderBottom="1px solid #fafafa"
                             display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
@@ -87,39 +99,33 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                             <div className="form-group">
                                 <label>Email</label>
                                 <Autocomplete
+                                onChange={(e, newValue)=> onEmailSelected(newValue)}
+                                fullWidth
                                 getOptionSelected={(option, value) => option.email === value.email}
                                 getOptionLabel={(option) => option.email}
                                 options={options}
                                 loading={loading}
+                                clearOnBlur
+                                selectOnFocus={false}
                                 renderInput={(params) => (
                                     <MyTextField {...params} fullWidth name="email" variant="outlined" size="small" placeholder="member's Email"
                                     onChange={(e) => { handleChange(e); handleSeachChange(e) }} onBlur={handleBlur}
-                                    value={values.email}
+                                    value={selectedUser.email}
                                     error={touched.email && !!errors.email}
                                     helperText={touched.email && errors.email} 
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <React.Fragment>
-                                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                {params.InputProps.endAdornment}
-                                            </React.Fragment>
-                                        ),
-                                    }}/>
+                                    />
                                 )}
                             />
                             </div>
                             <div className="form-group">
                                 <label>Name</label>
                                 <MyTextField fullWidth name="name" variant="outlined" size="small" placeholder="member's name"
-                                    onChange={handleChange} onBlur={handleBlur}
-                                    value={values.name} disabled />
+                                    value={selectedUser.name} disabled />
                             </div>
                             <div className="form-group">
                                 <label>Title</label>
                                 <MyTextField fullWidth name="title" variant="outlined" size="small" placeholder="member's title"
-                                    onChange={handleChange} onBlur={handleBlur}
-                                    value={values.title} disabled />
+                                    value={selectedUser.title} disabled />
                             </div>
                         </Box>
                     </Form>

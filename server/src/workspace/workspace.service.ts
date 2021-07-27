@@ -3,12 +3,14 @@ import { WorkspaceDto } from './workspace.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Workspace, WorkspaceDocument } from 'src/models/workspace.model';
+import { Member, MemberDocument } from 'src/models/member.model';
 import { toJson, toObjectID } from 'src/helpers';
 
 @Injectable()
 export class WorkspaceService{
 
     constructor(
+        @InjectModel(Member.name) private readonly MemberModel: Model<MemberDocument>,
         @InjectModel(Workspace.name) private readonly workspaceModel: Model<WorkspaceDocument>
     ){};
 
@@ -71,6 +73,36 @@ export class WorkspaceService{
                 return toJson(false, 'Failed to remove');
             }
             return toJson(true, 'Workspace has been deleted successfully');
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    async addNewMember(workspaceId: string, memberId: string): Promise<any> {
+        try{
+            const workspace = await this.workspaceModel.findOne({_id: toObjectID(workspaceId)});
+            if(!workspace){
+                return toJson(false, 'No workspace found');
+            }
+            if(workspace.members.indexOf(memberId) > -1){
+                return toJson(false, `This user is already a member of ${workspace.name}`);
+            }
+            const member = await this.MemberModel.findOne({_id: toObjectID(memberId)}, {
+                name: 1,
+                email: 1,
+                title: 1,
+                avatar: 1
+            });
+
+            const updated = await this.workspaceModel.findByIdAndUpdate({_id: toObjectID(workspaceId)}, {$set:{
+                members: [...workspace.members, member.id]
+            }}, {new: true});
+
+            if(!updated){
+                return toJson(false, 'Failed to add this member');
+            }
+            return toJson(true, `A new member has been added to ${workspace.name}`, member);
         }
         catch(err){
             throw err;
