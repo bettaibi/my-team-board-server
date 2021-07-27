@@ -13,9 +13,6 @@ export class RegisterDto{
     name: string;
 
     @ApiProperty()
-    workspace: string;
-
-    @ApiProperty()
     email: string;
 
     @ApiProperty()

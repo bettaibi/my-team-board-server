@@ -25,6 +25,23 @@ export class MemberService {
        }
     };
 
+    async getmemberByKeyword(keyword: string): Promise<any> {
+        try{
+            const list = await this.MemberModel.find({email: new RegExp(`^${keyword}`)}, {
+                email: 1,
+                title: 1,
+                name: 1
+            });
+            if(!list){
+                return toJson(false, 'Member not found', []);
+            }
+            return toJson(true, 'matched members', list)
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     async create(memberDto: MemberDto): Promise<any>{
         try{
             const saved = await this.MemberModel.create(memberDto);

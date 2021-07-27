@@ -96,7 +96,7 @@ const ProfileDetails = () => {
 
     const updateUser = async (values: UserModel, resetForm: () => void) => {
         try{
-            const {data} = await axios.put('/members');
+            const {data} = await axios.put('/members', values);
             if(data.success){
                 console.log(data)
                 resetForm();

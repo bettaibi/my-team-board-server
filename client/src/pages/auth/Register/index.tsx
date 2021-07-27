@@ -20,13 +20,12 @@ import { RegisterModel } from '../../../models/auth.model';
 
 const schema = yup.object().shape({
     name: yup.string().required('Full name is required'),
-    workspace: yup.string().required('Default workspace is required'),
     email: yup.string().required('Email is required').email('Invalid Email'),
     password: yup.string().required('Password is required').min(6, 'password is too short'),
     confirmPassword: yup.string().required('Confirm your password').oneOf([yup.ref('password')], 'Password not match')
 });
 
-const initialValue = { email: '', password: '', name: '', confirmPassword: '', workspace: '' };
+const initialValue = { email: '', password: '', name: '', confirmPassword: ''};
 
 const Register: React.FC = () => {
     const theme = useTheme();
@@ -63,7 +62,8 @@ const RegisterForm = () => {
 
     async function handleSubmit(values: RegisterModel, resetForm: () => void) {
         try {
-                const { data } = await axios.post(`/auth/register`, values);
+                const {confirmPassword, ...payload} = values;
+                const { data } = await axios.post(`/auth/register`, payload);
                 if(data.success) {
                     showMsg(data.message, 'success');
                     resetForm();
@@ -86,20 +86,6 @@ const RegisterForm = () => {
                 {
                     ({ handleSubmit, handleChange, handleBlur, errors, values, touched }) => (
                         <Form onSubmit={handleSubmit} autoComplete="off">
-                            <div className="form-group">
-                                <label className="bg-text-secondary">Workspace *</label>
-                                <MyTextField
-                                    className="w-100"
-                                    placeholder="default workspace"
-                                    variant="outlined"
-                                    size="small"
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    name="workspace"
-                                    value={values.workspace}
-                                    error={touched.workspace && !!errors.workspace}
-                                    helperText={touched.workspace && errors.workspace} />
-                            </div>
                             <div className="form-group">
                                 <label className="bg-text-secondary">Full Name *</label>
                                 <MyTextField

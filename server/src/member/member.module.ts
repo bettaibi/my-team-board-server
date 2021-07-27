@@ -3,14 +3,14 @@ import { MemberController } from './member.controller';
 import { MemberService } from './member.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Member, MemberSchema } from 'src/models/member.model';
-import { AuthGuardModule } from 'src/guards/auth.module';
+import { JwtGuardModule } from 'src/shared/jwtGuard.module';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
             {name: Member.name, schema: MemberSchema}
         ]),
-        AuthGuardModule
+        JwtGuardModule
     ],
     providers: [MemberService],
     controllers: [MemberController]

@@ -19,6 +19,11 @@ export class MemberController {
         return await this.memberService.all();
     }
 
+    @Get('search/:keyword')
+    async getMembersByKeyword(@Param('keyword') keyword: string): Promise<any>{
+        return await this.memberService.getmemberByKeyword(keyword);
+    }
+
     @Post()
     async create(@Body() payload: MemberDto): Promise<any>{
         return await this.memberService.create(payload);

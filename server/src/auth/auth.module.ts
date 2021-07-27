@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthGuardModule } from 'src/guards/auth.module';
 import { Member, MemberSchema } from 'src/models/member.model';
-import { Workspace, WorkspaceSchema } from 'src/models/workspace.model';
+import { JwtGuardModule } from 'src/shared/jwtGuard.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
-            {name: Workspace.name, schema: WorkspaceSchema},
             {name: Member.name, schema: MemberSchema}
         ]),
-        AuthGuardModule
+        JwtGuardModule
     ],
     controllers: [AuthController],
     providers: [AuthService]
