@@ -3,8 +3,7 @@ import useDialog from '../../../hooks/useDialog';
 import {
     IconButton,
     makeStyles,
-    Box,
-    Typography
+    Box
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import WithTooltip from '../../WithTooltip';
@@ -13,6 +12,7 @@ import MyTextField from '../../MyTextField';
 import clsx from 'clsx';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
+import axios from 'axios';
 
 const schema = yup.object().shape({
     name: yup.string().required('Name is required')
@@ -58,8 +58,25 @@ const NewWorkspaceDialog = () => {
 const NewWorkspace = ({ onDialogClose }: { onDialogClose: () => void }) => {
     const classes = useStyles();
 
+    async function submitHandler(values: any, resetForm: () => void){
+        try{
+            const { data } = await axios.post('/workspace', values);
+            if(data.success){
+                resetForm();
+                onDialogClose();
+            }
+            else{
+
+            }
+            console.log(data)
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
+
     return (
-        <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values, { resetForm}) => submitHandler(values, resetForm)}>
             {
                 ({handleChange, handleSubmit, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off">

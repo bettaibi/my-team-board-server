@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Workspace, WorkspaceDocument } from 'src/models/workspace.model';
 import { Member, MemberDocument } from 'src/models/member.model';
+import { Project, ProjectDocument } from 'src/models/project.model';
 import { toJson, toObjectID } from 'src/helpers';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class WorkspaceService{
 
     constructor(
         @InjectModel(Member.name) private readonly MemberModel: Model<MemberDocument>,
+        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>,
         @InjectModel(Workspace.name) private readonly workspaceModel: Model<WorkspaceDocument>
     ){};
 
@@ -18,11 +20,7 @@ export class WorkspaceService{
         try{
             const list = await this.workspaceModel.find({
                 members: {$in: [userID]}
-            }).populate({
-                path: 'members',
-                model: 'Member',
-                select: 'name email title avatar'
-            });
+            }, {members: 0, owner: 0});
 
             if(!list){
                 return toJson(false, 'Failed to get workspace list');
@@ -34,11 +32,44 @@ export class WorkspaceService{
         }
     }
 
-    async create(payload: WorkspaceDto): Promise<any>{
+    async switchToWorkspace(workspaceId: string, userID: string): Promise<any>{
         try{
-            const saved = await this.workspaceModel.create(payload);
+            const workspace = await this.workspaceModel.findOne({_id: toObjectID(workspaceId)})
+            if(!workspace){
+                return toJson(false, 'Workspace not found');
+            }
+            workspace.members = workspace.members.filter((item: string)=> item != userID);
+            const projects = await this.ProjectModel.find({workspace: toObjectID(workspaceId)})
+            .populate({
+                path: 'members',
+                model: 'Member',
+                select: 'name email title avatar'
+            });
+            if(!projects){
+                return toJson(false, 'Projects not found');
+            }
+    
+            const populated = await this.workspaceModel.populate(workspace,  {
+                path: 'members',
+                model: 'Member',
+                select: 'name email title avatar'
+            });
+
+            return toJson(true, `Switch to ${workspace.name}`, {
+                members: populated.members,
+                projects
+            });
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    async create(userID: string, payload: WorkspaceDto): Promise<any>{
+        try{
+            const saved = await this.workspaceModel.create({name: payload.name, owner: userID, members: [userID]});
             if(!saved){
-                return toJson(false, 'Failed to create workspace');
+                return toJson(false, 'Failed to create a default workspace!');
             }
             return toJson(true, 'A new Workspace has been created', saved);
         }
@@ -51,7 +82,6 @@ export class WorkspaceService{
         try{
             const updated = await this.workspaceModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
                 name: payload.name,
-                owner: payload.owner,
                 members: payload.members
             }}, {new: true});
 
@@ -94,7 +124,6 @@ export class WorkspaceService{
                 title: 1,
                 avatar: 1
             });
-
             const updated = await this.workspaceModel.findByIdAndUpdate({_id: toObjectID(workspaceId)}, {$set:{
                 members: [...workspace.members, member.id]
             }}, {new: true});

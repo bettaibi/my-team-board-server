@@ -1,0 +1,17 @@
+import { UserModel } from '../../models/app.model';
+import ActionType from './types';
+
+export const getWorkspaceMembers = () => {
+
+    return {
+        type: ActionType.GET_MEMBERS,
+    };
+};
+
+export const setWorkspaceMembers = (payload: UserModel[]) => {
+
+    return {
+        payload,
+        type: ActionType.SET_MEMBERS,
+    };
+};

@@ -50,11 +50,6 @@ export class AuthService {
                 // return toJson(false, 'Failed to register!');
                 throw new BadRequestException('Failed to register');
             }
-            // const workspace = await this.WorkspaceModel.create({name: payload.workspace, owner: saved.id, members: [saved.id]});
-            // if(!workspace){
-            //     return toJson(false, 'Failed to create a default workspace!');
-            //     throw new BadRequestException('Workspace name is not available, try a new one');
-            // }
             const jwt = await this.jwtService.signAsync({id: saved.id});
             return jwt;
         }

@@ -9,6 +9,24 @@ export interface UserModel{
     title: string;
 }
 
+export interface WorkspaceModel{
+    _id?: string;
+    name: string;
+    owner?: string;
+    members?: any[];
+}
+
+export interface ProjectModel{
+    _id?: string;
+    name: string;
+    description?: string;
+    members: any[];
+    workspace: string;
+}
+
 export interface AppState{
     user: UserModel;
+    workspaces: WorkspaceModel[];
+    projects: ProjectModel[];
+    members: UserModel[];
 }

@@ -12,7 +12,7 @@ import {
     InputAdornment
 } from '@material-ui/core';
 import NewMember from './NewMember';
-
+import {useSelector} from 'react-redux';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 import MyTextField from '../../../components/MyTextField';
@@ -20,6 +20,7 @@ import { Add, SearchOutlined } from '@material-ui/icons';
 import userAvatar from '../../../assets/avatars/Henderson.jpg'
 import useSidenav from '../../../hooks/useSidenav';
 import { fetchCurrentUser } from '../../../store/actions/user.actions';
+import { AppState, UserModel } from '../../../models/app.model';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Members = () => {
     const classes = useStyles();
-    const members = [1, 2, 3, 4];
+    const members = useSelector((state: AppState) => state.members);
 
     const fire = () => {
         console.log('fire')
@@ -64,7 +65,7 @@ const Members = () => {
                     Members
                 </Typography>
                 <Typography variant="subtitle2" color="textSecondary">
-                    80 contacts
+                    {members.length>0?members.length:'No member is created yet'} contacts
                 </Typography>
                 <Box display="flex" flexDirection="row" my={2} className={classes.search}>
                     <MyTextField style={{ marginBottom: '0.5rem' }} fullWidth variant="outlined" placeholder="Search members" size="small"
@@ -81,13 +82,13 @@ const Members = () => {
 
 
             <List component="nav" className={classes.root} aria-label="Members list">
-                {members.map((item: number) => (
-                    <React.Fragment key={item}>
+                {members.map((item: UserModel) => (
+                    <React.Fragment key={item._id}>
                         <ListItem className={classes.listItem} onClick={fire}>
                             <ListItemAvatar>
-                                <Avatar src={userAvatar} />
+                                <Avatar src={item.avatar?item.avatar:userAvatar} />
                             </ListItemAvatar>
-                            <ListItemText primary="Photos" secondary="Jan 9, 2014" />
+                            <ListItemText primary={item.name} secondary={item.title || 'Title not mentioned'} />
                         </ListItem>
                         <Divider />
                     </React.Fragment>

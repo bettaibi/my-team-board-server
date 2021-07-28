@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../models/app.model';
+import Workspaces from './Workspaces';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -66,18 +67,7 @@ const useStyles = makeStyles((theme) => ({
     mb: {
         marginBottom: theme.spacing(1)
     },
-    namespaces: {
-        backgroundColor: '#2c3344',
-        cursor: 'pointer',
-        fontSize: '14px',
-        color: '#868c94',
-        '&:hover': {
-            backgroundColor: '#475569',
-        }
-    },
-    bgActive: {
-        backgroundColor: '#475569',
-    },
+
     textWhite: {
         color: '#fafafa'
     },
@@ -132,10 +122,7 @@ const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
         <Grid container className={classes.root}>
             <Grid className={classes.borderRight} item xs={3}>
                 <Box my={2} px={1} display="flex" flexDirection="column" alignItems="center">
-                    <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces + ' ' + classes.bgActive}>IT</Avatar>
-                    <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>MN</Avatar>
-                    <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces}>H</Avatar>
-
+                    <Workspaces />
                     <NewWorkspaceDialog />
                 </Box>
             </Grid>

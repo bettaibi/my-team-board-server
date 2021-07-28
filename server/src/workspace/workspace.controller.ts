@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Put, Delete, Param, Query} from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Delete, Param, Query, UseGuards, Patch} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/decorators/user.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { WorkspaceDto } from './workspace.dto';
 import { WorkspaceService } from './workspace.service';
 
+@UseGuards(AuthGuard)
 @ApiTags('workspace')
 @Controller('workspace')
 export class WorkspaceController{
@@ -22,10 +24,20 @@ export class WorkspaceController{
         }
     }
 
-    @Post()
-    async create(@Body() payload: WorkspaceDto): Promise<any>{
+    @Get('switch/:workspaceId')
+    async switchToWorkspace(@Param('workspaceId') workspaceId: string, @User() userID: string): Promise<any>{
         try{
-            return this.workspaceService.create(payload);
+            return this.workspaceService.switchToWorkspace(workspaceId, userID);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    @Post()
+    async create(@User() userID: string, @Body() payload: WorkspaceDto): Promise<any>{
+        try{
+            return this.workspaceService.create(userID, payload);
         }
         catch(err){
             throw err;
@@ -37,11 +49,15 @@ export class WorkspaceController{
         return await this.workspaceService.update(id, payload);
     }
 
-    @Put('addMember')
+    @Patch('addMember')
     async addNewMember(@Query('workspaceId') workspaceId: string, 
     @Query('memberId') memberId: string): Promise<any>{
-
+      try{
         return await this.workspaceService.addNewMember(workspaceId, memberId);
+      }
+      catch(err){
+          throw err;
+      }
     }
 
     @Delete(':id')

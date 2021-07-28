@@ -55,7 +55,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
 
         }
         catch (err) {
-            console.log(err.message)
+            console.log(err.message || err)
         }
     };
 
@@ -65,9 +65,20 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
         }
     }
 
-    function submitHandler(){
-        console.log(selectedUser);
-        setSelectedUser(InitialValue)
+    async function submitHandler(){
+        try{
+            const {data} = await axios.patch('/workspace/addMember', null, {params: {
+                workspaceId: localStorage.getItem('workspace'),
+                memberId: selectedUser._id
+            }});
+            if(data.success){
+                setSelectedUser(InitialValue)
+            }
+            console.log(data)
+        }
+        catch(err){
+            console.error(err.message || err)
+        }
     }
 
     return (
