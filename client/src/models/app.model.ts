@@ -18,10 +18,10 @@ export interface WorkspaceModel{
 
 export interface ProjectModel{
     _id?: string;
-    name: string;
+    title: string;
     description?: string;
     members: any[];
-    workspace: string;
+    workspace?: string;
 }
 
 export interface AppState{

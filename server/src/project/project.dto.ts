@@ -10,4 +10,7 @@ export class ProjectDto{
 
     @ApiProperty()
     workspace: string;
+
+    @ApiProperty()
+    members?: string[];
 }

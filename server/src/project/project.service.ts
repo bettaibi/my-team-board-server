@@ -12,26 +12,36 @@ export class ProjectService{
         @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>
     ){};
 
-    async all(workspaceID: string): Promise<any>{
+    async all(workspaceID: string, userID: string): Promise<any>{
         try{
-            const list = await this.ProjectModel.find({workspace: toObjectID(workspaceID)});
+            const list = await this.ProjectModel.find({workspace: toObjectID(workspaceID), members: {$in: [userID]}})
+            .populate({
+                path: 'members',
+                model: 'Member',
+                select: 'avatar name'
+            });
             if(!list){
-                return toJson(false, 'Failed to get workspace list');
+                return toJson(false, 'Failed to get projects list');
             }
-            return toJson(true, 'workspace list', list);
+            return toJson(true, 'my projects', list);
         }
         catch(err){
             throw err;
         }
     }
 
-    async create(payload: ProjectDto): Promise<any>{
+    async create(payload: ProjectDto, userID: string): Promise<any>{
         try{
-            const saved = await this.ProjectModel.create(payload);
+            const saved = await this.ProjectModel.create({...payload, members: [...payload.members, userID]});
             if(!saved){
                 return toJson(false, 'Failed to create workspace');
             }
-            return toJson(true, 'A new Workspace has been created', saved);
+            const populated = await this.ProjectModel.populate(saved, {
+                path: 'members',
+                model: 'Member',
+                select: 'name avatar'
+            });
+            return toJson(true, 'A new Workspace has been created', populated);
         }
         catch(err){
             throw err;

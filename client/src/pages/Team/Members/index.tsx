@@ -80,7 +80,6 @@ const Members = () => {
                 </Box>
             </Box>
 
-
             <List component="nav" className={classes.root} aria-label="Members list">
                 {members.map((item: UserModel) => (
                     <React.Fragment key={item._id}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   Typography,
   Avatar,
@@ -12,13 +12,16 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import RoundedButton from '../../../components/RoundedButton';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom'; 
+import { useSelector, useDispatch } from 'react-redux';
 import useSidenav from '../../../hooks/useSidenav';
 import NewProject from './NewProject';
-
+import axios from 'axios';
 import avatar1 from '../../../assets/avatars/Abbott.jpg';
 import avatar2 from '../../../assets/avatars/Christy.jpg';
 import avatar3 from '../../../assets/avatars/Barrera.jpg';
 import avatar4 from '../../../assets/avatars/Henderson.jpg';
+import { AppState, ProjectModel } from '../../../models/app.model';
+import { setProjects } from '../../../store/actions/project.actions';
 
 
 const useStyle = makeStyles((theme) => ({
@@ -45,9 +48,28 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 const Board = () => {
-  const projects = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const projects = useSelector((state: AppState) => state.projects);
   const classes = useStyle();
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  useEffect(()=> {
+    const getProjects = async () => {
+      try{
+        const activeWorkspace = localStorage.getItem('workspace');
+        const {data} = await axios.get(`/projects/${activeWorkspace}`);
+        if(data.success){
+          dispatch(setProjects(data.data))
+        }
+        console.log(data)
+      }
+      catch(err){
+        console.error(err)
+      }
+    };
+
+    getProjects()
+  }, []);
 
   const goToScrumboard = () => {
     history.push('/team/scrumboard');
@@ -63,8 +85,8 @@ const Board = () => {
 
       <Grid container spacing={2} className={classes.gridContainer}>
         {
-          projects.map((item: number) => (
-            <Grid key={item} item xs={12} sm={6} md={4} lg={4} 
+          projects.map((item: ProjectModel) => (
+            <Grid key={item._id} item xs={12} sm={6} md={4} lg={4} 
             onClick={goToScrumboard}
             >
               <Paper elevation={3} className={clsx('bg-white', classes.paper)}>

@@ -39,11 +39,11 @@ export class WorkspaceService{
                 return toJson(false, 'Workspace not found');
             }
             workspace.members = workspace.members.filter((item: string)=> item != userID);
-            const projects = await this.ProjectModel.find({workspace: toObjectID(workspaceId)})
+            const projects = await this.ProjectModel.find({workspace: toObjectID(workspaceId), members: {$in: [userID]}})
             .populate({
                 path: 'members',
                 model: 'Member',
-                select: 'name email title avatar'
+                select: 'name avatar'
             });
             if(!projects){
                 return toJson(false, 'Projects not found');

@@ -19,7 +19,6 @@ export class Project {
 
     @Prop({required: true, type: MongooseSchema.Types.ObjectId, ref: 'Workspace'})
     workspace: Types.ObjectId;
-
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

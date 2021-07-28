@@ -1,7 +1,7 @@
 import React from 'react';
 import useDialog from '../../../hooks/useDialog';
 import {
-    IconButton,
+    Avatar,
     makeStyles,
     Box
 } from '@material-ui/core';
@@ -29,6 +29,15 @@ const useStyles = makeStyles((theme) => ({
     mr: {
         marginRight: theme.spacing(1)
     },
+    namespaces: {
+        backgroundColor: '#2c3344',
+        cursor: 'pointer',
+        fontSize: '14px',
+        color: '#868c94',
+        '&:hover': {
+            backgroundColor: '#475569',
+        }
+    },
     icons: {
         color: '#64748B'
     },
@@ -42,10 +51,9 @@ const NewWorkspaceDialog = () => {
         <React.Fragment>
             <WithTooltip title="New Workspace"
                 text="Create a new workspace or switch to a different workspace by clicking on the icons above.">
-                <IconButton className={classes.mb}
-                    onClick={onDialogOpen}>
-                    <Add className={classes.icons} />
-                </IconButton>
+                <Avatar onClick={onDialogOpen} variant="rounded" className={classes.mb + ' ' + classes.namespaces}>
+                     <Add className={classes.icons} />
+                </Avatar>
             </WithTooltip>
 
             <DialogComponent>

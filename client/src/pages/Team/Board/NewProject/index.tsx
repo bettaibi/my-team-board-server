@@ -10,6 +10,8 @@ import * as yup from "yup";
 import MyTextField from '../../../../components/MyTextField';
 import RoundedButton from '../../../../components/RoundedButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { ProjectModel, UserModel } from '../../../../models/app.model';
+import axios, { CancelTokenSource } from 'axios';
 
 const InitialValue = {
     title: '',
@@ -19,19 +21,75 @@ const InitialValue = {
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
-    description: yup.string().required('Description is required'),
-    members: yup.array().required("No member is chosen")
+    description: yup.string().required('Description is required')
 });
-const options = [{name: 'Bettaibi Nidhal'}, {name: 'Bettaibi Ridha'}, {name: 'Bettaibi Najet'}];
+let cancelToken: CancelTokenSource;
+let members: string[] = [];
 
 interface NewProjectProps {
     onSidenavClose: () => void;
 }
 
 const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
+    const [selectedMembers, setSelectedMembers] = React.useState<UserModel[]>([]);
+    const [loading, setLoading] = React.useState(false);
 
+    const handleSeachChange = async (e: any) => {
+        const term = e.target.value;
+
+        if (typeof cancelToken != typeof undefined) {
+            cancelToken?.cancel('Operation cancled');
+        }
+
+        cancelToken = axios.CancelToken.source();
+
+        try {
+            if (term) {
+                setLoading(true);
+                const { data } = await axios.get(`/members/search/${term}`, { cancelToken: cancelToken.token });
+                console.log(data)
+                if(data.success) {
+                    setSelectedMembers(data.data)
+                }
+                setLoading(false);
+            }
+
+        }
+        catch (err) {
+            console.log(err.message || err)
+        }
+    };
+
+    function onEmailSelected(newValues: UserModel[]){
+        if(newValues !== null){
+            if(newValues.length === 0){
+                members = [];
+            }
+            else{
+                members = [...newValues.map((item: UserModel) => item._id || '')];
+            }
+        }
+    }
+
+    async function submitHandler (values: ProjectModel, resetForm: () => void){
+        try{
+            const payload: ProjectModel = {
+                ...values,
+                members: members,
+                workspace: localStorage.getItem('workspace') || ''
+            }
+            // const {data} = await axios.post('/projects', payload);
+            // if(data.success){
+
+            // }
+            console.log(payload)
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
     return (
-        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values, { resetForm }) => submitHandler(values, resetForm)}>
             {
                 ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
@@ -75,13 +133,17 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                             <div className="form-group">
                                 <label>Members</label>
                                 <Typography variant="body2" color="textSecondary" gutterBottom>
-                                    Only selected members are able to work on this project
+                                    Only selected members are able to work on this project (you can add them later)
                                 </Typography>
                                 <Autocomplete
+                                    onChange={(e, newValue)=> onEmailSelected(newValue)}
                                     multiple
+                                    fullWidth
                                     limitTags={2}
+                                    loading={loading}
+                                    clearOnBlur
                                     id="multiple-limit-tags"
-                                    options={options}
+                                    options={selectedMembers}
                                     getOptionLabel={(option) => option.name}
                                     defaultValue={[]}
                                     renderTags={(value, getTagProps) =>
@@ -90,16 +152,15 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                             variant="default"
                                             color='primary'
                                             label={option.name}
-                                            avatar={<Avatar>B</Avatar>}
+                                            avatar={<Avatar>{option.name.charAt(0)}</Avatar>}
                                             {...getTagProps({ index })}
                                           />
                                         ))
                                       }
                                     renderInput={(params) => (
                                         <MyTextField  name="members" variant="outlined" size="small" placeholder="Add members to this project"
-                                        {...params}
-                                        error={touched.members && !!errors.members}
-                                        helperText={touched.members && errors.members} />
+                                        onChange={handleSeachChange}
+                                        {...params} />
                                 )}
                               />
                             </div>

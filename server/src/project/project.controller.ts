@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from 'src/decorators/user.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { ProjectDto } from './project.dto';
 import { ProjectService } from './project.service';
 
+@UseGuards(AuthGuard)
 @ApiTags('Project')
 @Controller('projects')
 export class ProjectController{
@@ -12,9 +15,9 @@ export class ProjectController{
     ){}
 
     @Get(':workspaceID')
-    async list(@Param('workspaceID') workspaceID: string): Promise<any>{
+    async list(@Param('workspaceID') workspaceID: string, @User() userID: string): Promise<any>{
         try{
-            return this.projectService.all(workspaceID);
+            return this.projectService.all(workspaceID, userID);
         }
         catch(err){
             throw err;
@@ -22,9 +25,9 @@ export class ProjectController{
     }
 
     @Post()
-    async create(@Body() payload: ProjectDto): Promise<any>{
+    async create(@Body() payload: ProjectDto, @User() userID: string): Promise<any>{
         try{
-            return this.projectService.create(payload);
+            return this.projectService.create(payload, userID);
         }
         catch(err){
             throw err;
