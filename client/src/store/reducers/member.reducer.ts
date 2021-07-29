@@ -7,6 +7,8 @@ const MemberReducer = (state = [], action: {type: string, payload?: any}) => {
             return [...state]
         case ActionType.SET_MEMBERS:
             return [...action.payload]
+        case ActionType.NEW_MEMBER: 
+            return [action.payload, ...state];
 
         default: return [...state]
     }

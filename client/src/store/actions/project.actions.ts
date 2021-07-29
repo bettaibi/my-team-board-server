@@ -15,3 +15,11 @@ export const setProjects = (payload: ProjectModel[]) => {
         type: ActionType.SET_PROJECTS,
     };
 };
+
+export const newProject = (payload: ProjectModel) => {
+
+    return {
+        payload,
+        type: ActionType.NEW_PROJECT,
+    };
+};

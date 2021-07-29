@@ -10,8 +10,11 @@ import * as yup from "yup";
 import MyTextField from '../../../../components/MyTextField';
 import RoundedButton from '../../../../components/RoundedButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { ProjectModel, UserModel } from '../../../../models/app.model';
-import axios, { CancelTokenSource } from 'axios';
+import { AppState, ProjectModel, UserModel } from '../../../../models/app.model';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { useSharedContext } from '../../../../context';
+import { newProject } from '../../../../store/actions/project.actions';
 
 const InitialValue = {
     title: '',
@@ -23,7 +26,7 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
     description: yup.string().required('Description is required')
 });
-let cancelToken: CancelTokenSource;
+
 let members: string[] = [];
 
 interface NewProjectProps {
@@ -31,34 +34,8 @@ interface NewProjectProps {
 }
 
 const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
-    const [selectedMembers, setSelectedMembers] = React.useState<UserModel[]>([]);
-    const [loading, setLoading] = React.useState(false);
-
-    const handleSeachChange = async (e: any) => {
-        const term = e.target.value;
-
-        if (typeof cancelToken != typeof undefined) {
-            cancelToken?.cancel('Operation cancled');
-        }
-
-        cancelToken = axios.CancelToken.source();
-
-        try {
-            if (term) {
-                setLoading(true);
-                const { data } = await axios.get(`/members/search/${term}`, { cancelToken: cancelToken.token });
-                console.log(data)
-                if(data.success) {
-                    setSelectedMembers(data.data)
-                }
-                setLoading(false);
-            }
-
-        }
-        catch (err) {
-            console.log(err.message || err)
-        }
-    };
+    const selectedMembers = useSelector((state: AppState) => state.members);
+    const { dispatch } = useSharedContext();
 
     function onEmailSelected(newValues: UserModel[]){
         if(newValues !== null){
@@ -77,12 +54,14 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                 ...values,
                 members: members,
                 workspace: localStorage.getItem('workspace') || ''
+            };
+            const {data} = await axios.post('/projects', payload);
+            if(data.success){
+                members = [];
+                resetForm();
+                dispatch(newProject(data.data));
             }
-            // const {data} = await axios.post('/projects', payload);
-            // if(data.success){
-
-            // }
-            console.log(payload)
+            console.log(data)
         }
         catch(err){
             console.error(err)
@@ -140,7 +119,6 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                     multiple
                                     fullWidth
                                     limitTags={2}
-                                    loading={loading}
                                     clearOnBlur
                                     id="multiple-limit-tags"
                                     options={selectedMembers}
@@ -159,7 +137,6 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                       }
                                     renderInput={(params) => (
                                         <MyTextField  name="members" variant="outlined" size="small" placeholder="Add members to this project"
-                                        onChange={handleSeachChange}
                                         {...params} />
                                 )}
                               />

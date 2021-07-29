@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
     Avatar,
     Tooltip
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState, WorkspaceModel } from '../../../models/app.model';
-import { setWorkspaces } from '../../../store/actions/workspace.actions';
-import { setProjects } from '../../../store/actions/project.actions';
-import { setWorkspaceMembers } from '../../../store/actions/members.actions';
+import clsx from 'clsx';
+import { useSharedContext } from '../../../context';
 
 const useStyles = makeStyles((theme: Theme) => ({
     mb: {
@@ -33,53 +31,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Workspaces = () => {
     const classes = useStyles();
     const list = useSelector((state: AppState) => state.workspaces);
-    const dispatch = useDispatch();
+    const {selectedWorkspace, setSelectedWorkspace} = useSharedContext();
 
-    useEffect(() => {
-        const getWorkspaces = async () => {
-            try {
-                const { data } = await axios.get('/workspace');
-                if (data.success) {
-                    dispatch(setWorkspaces(data.data))
-                }
-                console.log(data)
-            }
-            catch (err) {
-                console.error(err);
-            }
-        };
-
-        getWorkspaces()
-    }, []);
-
-    async function onSwitch (id: string){
-        try{
-            if(id){
-                const {data} = await axios.get(`/workspace/switch/${id}`);
-                if(data.success){
-                    localStorage.setItem('workspace', id);
-                    dispatch(setProjects(data.data.projects));
-                    dispatch(setWorkspaceMembers(data.data.members));
-                }
-                console.log(data)
-            }
-            
-        }
-        catch(err){
-            console.error(err);
+    function onSwitch (id: string){
+        if(id){
+            setSelectedWorkspace(id);
         }
     }
 
     return (
         <React.Fragment>
-            {/* <Tooltip title="Spark" placement="right">
-                <Avatar variant="rounded" className={classes.mb + ' ' + classes.namespaces + ' ' + classes.bgActive}>IT</Avatar>
-            </Tooltip> */}
             {
                 list.map((item: WorkspaceModel) => (
                     <Tooltip title={item.name} key={item._id} placement="right">
                         <Avatar variant="rounded" onClick={()=> onSwitch(item._id || '')}
-                            className={classes.mb + ' ' + classes.namespaces}>
+                            className={clsx(classes.mb , classes.namespaces, {[classes.bgActive]: item._id === selectedWorkspace})}>
                                 {item.name.charAt(0).toUpperCase()+item.name.charAt(1).toUpperCase()}
                         </Avatar>
                     </Tooltip>

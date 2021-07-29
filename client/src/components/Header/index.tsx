@@ -20,6 +20,7 @@ import UsePopover from '../../hooks/usePopover';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import axios from 'axios';
+import { useSharedContext } from '../../context';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -91,7 +92,7 @@ const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
 
 const NotificationMenu = () => {
     const classes = useStyles();
-    const { PopoverComponent, handleClick, handleClose } = UsePopover();
+    const { PopoverComponent, handleClick } = UsePopover();
 
     return (
         <React.Fragment>
@@ -115,6 +116,7 @@ const NotificationMenu = () => {
 const AccountMenu = () => {
     const history = useHistory();
     const classes = useStyles();
+    const {currentUser} = useSharedContext();
     const { PopoverComponent, handleClick, handleClose } = UsePopover();
 
     const navigateTo = (path: string) => {
@@ -150,7 +152,7 @@ const AccountMenu = () => {
                         <Typography variant="subtitle2">
                             Signed in as
                         </Typography>
-                        <small>bettaibinidhal00@gmail.com</small>
+                        <small>{currentUser.email || 'unknown@gmail.com'}</small>
                     </Box>
                     <Divider />
                     <MenuItem onClick={() => navigateTo('/team/profile')} className={classes.menuItem}>

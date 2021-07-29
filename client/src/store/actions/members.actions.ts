@@ -15,3 +15,11 @@ export const setWorkspaceMembers = (payload: UserModel[]) => {
         type: ActionType.SET_MEMBERS,
     };
 };
+
+export const newMember = (payload: UserModel) => {
+
+    return {
+        payload,
+        type: ActionType.NEW_MEMBER,
+    };
+};

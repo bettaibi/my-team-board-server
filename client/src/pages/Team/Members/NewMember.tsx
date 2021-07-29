@@ -10,6 +10,8 @@ import RoundedButton from '../../../components/RoundedButton';
 import axios, { CancelTokenSource } from 'axios';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { UserModel } from '../../../models/app.model';
+import { useSharedContext } from '../../../context';
+import { newMember } from '../../../store/actions/members.actions';
 
 const InitialValue = {
     _id: '',
@@ -32,6 +34,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState<UserModel[]>([]);
     const [selectedUser, setSelectedUser] = React.useState<UserModel>(InitialValue);
+    const { dispatch } = useSharedContext();
 
     const handleSeachChange = async (e: any) => {
         const term = e.target.value;
@@ -72,7 +75,8 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                 memberId: selectedUser._id
             }});
             if(data.success){
-                setSelectedUser(InitialValue)
+                setSelectedUser(InitialValue);
+                dispatch(newMember(data.data))
             }
             console.log(data)
         }

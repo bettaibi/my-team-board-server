@@ -20,8 +20,8 @@ export class MemberController {
     }
 
     @Get('search/:keyword')
-    async getMembersByKeyword(@Param('keyword') keyword: string): Promise<any>{
-        return await this.memberService.getmemberByKeyword(keyword);
+    async getMembersByKeyword(@Param('keyword') keyword: string, @User() userID: string): Promise<any>{
+        return await this.memberService.getmemberByKeyword(keyword, userID);
     }
 
     @Post()

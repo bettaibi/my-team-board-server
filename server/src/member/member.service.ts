@@ -25,9 +25,10 @@ export class MemberService {
        }
     };
 
-    async getmemberByKeyword(keyword: string): Promise<any> {
+    async getmemberByKeyword(keyword: string, userID: string): Promise<any> {
         try{
-            const list = await this.MemberModel.find({email: new RegExp(`^${keyword}`)}, {
+            const list = await this.MemberModel.find({email: new RegExp(`^${keyword}`), _id: {$ne: userID}},
+            {
                 email: 1,
                 title: 1,
                 name: 1

@@ -6,7 +6,8 @@ export interface UserModel{
     address?: string;
     city?: string;
     avatar?: string;
-    title: string;
+    title?: string;
+    phone?: string;
 }
 
 export interface WorkspaceModel{
@@ -22,10 +23,10 @@ export interface ProjectModel{
     description?: string;
     members: any[];
     workspace?: string;
+    createdAt?: Date;
 }
 
 export interface AppState{
-    user: UserModel;
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];
     members: UserModel[];

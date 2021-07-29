@@ -6,16 +6,17 @@ import {
     Typography,
     Badge,
 } from '@material-ui/core';
-import { Theme, makeStyles, withStyles, createStyles, useTheme } from '@material-ui/core/styles';
+import { Theme, makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
 import { AssignmentOutlined, PeopleOutline } from '@material-ui/icons';
 import NewWorkspaceDialog from './NewWorkspace';
-import userAvatar from '../../assets/avatars/Henderson.jpg';
+import userAvatar from '../../assets/avatars/profile.jpg';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../models/app.model';
 import Workspaces from './Workspaces';
+import { useSharedContext } from '../../context';
+import { useSelector } from 'react-redux';
+import { AppState, UserModel } from '../../models/app.model';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
@@ -103,23 +104,16 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+interface PagesNavProps{
+    classes: ClassNameMap;
+}
+
 const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
     const classes = useStyles();
-    const history = useHistory();
-    const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.up('sm'));
-
     console.log("navigation component")
-    const navigateTo = (path: string) => {
-        history.push(path);
-        if (!matches) {
-            onSidenavClose();
-        }
-    };
-    let path = history.location.pathname;
 
     return (
-        <Grid container className={classes.root}>
+        <Grid container className={clsx(classes.root, 'content-scroll')}>
             <Grid className={classes.borderRight} item xs={3}>
                 <Box my={2} px={1} display="flex" flexDirection="column" alignItems="center">
                     <Workspaces />
@@ -130,27 +124,7 @@ const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
 
                 <CurrentUser />
 
-                <Box p={2} >
-                    <Typography variant="subtitle2" color="primary">
-                        Workspaces
-                    </Typography>
-                    <small className={classes.textSecondary}>
-                        Workspace Managment
-                    </small>
-
-                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team' })} onClick={() => navigateTo('/team')}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                        <AssignmentOutlined className={classes.textWhite} />
-                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Scrumboard</span>
-                    </Box>
-
-                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/members' })} onClick={() => navigateTo('/team/members')}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                        <PeopleOutline className={classes.textWhite} />
-                        <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Members</span>
-                    </Box>
-
-                </Box>
+                <Pages classes={classes} />
 
                 <Box p={2} >
                     <Typography variant="subtitle2" color="primary">
@@ -160,42 +134,7 @@ const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
                         Workspace's Members
                     </small>
 
-                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/chat/members1' })} onClick={() => navigateTo('/team/chat/members1')}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
-                    <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/chat/members2' })} onClick={() => navigateTo('/team/chat/members2')}
-                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-
-                        <StyledBadge
-                            overlap="circle"
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            variant="dot"
-                        >
-                            <Avatar alt="team member" src={userAvatar} />
-                        </StyledBadge>
-                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
-                            <span >Nidhal Bettaibi</span>
-                            <small >Developer</small>
-                        </Box>
-                    </Box>
+                    <MemberList classes={classes} />
 
                 </Box>
 
@@ -204,21 +143,91 @@ const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
     )
 }
 
+const Pages: React.FC<PagesNavProps> = ({classes}) => {
+    const history = useHistory();
+
+    const navigateTo = (path: string) => {
+        history.push(path);
+    };
+
+    let path = history.location.pathname;
+    return (
+        <Box p={2} >
+            <Typography variant="subtitle2" color="primary">
+                Workspaces
+            </Typography>
+            <small className={classes.textSecondary}>
+                Workspace Managment
+            </small>
+
+            <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team' })} onClick={() => navigateTo('/team')}
+                display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                <AssignmentOutlined className={classes.textWhite} />
+                <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Scrumboard</span>
+            </Box>
+
+            <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/members' })} onClick={() => navigateTo('/team/members')}
+                display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                <PeopleOutline className={classes.textWhite} />
+                <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Members</span>
+            </Box>
+
+        </Box>
+    )
+};
+
+const MemberList: React.FC<PagesNavProps> = ({classes}) => {
+    const members = useSelector((state: AppState) => state.members);
+    const history = useHistory();
+
+    const navigateTo = (path: string) => {
+        history.push(path);
+    };
+
+    let path = history.location.pathname;
+
+    return (
+        <>
+            {
+                members.map((item: UserModel) => (
+                    <Box key={item._id} className={clsx(classes.navItem, { [classes.activeItem]: path === `/team/chat/${item._id}` })} onClick={() => navigateTo(`/team/chat/${item._id}`)}
+                        display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+
+                        <StyledBadge
+                            overlap="circle"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            variant="dot"
+                        >
+                            <Avatar alt="team member" src={userAvatar} />
+                        </StyledBadge>
+                        <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
+                            <span >{item.name}</span>
+                            <small >{item.title || 'Not mention'}</small>
+                        </Box>
+                    </Box>
+                ))
+            }
+        </>
+    )
+
+};
+
 const CurrentUser = () => {
     const classes = useStyles();
-    const user = useSelector((state: AppState) => state.user);
-
-    console.log(user);
+    const { currentUser } = useSharedContext();
 
     return (
         <Box borderBottom="1px solid #2c3344" textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center"
             style={{ padding: '1.5rem 1rem' }}>
-            <Avatar alt="user avatar" src={userAvatar} className={classes.largeAvatar} />
-            <Typography variant="subtitle2" className={classes.textWhite} gutterBottom>
-                Bettaibi Nidhal
+            <Avatar alt="user avatar" src={currentUser.avatar || userAvatar} className={classes.largeAvatar} />
+            <Typography variant="subtitle2" className={clsx(classes.textWhite, 'text-capitalize')} gutterBottom>
+                {currentUser.name || 'Unknown'}
             </Typography>
             <small className={classes.textSecondary}>
-                bettaibinidhal00@gmail.com
+                {currentUser.email || 'unknown@gmail.com'}
             </small>
         </Box>
     )

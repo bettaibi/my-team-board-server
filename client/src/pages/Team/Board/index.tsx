@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   Typography,
   Avatar,
@@ -6,23 +6,18 @@ import {
   Grid,
   Paper,
   makeStyles,
-  Divider
+  Divider,
+  Tooltip
 } from '@material-ui/core';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import RoundedButton from '../../../components/RoundedButton';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom'; 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import useSidenav from '../../../hooks/useSidenav';
 import NewProject from './NewProject';
-import axios from 'axios';
-import avatar1 from '../../../assets/avatars/Abbott.jpg';
-import avatar2 from '../../../assets/avatars/Christy.jpg';
-import avatar3 from '../../../assets/avatars/Barrera.jpg';
-import avatar4 from '../../../assets/avatars/Henderson.jpg';
-import { AppState, ProjectModel } from '../../../models/app.model';
-import { setProjects } from '../../../store/actions/project.actions';
-
+import defaultAvatar from '../../../assets/avatars/profile.jpg';
+import { AppState, ProjectModel, UserModel } from '../../../models/app.model';
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -51,25 +46,6 @@ const Board = () => {
   const projects = useSelector((state: AppState) => state.projects);
   const classes = useStyle();
   const history = useHistory();
-  const dispatch = useDispatch();
-
-  useEffect(()=> {
-    const getProjects = async () => {
-      try{
-        const activeWorkspace = localStorage.getItem('workspace');
-        const {data} = await axios.get(`/projects/${activeWorkspace}`);
-        if(data.success){
-          dispatch(setProjects(data.data))
-        }
-        console.log(data)
-      }
-      catch(err){
-        console.error(err)
-      }
-    };
-
-    getProjects()
-  }, []);
 
   const goToScrumboard = () => {
     history.push('/team/scrumboard');
@@ -90,30 +66,42 @@ const Board = () => {
             onClick={goToScrumboard}
             >
               <Paper elevation={3} className={clsx('bg-white', classes.paper)}>
-                <Typography variant="subtitle1" className="bg-text-primary">
-                  Admin Dashboard
+                <Typography variant="subtitle1" className="bg-text-primary text-capitalize">
+                  {item.title}
                 </Typography>
                 <Typography variant="subtitle2" component="strong" color="textSecondary" gutterBottom>
-                  Roadmap for new project
+                  {item.description}
                 </Typography>
-                <Divider className={classes.separator}  />
+                <Divider className={classes.separator} />
+
                 <AvatarGroup max={4} style={{marginBottom: '0.5rem'}}>
-                    <Avatar alt="Remy Sharp" src={avatar1} />
-                    <Avatar alt="Remy Sharp" src={avatar2} />
-                    <Avatar alt="Remy Sharp" src={avatar3} />
-                    <Avatar alt="Remy Sharp" src={avatar4} />
-                    <Avatar alt="Remy Sharp" src={avatar4} />
-                    <Avatar alt="Remy Sharp" src={avatar4} />
+                  {
+                    item.members.map((member: UserModel) => (
+                      <Tooltip key={member._id} title={member.name}>
+                        <Avatar alt="project members" src={member.avatar || defaultAvatar} />
+                      </Tooltip>
+                    ))
+                  }
                 </AvatarGroup>
                 <div>
                   <span className="bg-text-secondary">Edited: </span>
-                  <span>2 days ago</span>
+                  <span>{item.createdAt}</span>
                 </div>
               </Paper>
           </Grid>
           ))
         }
       </Grid>
+
+      {
+        projects.length === 0 && (
+          <Box mt={4}>
+             <Typography variant="subtitle1" component="span" style={{color: 'lightgray'}} gutterBottom>
+               No projects created yet
+            </Typography>
+          </Box>
+        )
+      }
     </Box>
   )
 }

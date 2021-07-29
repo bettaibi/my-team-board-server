@@ -48,6 +48,9 @@ body{
 .text-right{
   text-align: right;
 }
+.text-capitalize{
+  text-transform: capitalize;
+}
 a{
   color: #6366F1;
   text-decoration: none;
