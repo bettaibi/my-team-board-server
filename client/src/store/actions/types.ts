@@ -8,7 +8,8 @@ const ActionType = {
     GET_MEMBERS: 'GET_MEMBERS',
     SET_MEMBERS: 'SET_MEMBERS',
     NEW_MEMBER: 'NEW_MEMBER',
-    NEW_PROJECT: 'NEW_MEMBER'
+    NEW_PROJECT: 'NEW_MEMBER',
+    DELETE_MEMBER: 'DELETE_MEMBER'
 };
 
 export default ActionType;

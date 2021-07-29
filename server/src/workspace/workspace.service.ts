@@ -109,6 +109,26 @@ export class WorkspaceService{
         }
     }
 
+    async deleteMembers(memberId: string, workspaceId: string): Promise<any> {
+        try{
+            const workspace = await this.workspaceModel.findOne({_id: toObjectID(workspaceId)});
+            if(!workspace){
+                return toJson(false, 'Workspace not found');
+            }
+            const members = workspace.members.filter((id: string) => id != memberId);
+            const updated = await this.workspaceModel.findByIdAndUpdate({_id: toObjectID(workspaceId)}, {$set: {
+                members
+            }}, {new: true});
+            if(!updated){
+                return toJson(false, 'Failed to Delete ');
+            }
+            return toJson(true, 'Member has been deleted successfully');
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     async addNewMember(workspaceId: string, memberId: string): Promise<any> {
         try{
             const workspace = await this.workspaceModel.findOne({_id: toObjectID(workspaceId)});

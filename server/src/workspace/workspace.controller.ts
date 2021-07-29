@@ -65,4 +65,9 @@ export class WorkspaceController{
         return await this.workspaceService.delete(id);
     }
 
+    @Delete('/members/:memberID/:workspaceID')
+    async deleteMembers(@Param('memberID') memberID: string, @Param('workspaceID') workspaceID: string): Promise<any>{
+        return await this.workspaceService.deleteMembers(memberID, workspaceID);
+    }
+
 }

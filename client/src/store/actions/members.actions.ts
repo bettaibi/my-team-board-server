@@ -23,3 +23,11 @@ export const newMember = (payload: UserModel) => {
         type: ActionType.NEW_MEMBER,
     };
 };
+
+export const deleteMember = (payload: string) => {
+
+    return{
+        payload,
+        type: ActionType.DELETE_MEMBER
+    }
+}

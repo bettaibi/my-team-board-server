@@ -57,9 +57,11 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
             };
             const {data} = await axios.post('/projects', payload);
             if(data.success){
-                members = [];
-                resetForm();
                 dispatch(newProject(data.data));
+
+                setTimeout(() =>{
+                    onSidenavClose();
+                })
             }
             console.log(data)
         }

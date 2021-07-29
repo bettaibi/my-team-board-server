@@ -1,3 +1,4 @@
+import { UserModel } from '../../models/app.model';
 import ActionType from '../actions/types';
 
 const MemberReducer = (state = [], action: {type: string, payload?: any}) => {
@@ -9,8 +10,10 @@ const MemberReducer = (state = [], action: {type: string, payload?: any}) => {
             return [...action.payload]
         case ActionType.NEW_MEMBER: 
             return [action.payload, ...state];
+        case ActionType.DELETE_MEMBER:
+            return [...state.filter((item: UserModel)=> item._id != action.payload)];
 
-        default: return [...state]
+        default: return [...state];
     }
 };
 
