@@ -103,7 +103,9 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
 
     return(
         <Shared.Provider value = {value}>
-            {appLoading ? <span style={{color: 'red'}}>App Loading...</span> : children}
+           <React.Fragment>
+                {appLoading ? <span style={{color: 'red'}}>App Loading...</span> : children}
+           </React.Fragment>
         </Shared.Provider>
     )
 }

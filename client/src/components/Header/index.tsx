@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     IconButton,
     Box,
@@ -12,15 +12,21 @@ import {
     Avatar,
     ListItemText,
     ListItemSecondaryAction,
-    Tooltip
+    Tooltip,
+    useMediaQuery
 } from '@material-ui/core'
 import { Menu, CloseOutlined, NotificationsOutlined, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined } from '@material-ui/icons';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import UsePopover from '../../hooks/usePopover';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import axios from 'axios';
 import { useSharedContext } from '../../context';
+import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
+import Navigation from '../Navigation';
+
+
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -63,19 +69,16 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         activeItem: {
             backgroundColor: '#f1f5f9 !important',
-        }
+        },
     }),
 );
 
-const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
+const Header = () => {
     const classes = useStyles();
 
     return (
         <header className={classes.root}>
-            <IconButton onClick={onSidenavToggle}
-                edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                <Menu className={classes.icons} />
-            </IconButton>
+            <SideBarComponent />
 
             <Box>
                 <IconButton edge="start" color="inherit" aria-label="Search" className={classes.menuButton}>
@@ -84,11 +87,42 @@ const Header = ({ onSidenavToggle }: { onSidenavToggle: () => void }) => {
 
                 <NotificationMenu />
                 <AccountMenu />
-
             </Box>
         </header>
     )
 };
+
+const SideBarComponent = () => {
+    const { SwipeableSidenav, onSidenavToggle, show } = useSwipeableSidenav('left', 'persistent', drawerWidth);
+    const classes = useStyles();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+    let main: HTMLElement | null = document.getElementById('app-main');
+
+    useEffect(() => {
+        if(main){
+            if(show){
+               main.style.marginLeft = matches ? `${drawerWidth}px`: `0px`;
+            }
+            else{
+                main.style.marginLeft = `${0}px`;
+            }
+        }
+    }, [show, matches]);
+ 
+    return (
+        <React.Fragment>
+            <IconButton onClick={onSidenavToggle}
+                edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                <Menu className={classes.icons} />
+            </IconButton>
+
+            <SwipeableSidenav>
+                <Navigation />
+            </SwipeableSidenav>
+        </React.Fragment>
+    )
+}
 
 const NotificationMenu = () => {
     const classes = useStyles();

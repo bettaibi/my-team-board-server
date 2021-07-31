@@ -14,19 +14,21 @@ import {
     IconButton,
 } from '@material-ui/core';
 import { DeleteOutline } from '@material-ui/icons';
-import NewMember from './NewMember';
 import { useSelector } from 'react-redux';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-
-import MyTextField from '../../../components/MyTextField';
 import { Add, SearchOutlined } from '@material-ui/icons';
-import userAvatar from '../../../assets/avatars/Henderson.jpg'
-import useSidenav from '../../../hooks/useSidenav';
 import { AppState, UserModel } from '../../../models/app.model';
-import useConfirmDialog from '../../../hooks/useConfirmDialog';
-import axios from 'axios';
 import { useSharedContext } from '../../../context';
 import { deleteMember } from '../../../store/actions/members.actions';
+
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
+import useSidenav from '../../../hooks/useSidenav';
+import MyTextField from '../../../components/MyTextField';
+import NewMember from './NewMember';
+import userAvatar from '../../../assets/avatars/Henderson.jpg'
+import axios from 'axios';
+import useSnackbar from '../../../hooks/useSnackbar';
+import { useNotificationContext } from '../../../context/NotificationContext';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -76,7 +78,8 @@ const Members = () => {
                                     <SearchOutlined color="disabled" />
                                 </InputAdornment>
                             ),
-                        }} />
+                        }}
+                    />
                     <AddMember />
                 </Box>
             </Box>
@@ -138,6 +141,7 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
         message: 'Are you sure you want to delete this member?'
     });
     const { dispatch, selectedWorkspace } = useSharedContext();
+    const { showMsg } = useNotificationContext();
 
     async function onDelete() {
         try {
@@ -145,13 +149,14 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
                 const { data } = await axios.delete(`/workspace/members/${memberId}/${selectedWorkspace}`);
                 if (data.success) {
                     dispatch(deleteMember(memberId));
-                    setTimeout(() =>{
-                        handleClose();
-                    },0)
-                    console.log(data)
+                    showMsg(data.data.message, 'success')
                 }
                 else{
-                    // reason
+                    showMsg(data.data.message, 'error')
+
+                    setTimeout(()=> {
+                     handleClose()
+                    });
                 }
             }
         }
@@ -162,7 +167,7 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
 
     return (
         <React.Fragment>
-            <IconButton onClick={handleOpen}>
+            <IconButton onClick={onDelete}>
                 <DeleteOutline />
             </IconButton>
 

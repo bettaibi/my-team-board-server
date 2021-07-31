@@ -108,7 +108,7 @@ interface PagesNavProps{
     classes: ClassNameMap;
 }
 
-const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
+const Navigation = () => {
     const classes = useStyles();
     console.log("navigation component")
 
@@ -143,7 +143,7 @@ const Navigation = ({ onSidenavClose }: { onSidenavClose: () => void }) => {
     )
 }
 
-const Pages: React.FC<PagesNavProps> = ({classes}) => {
+const Pages: React.FC<PagesNavProps> = React.memo(({classes}) => {
     const history = useHistory();
 
     const navigateTo = (path: string) => {
@@ -174,9 +174,9 @@ const Pages: React.FC<PagesNavProps> = ({classes}) => {
 
         </Box>
     )
-};
+});
 
-const MemberList: React.FC<PagesNavProps> = ({classes}) => {
+const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
     const members = useSelector((state: AppState) => state.members);
     const history = useHistory();
 
@@ -213,9 +213,9 @@ const MemberList: React.FC<PagesNavProps> = ({classes}) => {
         </>
     )
 
-};
+});
 
-const CurrentUser = () => {
+const CurrentUser = React.memo(() => {
     const classes = useStyles();
     const { currentUser } = useSharedContext();
 
@@ -231,6 +231,6 @@ const CurrentUser = () => {
             </small>
         </Box>
     )
-}
+});
 
 export default Navigation;

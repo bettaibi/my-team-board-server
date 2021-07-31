@@ -34,16 +34,16 @@ const useSnackbar = (direction?: Direction) => {
     const SnackbarComponent = useCallback(
         () => (
             <Snackbar 
-            open={toast.open} 
-            autoHideDuration={4000} 
-            onClose={handleClose}
-            anchorOrigin={{ vertical, horizontal }}
-            key={vertical + horizontal}
-            TransitionComponent={Slide}
-            >
-            <Alert onClose={handleClose} severity={toast.type}>
-                {toast.message}
-            </Alert>
+                open={toast.open} 
+                autoHideDuration={90000} 
+                onClose={handleClose}
+                anchorOrigin={{ vertical, horizontal }}
+                key={vertical + horizontal}
+                TransitionComponent={Slide}
+                >
+                <Alert onClose={handleClose} severity={toast.type}>
+                    {toast.message}
+                </Alert>
             </Snackbar>
         ),
         [toast, vertical, horizontal],
