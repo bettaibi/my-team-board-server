@@ -9,7 +9,8 @@ const ActionType = {
     SET_MEMBERS: 'SET_MEMBERS',
     NEW_MEMBER: 'NEW_MEMBER',
     NEW_PROJECT: 'NEW_PROJECT',
-    DELETE_MEMBER: 'DELETE_MEMBER'
+    NEW_WORKSPACE: 'NEW_WORKSPACE',
+    DELETE_MEMBER: 'DELETE_MEMBER',
 };
 
 export default ActionType;

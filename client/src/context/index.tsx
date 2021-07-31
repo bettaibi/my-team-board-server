@@ -58,7 +58,7 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
                 if (data.success) {
                     dispatch(setWorkspaces(data.data))
 
-                    if(selectedWorkspace === null){
+                    if(selectedWorkspace === null && data.data.length > 0) {
                         setSelectedWorkspace(data.data[0]._id);
                     }
                 }

@@ -13,6 +13,9 @@ import clsx from 'clsx';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
+import { useNotificationContext } from '../../../context/NotificationContext';
+import { useSharedContext } from '../../../context';
+import { newWorkspace } from '../../../store/actions/workspace.actions';
 
 const schema = yup.object().shape({
     name: yup.string().required('Name is required')
@@ -65,18 +68,22 @@ const NewWorkspaceDialog = () => {
 
 const NewWorkspace = ({ onDialogClose }: { onDialogClose: () => void }) => {
     const classes = useStyles();
+    const { showMsg } = useNotificationContext();
+    const { dispatch } = useSharedContext();
 
-    async function submitHandler(values: any, resetForm: () => void){
+    async function submitHandler(values: any){
         try{
             const { data } = await axios.post('/workspace', values);
             if(data.success){
-                resetForm();
-                onDialogClose();
+                showMsg(data.message, 'success');
+                dispatch(newWorkspace(data.data));
+                setTimeout(() =>{
+                    onDialogClose();
+                });
             }
             else{
-
+                showMsg(data.message, 'error');
             }
-            console.log(data)
         }
         catch(err){
             console.error(err)
@@ -84,7 +91,7 @@ const NewWorkspace = ({ onDialogClose }: { onDialogClose: () => void }) => {
     }
 
     return (
-        <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values, { resetForm}) => submitHandler(values, resetForm)}>
+        <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values) => submitHandler(values)}>
             {
                 ({handleChange, handleSubmit, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off">

@@ -138,7 +138,7 @@ const AddMember = () => {
 const DeleteMember = ({ memberId }: { memberId: string }) => {
     const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
-        message: 'Are you sure you want to delete this member?'
+        message: 'Are you sure you want to delete this member? This member would be unlinked to all related projects.'
     });
     const { dispatch, selectedWorkspace } = useSharedContext();
     const { showMsg } = useNotificationContext();

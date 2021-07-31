@@ -15,3 +15,12 @@ export const setWorkspaces = (payload: WorkspaceModel[]) => {
         type: ActionType.SET_WORKSPACES,
     };
 };
+
+export const newWorkspace = (payload: WorkspaceModel) => {
+
+    return {
+        payload,
+        type: ActionType.NEW_WORKSPACE,
+    };
+};
+

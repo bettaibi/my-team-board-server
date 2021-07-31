@@ -18,13 +18,13 @@ const useConfirmDialog = (obj: ConfirmDialogProps) => {
 
     const ConfirmDialog = useCallback(() => (
         <Dialog open={show} onClose={handleClose} maxWidth="xs">
-            <DialogContent dividers style={{padding: '1rem'}}>
-                <Typography variant="subtitle1" >
+            <DialogContent dividers style={{padding: '1.2rem 1rem'}}>
+                <Typography variant="h6" >
                     Confirm
                 </Typography>
-                <small>
+                <span>
                     {message}
-                </small>
+                </span>
             </DialogContent>
             <DialogActions>
                 <Button size="small" onClick={handleClose}>Close</Button>

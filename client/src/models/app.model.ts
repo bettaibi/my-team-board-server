@@ -20,7 +20,7 @@ export interface WorkspaceModel{
 export interface ProjectModel{
     _id?: string;
     title: string;
-    description?: string;
+    description: string;
     members: any[];
     workspace?: string;
     createdAt?: Date;

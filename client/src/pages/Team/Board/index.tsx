@@ -18,6 +18,7 @@ import useSidenav from '../../../hooks/useSidenav';
 import NewProject from './NewProject';
 import defaultAvatar from '../../../assets/avatars/profile.jpg';
 import { AppState, ProjectModel, UserModel } from '../../../models/app.model';
+import Moment from 'react-moment';
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -32,7 +33,8 @@ const useStyle = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     cursor: 'pointer',
-    borderRadius: 10
+    borderRadius: 10,
+
   },
   separator: {
     width: '50px',
@@ -64,14 +66,14 @@ const Board = () => {
         {
           projects.map((item: ProjectModel) => (
             <Grid key={item._id} item xs={12} sm={6} md={4} lg={4} 
-            onClick={goToScrumboard}
+            onClick={goToScrumboard} 
             >
               <Paper elevation={3} className={clsx('bg-white', classes.paper)}>
                 <Typography variant="subtitle1" className="bg-text-primary text-capitalize">
                   {item.title}
                 </Typography>
                 <Typography variant="subtitle2" component="strong" color="textSecondary" gutterBottom>
-                  {item.description}
+                  {item.description.substr(0, 90)+'..'}
                 </Typography>
                 <Divider className={classes.separator} />
 
@@ -86,7 +88,7 @@ const Board = () => {
                 </AvatarGroup>
                 <div>
                   <span className="bg-text-secondary">Edited: </span>
-                  <span>{item.createdAt}</span>
+                  <Moment fromNow>{item.createdAt}</Moment>
                 </div>
               </Paper>
           </Grid>
