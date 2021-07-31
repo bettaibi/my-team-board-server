@@ -46,6 +46,7 @@ const Board = () => {
   const projects = useSelector((state: AppState) => state.projects);
   const classes = useStyle();
   const history = useHistory();
+  console.log('board component')
 
   const goToScrumboard = () => {
     history.push('/team/scrumboard');

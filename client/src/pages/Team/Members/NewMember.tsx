@@ -12,6 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { UserModel } from '../../../models/app.model';
 import { useSharedContext } from '../../../context';
 import { newMember } from '../../../store/actions/members.actions';
+import { useNotificationContext } from '../../../context/NotificationContext';
 
 const InitialValue = {
     _id: '',
@@ -35,6 +36,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
     const [options, setOptions] = React.useState<UserModel[]>([]);
     const [selectedUser, setSelectedUser] = React.useState<UserModel>(InitialValue);
     const { dispatch } = useSharedContext();
+    const { showMsg } = useNotificationContext();
 
     const handleSeachChange = async (e: any) => {
         const term = e.target.value;
@@ -75,10 +77,13 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                 memberId: selectedUser._id
             }});
             if(data.success){
+                showMsg(data.message, 'success');
                 setSelectedUser(InitialValue);
-                dispatch(newMember(data.data))
+                dispatch(newMember(data.data));
             }
-            console.log(data)
+            else{
+                showMsg(data.message, 'error') ;
+            }
         }
         catch(err){
             console.error(err.message || err)

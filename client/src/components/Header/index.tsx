@@ -14,15 +14,15 @@ import {
     ListItemSecondaryAction,
     Tooltip,
     useMediaQuery
-} from '@material-ui/core'
+} from '@material-ui/core';
 import { Menu, CloseOutlined, NotificationsOutlined, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined } from '@material-ui/icons';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import UsePopover from '../../hooks/usePopover';
 import { useHistory } from 'react-router-dom';
+import { useSharedContext } from '../../context';
 import clsx from 'clsx';
 import axios from 'axios';
-import { useSharedContext } from '../../context';
 import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
+import UsePopover from '../../hooks/usePopover';
 import Navigation from '../Navigation';
 
 

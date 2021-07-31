@@ -150,7 +150,7 @@ const Pages: React.FC<PagesNavProps> = React.memo(({classes}) => {
         history.push(path);
     };
 
-    let path = history.location.pathname;
+   
     return (
         <Box p={2} >
             <Typography variant="subtitle2" color="primary">
@@ -160,13 +160,13 @@ const Pages: React.FC<PagesNavProps> = React.memo(({classes}) => {
                 Workspace Managment
             </small>
 
-            <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team' })} onClick={() => navigateTo('/team')}
+            <Box className={clsx(classes.navItem, { [classes.activeItem]: history.location.pathname === '/team' })} onClick={() => navigateTo('/team')}
                 display="flex" flexDirection="row" alignItems="center" justifyContent="start">
                 <AssignmentOutlined className={classes.textWhite} />
                 <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Scrumboard</span>
             </Box>
 
-            <Box className={clsx(classes.navItem, { [classes.activeItem]: path === '/team/members' })} onClick={() => navigateTo('/team/members')}
+            <Box className={clsx(classes.navItem, { [classes.activeItem]: history.location.pathname === '/team/members' })} onClick={() => navigateTo('/team/members')}
                 display="flex" flexDirection="row" alignItems="center" justifyContent="start">
                 <PeopleOutline className={classes.textWhite} />
                 <span className={classes.textWhite} style={{ marginLeft: '8px' }} >Members</span>
@@ -184,13 +184,11 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
         history.push(path);
     };
 
-    let path = history.location.pathname;
-
     return (
         <>
             {
                 members.map((item: UserModel) => (
-                    <Box key={item._id} className={clsx(classes.navItem, { [classes.activeItem]: path === `/team/chat/${item._id}` })} onClick={() => navigateTo(`/team/chat/${item._id}`)}
+                    <Box key={item._id} className={clsx(classes.navItem, { [classes.activeItem]: history.location.pathname === `/team/chat/${item._id}` })} onClick={() => navigateTo(`/team/chat/${item._id}`)}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
                         <StyledBadge

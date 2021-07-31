@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Members = () => {
     const classes = useStyles();
     const members = useSelector((state: AppState) => state.members);
-
+    console.log('Members page component')
     return (
         <Box className="bg-white" width="100%" height="100%">
             <Box p={3}>
@@ -148,11 +148,13 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
             if (memberId && selectedWorkspace) {
                 const { data } = await axios.delete(`/workspace/members/${memberId}/${selectedWorkspace}`);
                 if (data.success) {
-                    dispatch(deleteMember(memberId));
-                    showMsg(data.data.message, 'success')
+                    showMsg(data.message, 'success') 
+                    setTimeout(()=> {
+                        dispatch(deleteMember(memberId));
+                    });
                 }
                 else{
-                    showMsg(data.data.message, 'error')
+                    showMsg(data.message, 'error')
 
                     setTimeout(()=> {
                      handleClose()
@@ -167,7 +169,7 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
 
     return (
         <React.Fragment>
-            <IconButton onClick={onDelete}>
+            <IconButton onClick={handleOpen}>
                 <DeleteOutline />
             </IconButton>
 

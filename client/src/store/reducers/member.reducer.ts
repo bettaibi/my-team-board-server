@@ -9,7 +9,7 @@ const MemberReducer = (state = [], action: {type: string, payload?: any}) => {
         case ActionType.SET_MEMBERS:
             return [...action.payload]
         case ActionType.NEW_MEMBER: 
-            return [...state, action.payload];
+            return [...state, {...action.payload}];
         case ActionType.DELETE_MEMBER:
             return [...state.filter((item: UserModel) => item._id != action.payload)];
 
