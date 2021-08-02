@@ -1,17 +1,17 @@
 import React, { Dispatch, useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
 import { setProjects } from '../store/actions/project.actions';
 import { setWorkspaceMembers } from '../store/actions/members.actions';
 import { setWorkspaces } from '../store/actions/workspace.actions';
 import { UserModel } from '../models/app.model';
+import axios from 'axios';
 
 interface ContextProps{
     dispatch: Dispatch<any>;
     selectedWorkspace: string | null;
     setSelectedWorkspace: (w: string) => void;
     currentUser: UserModel;
-    setCurrentUser: (u: UserModel) => void;
+    updateCurrentUser: (u: UserModel) => void;
 }
 
 const defaultUserState: UserModel = {
@@ -93,12 +93,16 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
         onSwitch()
     }, [selectedWorkspace]);
 
+    function updateCurrentUser(u: UserModel){
+        setCurrentUser(state => {return {...state, ...u}});
+    }
+
     const value = {
         dispatch,
         selectedWorkspace,
         setSelectedWorkspace,
         currentUser,
-        setCurrentUser
+        updateCurrentUser
     };
 
     return(

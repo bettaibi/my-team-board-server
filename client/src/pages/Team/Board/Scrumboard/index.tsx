@@ -100,11 +100,12 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-const Scrumboard = () => {
+const Scrumboard = (props: any) => {
     const classes = useStyle();
     const history = useHistory();
     const [state, setState] = useState<any[]>(aspects);
 
+    console.log(props.match.params.projectId)
     const goBack = () => {
         history.goBack();
     }

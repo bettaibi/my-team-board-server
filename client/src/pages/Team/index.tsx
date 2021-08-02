@@ -38,11 +38,11 @@ const Team = () => {
                     <Suspense fallback={<span>loading content .....</span>}>
                         <Switch>
                             <Route path="/team" exact component={Board} />
-                            <Route path="/team/scrumboard" component={Scrumboard} />
+                            <Route path="/team/scrumboard/:projectId" component={Scrumboard} />
                             <Route path="/team/members" component={Members} />
                             <Route path="/team/profile" component={Profile} />
                             <Route path="/team/setting" component={Setting} />
-                            <Route path="/team/chat/:roomID" component={Chat} />
+                            <Route path="/team/chat/:roomId" component={Chat} />
                         </Switch>
                     </Suspense>
                 </main>

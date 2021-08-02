@@ -50,8 +50,10 @@ const Board = () => {
   const history = useHistory();
   console.log('board component')
 
-  const goToScrumboard = () => {
-    history.push('/team/scrumboard');
+  const goToScrumboard = (id: string) => {
+    if(id){
+      history.push(`/team/scrumboard/${id}`);
+    }
   }
 
   return (
@@ -66,7 +68,7 @@ const Board = () => {
         {
           projects.map((item: ProjectModel) => (
             <Grid key={item._id} item xs={12} sm={6} md={4} lg={4} 
-            onClick={goToScrumboard} 
+            onClick={() => goToScrumboard(item._id || '')} 
             >
               <Paper elevation={3} className={clsx('bg-white', classes.paper)}>
                 <Typography variant="subtitle1" className="bg-text-primary text-capitalize">

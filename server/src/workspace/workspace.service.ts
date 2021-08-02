@@ -123,7 +123,7 @@ export class WorkspaceService{
             if(!updated){
                 return toJson(false, 'Failed to Delete ');
             }
-            const projectsUpdated = await this.ProjectModel.updateMany({}, {
+            const projectsUpdated = await this.ProjectModel.updateMany({workspace: toObjectID(workspaceId)}, {
                 $pull :{
                     members: { $in: [memberId] }
                 }
