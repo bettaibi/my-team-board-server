@@ -8,20 +8,19 @@ import {
     Avatar
 } from '@material-ui/core';
 import { Formik, Form } from "formik";
+import { useSharedContext } from '../../../context';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { UserModel } from '../../../models/app.model';
 import MyTextField from '../../../components/MyTextField';
-import * as yup from "yup";
 import clsx from 'clsx';
 import RoundedButton from '../../../components/RoundedButton';
-import axios from 'axios';
-import { useSharedContext } from '../../../context';
-import { UserModel } from '../../../models/app.model';
 import userAvatar from '../../../assets/avatars/profile.jpg';
 import useMutation from '../../../hooks/useMutation';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import useDialog from '../../../hooks/useDialog';
-import ReactCrop from 'react-image-crop';
+import Cropper from "react-cropper";
+import * as yup from "yup";
 
-import 'react-image-crop/dist/ReactCrop.css';
+import "cropperjs/dist/cropper.css";
 
 const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
@@ -52,11 +51,23 @@ const useStyles = makeStyles((theme: Theme) => ({
                 width: '100%',
                 backgroundColor: 'rgba(0,0,0,0.5)',
                 color: 'white',
-                display:'flex',
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
             }
         }
+    },
+    croppedImageContainer: {
+        overflow: "hidden",
+        width: theme.spacing(10),
+        height: theme.spacing(10),
+        borderRadius: '40px',
+        position: 'absolute',
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+    },
+    croppedImage: {
+        objectFit: 'cover',
     },
     iconColor: {
         color: '#64748B'
@@ -73,7 +84,7 @@ const BasicInfos = () => {
             <Grid item xs={12} sm={4}>
                 <Box component="div" p={2} className={clsx(classes.card)}
                     display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                    <ImageCropperContainer classes= {classes} currentUser = {currentUser} updateCurrentUser={updateCurrentUser} />
+                    <ImageCropperContainer classes={classes} currentUser={currentUser} updateCurrentUser={updateCurrentUser} />
                     <Typography variant="h6" className="text-center">
                         {currentUser.name}
                     </Typography>
@@ -84,7 +95,7 @@ const BasicInfos = () => {
             </Grid>
 
             <Grid item xs>
-                <ProfileDetails classes = {classes} currentUser={currentUser} updateCurrentUser={updateCurrentUser} />
+                <ProfileDetails classes={classes} currentUser={currentUser} updateCurrentUser={updateCurrentUser} />
             </Grid>
         </Grid>
     )
@@ -209,70 +220,103 @@ const ImageCropperContainer: React.FC<ProfileDetailsProps> = ({ classes, current
         reader.onerror = error => reject(error);
     });
 
-    function imageHandler(){
-        const file = fileRef.current;
-        if(file)
-        file.click();
+    function imageHandler() {
+        try {
+            const file = fileRef.current;
+            if (file)
+            file.click();
+        }
+        catch (err) {
+            console.error(err)
+        }
     };
 
-    async function onChangeHandler(e: any){
-        const img = await toBase64(e.target.files[0]);
-        setSelectedImg(img);
-        onDialogOpen();
+    async function onChangeHandler(e: any) {
+        try {
+            const img = await toBase64(e.target.files[0]);
+            setSelectedImg(img);
+            onDialogOpen();
+        }
+        catch (err) {
+            console.error(err);
+        }
     };
 
     return (
         <React.Fragment>
             <Avatar alt="user profile" src={currentUser.avatar || userAvatar} className={classes.largeAvatar}
-               onClick={imageHandler}  />
+                onClick={imageHandler} />
             <input ref={fileRef} type="file" hidden accept="image/*" onChange={onChangeHandler} />
             <DialogComponent>
-               <ImageCropper src = {selectedImg} updateCurrentUser={updateCurrentUser}
-               onDialogClose = {onDialogClose} />
+                <ImageCropper src={selectedImg} updateCurrentUser={updateCurrentUser}
+                    onDialogClose={onDialogClose} classes={classes} />
             </DialogComponent>
         </React.Fragment>
     )
 };
 
-interface ImageCropperProps{
+interface ImageCropperProps {
     src: string;
     onDialogClose: () => void;
     updateCurrentUser: (u: UserModel) => void;
+    classes: ClassNameMap<any>;
 }
-const ImageCropper: React.FC<ImageCropperProps> = ({src, onDialogClose, updateCurrentUser}) => {
-    const [crop, setCrop] = React.useState<any>({ aspect: 16 / 9 });
+const ImageCropper: React.FC<ImageCropperProps> = ({ classes, src, onDialogClose, updateCurrentUser }) => {
+
+    const [cropData, setCropData] = React.useState();
+    const cropperRef = React.useRef<HTMLImageElement>(null);
 
     const saveAvatar = () => {
 
     };
 
-    const onDragEndHandler = (e: any) => {
-        console.log(e)
+    const getCropData = () => {
+        const imageElement: any = cropperRef?.current;
+        const cropper: any = imageElement?.cropper;
+        setCropData(cropper.getCroppedCanvas().toDataURL())
     };
 
     return (
         <>
             <Box p={2} borderBottom="1px solid lightgray" component="div"
-            display="flex" alignItems="center" justifyContent="space-between">
+                display="flex" alignItems="center" justifyContent="space-between">
                 <Typography variant="subtitle1" className="fw-700">
                     Image Cropper
                 </Typography>
 
                 <div>
                     <RoundedButton onClick={onDialogClose}
-                    style={{marginRight: '0.5rem', color: 'gray'}} disableElevation variant="outlined" color="default" size="small">
-                      <span>Cancel</span>
+                        style={{ marginRight: '0.5rem', color: 'gray' }} disableElevation variant="outlined" color="default" size="small">
+                        <span>Cancel</span>
                     </RoundedButton>
 
                     <RoundedButton onClick={saveAvatar}
-                     disableElevation variant="contained" color="primary" size="small">
-                      <span>Save</span>
+                        disableElevation variant="contained" color="primary" size="small">
+                        <span>Save</span>
                     </RoundedButton>
                 </div>
             </Box>
 
-            <Box component="div">
-              <ReactCrop src={src} crop={crop} onChange={newCrop => setCrop(newCrop)}  />
+            <Box component="div" position="relative" overflow="hidden">
+                <Cropper
+                    style={{ height: '100vh', width: "100%" }}
+                    zoomTo={0.5}
+                    initialAspectRatio={16 / 9}
+                    src={src}
+                    viewMode={1}
+                    minCropBoxHeight={10}
+                    minCropBoxWidth={10}
+                    background={true}
+                    responsive={true}
+                    crop={getCropData}
+                    checkOrientation={false}
+                    ref={cropperRef}
+                    guides={false}
+                />
+
+                <Box className={classes.croppedImageContainer}>
+                    <img src={cropData || userAvatar} className={classes.croppedImage} alt="cropped image" width="100%" height="100%" />
+                </Box>
             </Box>
         </>
     )
