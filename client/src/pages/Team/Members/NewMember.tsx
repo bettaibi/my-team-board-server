@@ -12,7 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { UserModel } from '../../../models/app.model';
 import { useSharedContext } from '../../../context';
 import { newMember } from '../../../store/actions/members.actions';
-import { useNotificationContext } from '../../../context/NotificationContext';
+import useMutation from '../../../hooks/useMutation';
 
 const InitialValue = {
     _id: '',
@@ -36,7 +36,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
     const [options, setOptions] = React.useState<UserModel[]>([]);
     const [selectedUser, setSelectedUser] = React.useState<UserModel>(InitialValue);
     const { dispatch } = useSharedContext();
-    const { showMsg } = useNotificationContext();
+    const { loading: mutatioLoading, onMutate } = useMutation();
 
     const handleSeachChange = async (e: any) => {
         const term = e.target.value;
@@ -72,17 +72,18 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
 
     async function submitHandler(){
         try{
-            const {data} = await axios.patch('/workspace/addMember', null, {params: {
-                workspaceId: localStorage.getItem('workspace'),
-                memberId: selectedUser._id
-            }});
-            if(data.success){
-                showMsg(data.message, 'success');
+            const res = await onMutate({
+                url: '/workspace/addMember',
+                method: 'PATCH',
+                data: null,
+                params: {
+                    workspaceId: localStorage.getItem('workspace'),
+                    memberId: selectedUser._id
+                }
+            });
+            if(res.success){
                 setSelectedUser(InitialValue);
-                dispatch(newMember(data.data));
-            }
-            else{
-                showMsg(data.message, 'error') ;
+                dispatch(newMember(res.data));
             }
         }
         catch(err){
@@ -104,7 +105,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                                     Cancel
                                 </RoundedButton>
                                 <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
-                                    Save
+                                    {mutatioLoading?'Loading...':'Save'}
                                 </RoundedButton>
                             </Box>
                         </Box>

@@ -20,7 +20,11 @@ export class WorkspaceService{
         try{
             const list = await this.workspaceModel.find({
                 members: {$in: [userID]}
-            }, {members: 0, owner: 0});
+            }).populate({
+                path: 'members',
+                model: 'Member',
+                select: 'name title avatar'
+            });
 
             if(!list){
                 return toJson(false, 'Failed to get workspace list');
@@ -40,6 +44,7 @@ export class WorkspaceService{
             }
             workspace.members = workspace.members.filter((item: string)=> item != userID);
             const projects = await this.ProjectModel.find({workspace: toObjectID(workspaceId), members: {$in: [userID]}})
+            .sort({_id: -1})
             .populate({
                 path: 'members',
                 model: 'Member',
@@ -98,10 +103,15 @@ export class WorkspaceService{
     async delete(id: string): Promise<any>{
         try{
             const removed = await this.workspaceModel.findByIdAndDelete({_id: toObjectID(id)});
-
             if(!removed){
                 return toJson(false, 'Failed to remove');
             }
+
+            const removeProjects = await this.ProjectModel.deleteMany({workspace: toObjectID(id)});
+            if(!removeProjects){
+                return toJson(false, 'Failed to remove linked projects')
+            }
+            
             return toJson(true, 'Workspace has been deleted successfully');
         }
         catch(err){

@@ -30,6 +30,7 @@ const useDialog = () => {
     const DialogComponent: React.FC = ({children}) => {
         return(
         <Dialog 
+            disableBackdropClick
             onClose={onDialogClose} 
             aria-labelledby="customized-dialog-content" 
             open={show}

@@ -11,6 +11,7 @@ import {
     IconButton,
     MenuItem,
     Hidden,
+    Tooltip,
     makeStyles
 } from '@material-ui/core';
 import {
@@ -18,19 +19,14 @@ import {
     EditOutlined,
     DeleteOutline
 } from '@material-ui/icons';
+import { useSelector } from 'react-redux';
+
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
-
-import avatar2 from '../../../assets/avatars/Christy.jpg';
+import userAvatar from '../../../assets/avatars/profile.jpg';
 import UsePopover from '../../../hooks/usePopover';
+import { AppState } from '../../../models/app.model';
 
-function createData(name: string, role: string, members: any[]) {
-    return { name, role, members };
-}
-const rows = [
-    createData('Frozen yoghurt', 'Owner', [1, 2, 3]),
-    createData('Ice cream sandwich', 'Owner', [1, 2, 3, 4, 5, 8, 7, 8, 4, 1]),
-    createData('Eclair', 'Member', [1, 2, 3, 4, 5])
-];
+const baseURL = process.env.REACT_APP_BASE_URL;
 
 const useStyles = makeStyles((theme) => ({
     icons: {
@@ -42,12 +38,15 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const MyWorkspaces = () => {
+    const rows = useSelector((state: AppState) => state.workspaces);
+
+    console.log(rows);
     return (
         <TableContainer component={Paper} style={{ borderRadius: '10px' }}>
             <Table style={{ width: '100%' }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Workspace's Name</TableCell>
+                        <TableCell>Workspace</TableCell>
                         <TableCell>Role</TableCell>
                         <Hidden xsDown>
                             <TableCell>Members</TableCell>
@@ -59,16 +58,18 @@ const MyWorkspaces = () => {
                 <TableBody>
                     {rows.map((row) => (
                         <TableRow key={row.name}>
-                            <TableCell component="th" scope="row">
+                            <TableCell component="th" scope="row" className="text-capitalize">
                                 {row.name}
                             </TableCell>
-                            <TableCell>{row.role}</TableCell>
+                            <TableCell>Owner</TableCell>
                             <Hidden xsDown>
                                 <TableCell>
                                     <AvatarGroup max={3}>
                                         {
-                                            row.members.map((item, index) => (
-                                                <Avatar key={index} alt="Remy Sharp" src={avatar2} />
+                                            row.members.map((item) => (
+                                                <Tooltip key={item._id} title={item.name}>
+                                                    <Avatar alt="user avatar"  src={item.avatar? `${baseURL}/files/${item.avatar}` : userAvatar} />
+                                                </Tooltip>
                                             ))
                                         }
                                     </AvatarGroup>
@@ -87,7 +88,7 @@ const MyWorkspaces = () => {
 }
 
 const MenuActions = () => {
-    const { PopoverComponent, handleClick, handleClose } = UsePopover();
+    const { PopoverComponent, handleClick } = UsePopover();
     const classes = useStyles();
 
     return (

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Member, MemberDocument } from 'src/models/member.model';
 import { Model } from 'mongoose';
 import { toJson, toObjectID } from 'src/helpers';
-
+import * as fs from 'fs';
 
 @Injectable()
 export class FileService {
@@ -14,14 +14,22 @@ export class FileService {
 
     async updateUserAvatar(id: string, filename: string): Promise<any> {
         try{
-            const updated = this.MemberModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
-                avatar: filename
-            }}, {new: true});
+            const found = await this.MemberModel.findOne({_id: toObjectID(id)});
+            if(!found){
+                return toJson(false, 'User Not found');
+            }
+            if(found.avatar !== ''){
+                fs.unlinkSync(`./upload/${found.avatar}`);
+            }
+
+            const updated = await this.MemberModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
+               avatar: filename
+            }}, {new: true})
 
             if(!updated){
-               return toJson(false, 'Spmething wrong, File does not uploaded');
+               return toJson(false, 'Something wrong, File does not uploaded');
             }
-            return toJson(true, 'avatar updated', {avatar: filename}); 
+            return toJson(true, 'User Avatar has been successfully uploaded', {avatar: filename}); 
         }
         catch(err){
             throw err;

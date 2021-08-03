@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Member, MemberSchema } from 'src/models/member.model';
 import { diskStorage } from 'multer';
 import { CustomFile } from 'src/shared/customFile';
+import { JwtGuardModule } from 'src/shared/jwtGuard.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { CustomFile } from 'src/shared/customFile';
     }),
     MongooseModule.forFeature([
       {name: Member.name, schema: MemberSchema}
-    ])
+    ]),
+    JwtGuardModule
   ],
   controllers: [FileController],
   providers: [FileService]

@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useSharedContext } from '../../../../context';
 import { newProject } from '../../../../store/actions/project.actions';
+import useMutation from '../../../../hooks/useMutation';
 
 const InitialValue = {
     title: '',
@@ -36,6 +37,7 @@ interface NewProjectProps {
 const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
     const selectedMembers = useSelector((state: AppState) => state.members);
     const { dispatch } = useSharedContext();
+    const { loading, onMutate } = useMutation();
 
     function onEmailSelected(newValues: UserModel[]){
         if(newValues !== null){
@@ -55,15 +57,17 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                 members: members,
                 workspace: localStorage.getItem('workspace') || ''
             };
-            const {data} = await axios.post('/projects', payload);
-            if(data.success){
-                dispatch(newProject(data.data));
-
+            const res = await onMutate({
+                url: '/projects',
+                method: 'POST',
+                data: payload
+            })
+            if(res.success){
+                onSidenavClose();
                 setTimeout(() =>{
-                    onSidenavClose();
-                })
+                    dispatch(newProject(res.data));
+                },0)
             }
-            console.log(data)
         }
         catch(err){
             console.error(err)
@@ -83,7 +87,7 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                     Cancel
                                 </RoundedButton>
                                 <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
-                                    Save
+                                    {loading? 'Loading...':'Save'}
                                 </RoundedButton>
                             </Box>
                         </Box>

@@ -22,6 +22,8 @@ import * as yup from "yup";
 
 import "cropperjs/dist/cropper.css";
 
+const baseURL = process.env.REACT_APP_BASE_URL;
+
 const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
     phone: yup.string().required('Phone is required'),
@@ -43,14 +45,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             '&:after': {
                 fontFamily: 'Material Icons',
-                content: "'&#9688'",
+                content: "'📸'",
                 position: 'absolute',
                 top: 0,
                 height: '100%',
                 left: 0,
                 width: '100%',
                 backgroundColor: 'rgba(0,0,0,0.5)',
-                color: 'white',
+                color: '#fff !important',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
@@ -214,10 +216,12 @@ const ImageCropperContainer: React.FC<ProfileDetailsProps> = ({ classes, current
     const { onDialogOpen, onDialogClose, DialogComponent } = useDialog();
 
     const toBase64 = (file: File) => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        if(file){
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        }
     });
 
     function imageHandler() {
@@ -233,9 +237,11 @@ const ImageCropperContainer: React.FC<ProfileDetailsProps> = ({ classes, current
 
     async function onChangeHandler(e: any) {
         try {
-            const img = await toBase64(e.target.files[0]);
-            setSelectedImg(img);
-            onDialogOpen();
+            if(e){
+                const img = await toBase64(e.target.files[0]);
+                setSelectedImg(img);
+                onDialogOpen();
+            }
         }
         catch (err) {
             console.error(err);
@@ -244,11 +250,11 @@ const ImageCropperContainer: React.FC<ProfileDetailsProps> = ({ classes, current
 
     return (
         <React.Fragment>
-            <Avatar alt="user profile" src={currentUser.avatar || userAvatar} className={classes.largeAvatar}
+            <Avatar alt="user profile" src={currentUser.avatar? `${baseURL}/files/${currentUser.avatar}` : userAvatar} className={classes.largeAvatar}
                 onClick={imageHandler} />
             <input ref={fileRef} type="file" hidden accept="image/*" onChange={onChangeHandler} />
             <DialogComponent>
-                <ImageCropper src={selectedImg} updateCurrentUser={updateCurrentUser}
+                <ImageCropper currentUser = {currentUser} src={selectedImg} updateCurrentUser={updateCurrentUser}
                     onDialogClose={onDialogClose} classes={classes} />
             </DialogComponent>
         </React.Fragment>
@@ -260,20 +266,47 @@ interface ImageCropperProps {
     onDialogClose: () => void;
     updateCurrentUser: (u: UserModel) => void;
     classes: ClassNameMap<any>;
+    currentUser: UserModel;
 }
-const ImageCropper: React.FC<ImageCropperProps> = ({ classes, src, onDialogClose, updateCurrentUser }) => {
-
+const ImageCropper: React.FC<ImageCropperProps> = ({ currentUser, classes, src, onDialogClose, updateCurrentUser }) => {
+    const { loading, onMutate } = useMutation();
     const [cropData, setCropData] = React.useState();
     const cropperRef = React.useRef<HTMLImageElement>(null);
 
-    const saveAvatar = () => {
-
-    };
+    const urlToFile = (url: any, filename: string, mimeType = 'image/jpeg') => {
+        return (fetch(url)
+            .then((function(res: any){return res.arrayBuffer();}))
+            .then((function(buf: any){return new File([buf], filename, {type: mimeType});}))
+        );
+    }
 
     const getCropData = () => {
         const imageElement: any = cropperRef?.current;
         const cropper: any = imageElement?.cropper;
         setCropData(cropper.getCroppedCanvas().toDataURL())
+    };
+
+    const saveAvatar = async () => {
+        const file = await urlToFile(cropData, Date.now()+'.jpg');
+        const formData = new FormData();
+        formData.append('picture', file);
+
+        try{
+            const res = await onMutate({
+                url: '/files/avatar',
+                method: 'POST',
+                data: formData,
+            });
+            if(res.success){
+                onDialogClose();
+                setTimeout(()=> {
+                    updateCurrentUser({...currentUser, avatar: res.data.avatar});
+                },0);
+            }
+        }
+        catch(err){
+            console.error(err);
+        }
     };
 
     return (
@@ -292,7 +325,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ classes, src, onDialogClose
 
                     <RoundedButton onClick={saveAvatar}
                         disableElevation variant="contained" color="primary" size="small">
-                        <span>Save</span>
+                        <span>{loading?'Loading...':'Save'}</span>
                     </RoundedButton>
                 </div>
             </Box>
@@ -315,7 +348,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ classes, src, onDialogClose
                 />
 
                 <Box className={classes.croppedImageContainer}>
-                    <img src={cropData || userAvatar} className={classes.croppedImage} alt="cropped image" width="100%" height="100%" />
+                    <img src={cropData || userAvatar} className={classes.croppedImage} alt="cropped avatar" width="100%" height="100%" />
                 </Box>
             </Box>
         </>

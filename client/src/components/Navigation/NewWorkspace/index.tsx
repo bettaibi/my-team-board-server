@@ -12,10 +12,9 @@ import MyTextField from '../../MyTextField';
 import clsx from 'clsx';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-import axios from 'axios';
-import { useNotificationContext } from '../../../context/NotificationContext';
 import { useSharedContext } from '../../../context';
 import { newWorkspace } from '../../../store/actions/workspace.actions';
+import useMutation from '../../../hooks/useMutation';
 
 const schema = yup.object().shape({
     name: yup.string().required('Name is required')
@@ -68,21 +67,21 @@ const NewWorkspaceDialog = () => {
 
 const NewWorkspace = ({ onDialogClose }: { onDialogClose: () => void }) => {
     const classes = useStyles();
-    const { showMsg } = useNotificationContext();
     const { dispatch } = useSharedContext();
+    const { loading, onMutate } = useMutation();
 
     async function submitHandler(values: any){
         try{
-            const { data } = await axios.post('/workspace', values);
-            if(data.success){
-                showMsg(data.message, 'success');
-                dispatch(newWorkspace(data.data));
+            const res = await onMutate({
+                url: '/workspace',
+                method: 'POST',
+                data: values,
+            });
+            if(res.success){
+                onDialogClose();
                 setTimeout(() =>{
-                    onDialogClose();
-                });
-            }
-            else{
-                showMsg(data.message, 'error');
+                    dispatch(newWorkspace(res.data));
+                },0);
             }
         }
         catch(err){
@@ -98,7 +97,9 @@ const NewWorkspace = ({ onDialogClose }: { onDialogClose: () => void }) => {
                         <Box p={2} borderBottom="1px solid lightgray" height="64px" textAlign="right">
                             <RoundedButton variant="outlined" color="default" className={clsx(classes.icons, classes.mr)}
                                 onClick={onDialogClose} >Cancel</RoundedButton>
-                            <RoundedButton disableElevation variant="contained" color="primary" type="submit">Save</RoundedButton>
+                            <RoundedButton disableElevation variant="contained" color="primary" type="submit">
+                                {loading?'Loading...':'Save'}
+                            </RoundedButton>
                         </Box>
                         <Box p={2}>
                             <div className="form-group">

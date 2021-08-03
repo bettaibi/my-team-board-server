@@ -15,6 +15,7 @@ export class ProjectService{
     async all(workspaceID: string, userID: string): Promise<any>{
         try{
             const list = await this.ProjectModel.find({workspace: toObjectID(workspaceID), members: {$in: [userID]}})
+            .sort({_id: -1})
             .populate({
                 path: 'members',
                 model: 'Member',

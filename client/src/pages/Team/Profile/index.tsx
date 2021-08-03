@@ -14,6 +14,8 @@ import BasicInfos from './BasicInfos';
 import MyWorkspaces from './MyWorkspaces';
 import clsx from 'clsx';
 import SwipeableViews from 'react-swipeable-views';
+import { AppState } from '../../../models/app.model';
+import { useSelector } from 'react-redux';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -82,6 +84,7 @@ const Profile = () => {
 
 const TabContainer = () => {
     const [value, setValue] = React.useState(0);
+    const workspaces = useSelector((state: AppState) => state.workspaces);
 
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
         setValue(newValue);
@@ -96,7 +99,7 @@ const TabContainer = () => {
             <Hidden xsDown>
                 <Chip
                     size="small"
-                    label="12"
+                    label={workspaces.length}
                     color="primary"
                 />
             </Hidden>

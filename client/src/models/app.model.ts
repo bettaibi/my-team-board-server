@@ -14,7 +14,7 @@ export interface WorkspaceModel{
     _id?: string;
     name: string;
     owner?: string;
-    members?: any[];
+    members: any[];
 }
 
 export interface ProjectModel{

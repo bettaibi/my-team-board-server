@@ -18,6 +18,8 @@ import { useSelector } from 'react-redux';
 import { AppState, UserModel } from '../../models/app.model';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
+const baseURL = process.env.REACT_APP_BASE_URL;
+
 const StyledBadge = withStyles((theme: Theme) =>
     createStyles({
         badge: {
@@ -199,7 +201,7 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
                             }}
                             variant="dot"
                         >
-                            <Avatar alt="team member" src={userAvatar} />
+                            <Avatar alt="team member" src={item.avatar? `${baseURL}/files/${item.avatar}` : userAvatar} />
                         </StyledBadge>
                         <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
                             <span >{item.name}</span>
@@ -220,7 +222,7 @@ const CurrentUser = React.memo(() => {
     return (
         <Box borderBottom="1px solid #2c3344" textAlign="center" display="flex" flexDirection="column" alignItems="center" justifyContent="center"
             style={{ padding: '1.5rem 1rem' }}>
-            <Avatar alt="user avatar" src={currentUser.avatar || userAvatar} className={classes.largeAvatar} />
+            <Avatar alt="user avatar" src={currentUser.avatar? `${baseURL}/files/${currentUser.avatar}` : userAvatar} className={classes.largeAvatar} />
             <Typography variant="subtitle2" className={clsx(classes.textWhite, 'text-capitalize')} gutterBottom>
                 {currentUser.name || 'Unknown'}
             </Typography>

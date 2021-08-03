@@ -16,9 +16,11 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useSidenav from '../../../hooks/useSidenav';
 import NewProject from './NewProject';
-import defaultAvatar from '../../../assets/avatars/profile.jpg';
+import userAvatar from '../../../assets/avatars/profile.jpg';
 import { AppState, ProjectModel, UserModel } from '../../../models/app.model';
 import Moment from 'react-moment';
+
+const baseURL = process.env.REACT_APP_BASE_URL;
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -83,7 +85,7 @@ const Board = () => {
                   {
                     item.members.map((member: UserModel) => (
                       <Tooltip key={member._id} title={member.name}>
-                        <Avatar alt="project members" src={member.avatar || defaultAvatar} />
+                        <Avatar alt="project members"  src={member.avatar? `${baseURL}/files/${member.avatar}` : userAvatar} />
                       </Tooltip>
                     ))
                   }

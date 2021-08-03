@@ -25,10 +25,12 @@ import useConfirmDialog from '../../../hooks/useConfirmDialog';
 import useSidenav from '../../../hooks/useSidenav';
 import MyTextField from '../../../components/MyTextField';
 import NewMember from './NewMember';
-import userAvatar from '../../../assets/avatars/Henderson.jpg'
+import userAvatar from '../../../assets/avatars/profile.jpg'
 import axios from 'axios';
 import useSnackbar from '../../../hooks/useSnackbar';
 import { useNotificationContext } from '../../../context/NotificationContext';
+
+const baseURL = process.env.REACT_APP_BASE_URL;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -89,7 +91,7 @@ const Members = () => {
                     <React.Fragment key={item._id}>
                         <ListItem className={classes.listItem}>
                             <ListItemAvatar>
-                                <Avatar src={item.avatar ? item.avatar : userAvatar} />
+                                <Avatar src={item.avatar? `${baseURL}/files/${item.avatar}` : userAvatar} />
                             </ListItemAvatar>
                             <ListItemText primary={item.name} secondary={item.title || 'Title not mentioned'} />
                             <ListItemSecondaryAction>

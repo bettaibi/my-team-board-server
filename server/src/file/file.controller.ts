@@ -1,10 +1,13 @@
-import { Controller, Get, Patch, UploadedFile, UploadedFiles, UseInterceptors, Param, Res } from '@nestjs/common';
+import { Controller, UseGuards, Get, Patch, UploadedFile, UploadedFiles, UseInterceptors, Param, Res, Post } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { toJson } from 'src/helpers';
 import { FileService } from './file.service';
 import { Response } from 'express';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/decorators/user.decorator';
 
+@UseGuards(AuthGuard)
 @ApiTags('File upload')
 @Controller('files')
 export class FileController {
@@ -13,12 +16,12 @@ export class FileController {
         private fileService: FileService
     ){}
     
-    @Patch('avatar/:id')
+    @Post('avatar')
     @UseInterceptors(FileInterceptor('picture'))
-    async updateUserAvatar(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) : Promise<any>{
+    async updateUserAvatar(@UploadedFile() file: Express.Multer.File, @User() userID: string) : Promise<any>{
         try{
             if(file){
-                 return await this.fileService.updateUserAvatar(id, file.filename);
+                 return await this.fileService.updateUserAvatar(userID, file.filename);
             }
             else{
                 return toJson(false, 'Failed to upload');
