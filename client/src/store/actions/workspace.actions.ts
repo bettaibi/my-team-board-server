@@ -24,3 +24,11 @@ export const newWorkspace = (payload: WorkspaceModel) => {
     };
 };
 
+export const updateWorkspace = (payload: WorkspaceModel) => {
+
+    return {
+        payload,
+        type: ActionType.UPDATE_WORKSPACE,
+    }
+}
+

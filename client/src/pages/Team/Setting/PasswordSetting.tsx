@@ -47,6 +47,7 @@ const PasswordSetting = () => {
                             <label className="bg-text-secondary">Current password *</label>
                             <MyTextField
                                 fullWidth
+                                type="password"
                                 placeholder="Enter your password"
                                 variant="outlined"
                                 size="small"
@@ -69,6 +70,7 @@ const PasswordSetting = () => {
                             <label className="bg-text-secondary">New password *</label>
                             <MyTextField
                                 fullWidth
+                                type="password"
                                 placeholder="Enter your password"
                                 variant="outlined"
                                 size="small"

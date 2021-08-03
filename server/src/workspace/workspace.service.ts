@@ -24,6 +24,10 @@ export class WorkspaceService{
                 path: 'members',
                 model: 'Member',
                 select: 'name title avatar'
+            }).populate({
+                path: 'owner',
+                model: 'Member',
+                select: 'name avatar'
             });
 
             if(!list){
@@ -86,8 +90,7 @@ export class WorkspaceService{
     async update(id: string, payload: WorkspaceDto): Promise<any>{
         try{
             const updated = await this.workspaceModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
-                name: payload.name,
-                members: payload.members
+                name: payload.name
             }}, {new: true});
 
             if(!updated){
@@ -112,7 +115,7 @@ export class WorkspaceService{
                 return toJson(false, 'Failed to remove linked projects')
             }
             
-            return toJson(true, 'Workspace has been deleted successfully');
+            return toJson(true, 'Workspace has been deleted successfully, Session Expired!');
         }
         catch(err){
             throw err;

@@ -17,7 +17,6 @@ import {
 import {
     MoreVertOutlined,
     EditOutlined,
-    DeleteOutline
 } from '@material-ui/icons';
 import { useSelector } from 'react-redux';
 
@@ -102,11 +101,6 @@ const MenuActions = () => {
                     <MenuItem className={classes.menuItem}>
                         <EditOutlined className={classes.icons} />
                         <span style={{ marginLeft: '0.8rem' }}>Edit</span>
-                    </MenuItem>
-
-                    <MenuItem className={classes.menuItem}>
-                        <DeleteOutline className={classes.icons} />
-                        <span style={{ marginLeft: '0.8rem' }}>Delete</span>
                     </MenuItem>
                 </React.Fragment>
             </PopoverComponent>

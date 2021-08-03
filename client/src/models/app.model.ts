@@ -13,7 +13,7 @@ export interface UserModel{
 export interface WorkspaceModel{
     _id?: string;
     name: string;
-    owner?: string;
+    owner: any;
     members: any[];
 }
 

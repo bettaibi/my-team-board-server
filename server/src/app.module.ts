@@ -8,6 +8,7 @@ import { MemberModule } from './member/member.module';
 import { ProjectModule } from './project/project.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { FileModule } from './file/file.module';
+import { SettingModule } from './Setting/setting.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FileModule } from './file/file.module';
     MemberModule,
     WorkspaceModule,
     ProjectModule,
+    SettingModule,
     FileModule,
   ],
   controllers: [AppController],

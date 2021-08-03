@@ -1,3 +1,4 @@
+import { WorkspaceModel } from '../../models/app.model';
 import ActionType from '../actions/types';
 
 const WorkspaceReducer = (state = [], action: {type: string, payload?: any}) => {
@@ -8,9 +9,11 @@ const WorkspaceReducer = (state = [], action: {type: string, payload?: any}) => 
         case ActionType.SET_WORKSPACES:
             return [...action.payload];
         case ActionType.NEW_WORKSPACE:
-            return [...state, action.payload]
+            return [...state, action.payload];
+        case ActionType.UPDATE_WORKSPACE:
+            return [...state.map((item: WorkspaceModel) => {return item._id == action.payload._id ? action.payload : item})];
 
-        default: return [...state]
+        default: return [...state];
     }
 };
 

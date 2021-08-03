@@ -94,6 +94,7 @@ const EmailSetting = () => {
                             <label className="bg-text-secondary">Password *</label>
                             <MyTextField
                                 fullWidth
+                                type="password"
                                 placeholder="Enter your password"
                                 variant="outlined"
                                 size="small"

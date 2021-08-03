@@ -25,7 +25,6 @@ import useSwipeableSidenav from '../../hooks/useSwipeableSidenav';
 import UsePopover from '../../hooks/usePopover';
 import Navigation from '../Navigation';
 
-
 const drawerWidth = 280;
 
 const useStyles = makeStyles((theme: Theme) =>
