@@ -11,3 +11,11 @@ export class MemberEmailDto{
     password?: string;
     
 }
+
+export class MemberPasswordDto{
+    @ApiProperty()
+    currentPassword?: string;
+
+    @ApiProperty()
+    newPassword?: string;
+}

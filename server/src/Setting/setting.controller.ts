@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Put, Delete, UseGuards, Param } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { MemberEmailDto } from './setting.dto';
+import { MemberEmailDto, MemberPasswordDto } from './setting.dto';
 import { SettingService } from './setting.service';
 
 @UseGuards(AuthGuard)
@@ -15,9 +15,14 @@ export class SettingController {
     ){}
 
 
-    @Put()
-    async update(@User() userID: string, @Body() payload: MemberEmailDto): Promise<any>{
-        // return await this.memberService.update(userID, payload);
+    @Put('/email')
+    async changeEmail(@User() userID: string, @Body() payload: MemberEmailDto): Promise<any>{
+        return await this.settingService.changeEmail(userID, payload);
+    }
+
+    @Put('/password')
+    async changePassword(@User() userID: string, @Body() payload: MemberPasswordDto): Promise<any>{
+        return await this.settingService.changePassword(userID, payload);
     }
 
 }

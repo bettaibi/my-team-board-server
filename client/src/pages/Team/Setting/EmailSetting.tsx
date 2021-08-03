@@ -10,9 +10,12 @@ import {
 } from '@material-ui/icons';
 
 import { Formik, Form } from 'formik';
+import useMutation from '../../../hooks/useMutation';
 import MyTextField from '../../../components/MyTextField';
 import RoundedButton from '../../../components/RoundedButton';
 import * as yup from 'yup';
+import useDialog from '../../../hooks/useDialog';
+import SessionExpired from './SessionExpired';
 
 const schema = yup.object().shape({
     email: yup.string().required('Email is required').email('Invalid Email'),
@@ -27,9 +30,30 @@ const defaultValues = {
 };
 
 const EmailSetting = () => {
+    const { loading, onMutate } = useMutation();
+    const { DialogComponent, onDialogOpen, onDialogClose } = useDialog();
+
+
+    async function submitHandler(values: any) {
+        try{
+            const res = await onMutate({
+                url: `/settings/email`,
+                method: 'PUT',
+                data: values,
+            });
+
+            if(res.success){
+                onDialogOpen();
+            }
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
 
     return (
-        <Formik initialValues={defaultValues} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <>
+        <Formik initialValues={defaultValues} validationSchema={schema} onSubmit={(values) => submitHandler(values)}>
             {
                 ({ handleChange, handleSubmit, handleBlur, values, touched, errors }) => (
                     <Box p={2} width="100%">
@@ -114,7 +138,7 @@ const EmailSetting = () => {
                         </div>
                             <Box textAlign="right">
                                 <RoundedButton variant="contained" color="primary" type="submit">
-                                    Save
+                                   {loading ? 'Loading...' : 'Save'}
                                 </RoundedButton>
                             </Box>
                         </Form>
@@ -122,6 +146,10 @@ const EmailSetting = () => {
                 )
             }
         </Formik>
+        <DialogComponent>
+            <SessionExpired onDialogClose = {onDialogClose} />
+        </DialogComponent>
+        </>
     )
 }
 

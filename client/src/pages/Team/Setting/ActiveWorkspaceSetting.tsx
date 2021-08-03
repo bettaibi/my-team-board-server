@@ -17,12 +17,13 @@ import * as yup from 'yup';
 import { useSharedContext } from '../../../context';
 import { AppState, UserModel, WorkspaceModel } from '../../../models/app.model';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import useMutation from '../../../hooks/useMutation';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import userAvatar from '../../../assets/avatars/profile.jpg';
 import useConfirmDialog from '../../../hooks/useConfirmDialog';
 import { updateWorkspace } from '../../../store/actions/workspace.actions';
+import SessionExpired from './SessionExpired';
+import useDialog from '../../../hooks/useDialog';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -45,24 +46,24 @@ const ActiveWorkspaceSetting = () => {
         defaultValues = {
             name: activeWorkspace.name,
         };
-        disabled = !(activeWorkspace.owner._id === currentUser._id) ;
+        disabled = !(activeWorkspace.owner._id === currentUser._id);
     }
 
     async function submitHandler(values: any) {
-        try{
-           if(activeWorkspace){
-            const res = await onMutate({
-                url: `/workspace/${selectedWorkspace}`,
-                method: 'PUT',
-                data: {name: values.name},
-            });
-            if(res.success){
-                const obj = {...activeWorkspace, name: values.name};
-                dispatch(updateWorkspace(obj));
+        try {
+            if (activeWorkspace) {
+                const res = await onMutate({
+                    url: `/workspace/${selectedWorkspace}`,
+                    method: 'PUT',
+                    data: { name: values.name },
+                });
+                if (res.success) {
+                    const obj = { ...activeWorkspace, name: values.name };
+                    dispatch(updateWorkspace(obj));
+                }
             }
-           }
         }
-        catch(err){
+        catch (err) {
             console.error(err);
         }
     }
@@ -129,8 +130,8 @@ const ActiveWorkspaceSetting = () => {
                                 </AvatarGroup>
                             </Box>
                             <Box textAlign="right">
-                                <RemoveWorspaceContainer disabled = {disabled} currentWorkspace = { selectedWorkspace } />
-                                
+                                <RemoveWorspaceContainer disabled={disabled} currentWorkspace={selectedWorkspace} />
+
                                 <RoundedButton variant="contained" color="primary" type="submit">
                                     {loading ? 'Loading...' : 'Save'}
                                 </RoundedButton>
@@ -143,35 +144,17 @@ const ActiveWorkspaceSetting = () => {
     )
 }
 
-interface RemoveWorspaceContainerProps{
+interface RemoveWorspaceContainerProps {
     disabled: boolean;
     currentWorkspace: string | null;
 }
-const RemoveWorspaceContainer: React.FC<RemoveWorspaceContainerProps> = ({disabled, currentWorkspace}) => {
-    const { ConfirmDialog, handleOpen } = useConfirmDialog({
+const RemoveWorspaceContainer: React.FC<RemoveWorspaceContainerProps> = ({ disabled, currentWorkspace }) => {
+    const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this Workspace? All related members and projects will be unlikned.'
     });
     const { loading, onMutate } = useMutation();
-    const history = useHistory();
-
-    const logout = async () => {
-        try{
-            const res = await onMutate({
-                url: `/auth/logout`,
-                method: 'POST',
-            });
-            if(res.success){
-                document.cookie = "jwt=;";
-                setTimeout(() =>{
-                    history.push('/login');
-                });
-            }
-        }
-        catch(err){
-            throw err;
-        }
-    }
+    const { DialogComponent, onDialogOpen, onDialogClose } = useDialog();
 
     async function onDelete() {
         try {
@@ -180,8 +163,13 @@ const RemoveWorspaceContainer: React.FC<RemoveWorspaceContainerProps> = ({disabl
                 method: 'DELETE',
             });
 
-            if(res.success){
-                logout();
+            if (res.success) {
+                 handleClose();
+                 localStorage.removeItem('workspace');
+
+                 setTimeout(() => {
+                    onDialogOpen();
+                 })
             }
         }
         catch (err) {
@@ -189,16 +177,19 @@ const RemoveWorspaceContainer: React.FC<RemoveWorspaceContainerProps> = ({disabl
         }
     }
 
-    if(!currentWorkspace) return null;
+    if (!currentWorkspace) return null;
 
     return (
         <React.Fragment>
             <RoundedButton variant="contained" color="secondary" onClick={handleOpen}
-            style={{marginRight: '0.5rem'}} disabled={disabled}
+                style={{ marginRight: '0.5rem' }} disabled={disabled}
             >
                 {loading ? 'Loading...' : 'Delete'}
             </RoundedButton>
             <ConfirmDialog />
+            <DialogComponent>
+                <SessionExpired onDialogClose = {onDialogClose} />
+            </DialogComponent>
         </React.Fragment>
     )
 };

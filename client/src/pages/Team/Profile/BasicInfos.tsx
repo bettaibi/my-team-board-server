@@ -14,10 +14,11 @@ import { UserModel } from '../../../models/app.model';
 import MyTextField from '../../../components/MyTextField';
 import clsx from 'clsx';
 import RoundedButton from '../../../components/RoundedButton';
-import userAvatar from '../../../assets/avatars/profile.jpg';
 import useMutation from '../../../hooks/useMutation';
 import useDialog from '../../../hooks/useDialog';
 import Cropper from "react-cropper";
+import userAvatar from '../../../assets/avatars/profile.jpg';
+import cameraIcon from '../../../assets/avatars/camera.png';
 import * as yup from "yup";
 
 import "cropperjs/dist/cropper.css";
@@ -43,19 +44,25 @@ const useStyles = makeStyles((theme: Theme) => ({
         cursor: 'pointer',
         position: 'relative',
         '&:hover': {
-            '&:after': {
-                fontFamily: 'Material Icons',
-                content: "'📸'",
+            '&:before':{
+                content: `url(${cameraIcon})`,
+                width: '20px',
+                height: '20px',
+                zindex: 9999999999,
                 position: 'absolute',
-                top: 0,
-                height: '100%',
-                left: 0,
-                width: '100%',
-                backgroundColor: 'rgba(0,0,0,0.5)',
                 color: '#fff !important',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
+            },
+            '&:after': {
+                content: "''",
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
             }
         }
     },

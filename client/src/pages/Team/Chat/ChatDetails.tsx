@@ -8,7 +8,6 @@ import {
     Theme,
 } from '@material-ui/core';
 import {
-    CropOriginal,
     PhoneOutlined,
     VideoCallOutlined,
     FindInPageOutlined,
