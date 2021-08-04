@@ -9,6 +9,8 @@ import { ProjectModule } from './project/project.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { FileModule } from './file/file.module';
 import { SettingModule } from './Setting/setting.module';
+import { SprintModule } from './sprint/sprint.module';
+import { AspectModule } from './aspect/aspect.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { SettingModule } from './Setting/setting.module';
     WorkspaceModule,
     ProjectModule,
     SettingModule,
+    SprintModule,
+    AspectModule,
     FileModule,
   ],
   controllers: [AppController],

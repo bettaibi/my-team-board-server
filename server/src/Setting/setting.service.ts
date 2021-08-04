@@ -62,6 +62,6 @@ export class SettingService {
         catch(err){
             throw err;
         }
-     };
+    };
 
 }

@@ -3,7 +3,7 @@ import { Document,  Schema as MongooseSchema, Types } from "mongoose";
 
 export type SprintDocument = Document & Sprint;
 
-interface TaskModel{
+export interface TaskModel{
     description: string;
     order: number;
     done: boolean;
