@@ -20,6 +20,9 @@ export class Sprint {
     @Prop()
     dueDate: Date;
 
+    @Prop()
+    order: number;
+
     @Prop({default: []})
     tasks: TaskModel[];
 

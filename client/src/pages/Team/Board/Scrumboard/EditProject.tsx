@@ -6,17 +6,19 @@ import {
     Avatar,
     Chip
 } from '@material-ui/core';
-import * as yup from "yup";
+import { useNotificationContext } from '../../../../context/NotificationContext';
 import MyTextField from '../../../../components/MyTextField';
 import RoundedButton from '../../../../components/RoundedButton';
+import useConfirmDialog from '../../../../hooks/useConfirmDialog';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import * as yup from "yup";
 
 const InitialValue = {
     title: '',
     description: '',
     members: [],
 };
-const options = [{name: 'Bettaibi Nidhal'}, {name: 'Bettaibi Ridha'}, {name: 'Bettaibi Najet'}];
+const options = [{ name: 'Bettaibi Nidhal' }, { name: 'Bettaibi Ridha' }, { name: 'Bettaibi Najet' }];
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
@@ -29,7 +31,7 @@ interface EditProjectProps {
     onSidenavClose: () => void;
 }
 const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
- 
+
     return (
         <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
             {
@@ -38,11 +40,12 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
                         <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 1rem' }} borderBottom="1px solid #fafafa"
                             display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
 
-                            <div></div>
+                            <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
+                                Cancel
+                            </RoundedButton>
+
                             <Box>
-                                <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
-                                    Cancel
-                                </RoundedButton>
+                                <DeleteProjectButton />
                                 <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                     Save
                                 </RoundedButton>
@@ -86,22 +89,22 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
                                     defaultValue={[]}
                                     renderTags={(value, getTagProps) =>
                                         value.map((option, index) => (
-                                          <Chip
-                                            variant="default"
-                                            color='primary'
-                                            label={option.name}
-                                            avatar={<Avatar>B</Avatar>}
-                                            {...getTagProps({ index })}
-                                          />
+                                            <Chip
+                                                variant="default"
+                                                color='primary'
+                                                label={option.name}
+                                                avatar={<Avatar>B</Avatar>}
+                                                {...getTagProps({ index })}
+                                            />
                                         ))
-                                      }
+                                    }
                                     renderInput={(params) => (
-                                        <MyTextField  name="members" variant="outlined" size="small" placeholder="Add members to this project"
-                                        {...params}
-                                        error={touched.members && !!errors.members}
-                                        helperText={touched.members && errors.members} />
-                                )}
-                              />
+                                        <MyTextField name="members" variant="outlined" size="small" placeholder="Add members to this project"
+                                            {...params}
+                                            error={touched.members && !!errors.members}
+                                            helperText={touched.members && errors.members} />
+                                    )}
+                                />
                             </div>
 
                         </Box>
@@ -111,5 +114,28 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
         </Formik>
     )
 }
+
+const DeleteProjectButton = () => {
+    const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
+        onConfirmClick: onDelete,
+        message: 'Are you sure you want to delete this project, by deleting this project all linked aspects will be deleted.',
+    });
+    const { showMsg } = useNotificationContext();
+
+    async function onDelete(){
+        console.log('onDelete');
+    }
+
+    return (
+        <React.Fragment>
+            <RoundedButton disableElevation size="medium" style={{ marginLeft: '0.5rem' }} 
+            variant="contained" color="secondary" onClick={handleOpen}>
+                Delete
+            </RoundedButton>
+
+            <ConfirmDialog />
+        </React.Fragment>
+    )
+};
 
 export default EditProject;

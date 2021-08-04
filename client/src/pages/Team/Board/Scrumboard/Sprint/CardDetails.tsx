@@ -18,9 +18,9 @@ import {
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 
-import MyTextField from '../../../../components/MyTextField';
-import RoundedButton from '../../../../components/RoundedButton';
-import usePopover from '../../../../hooks/usePopover';
+import MyTextField from '../../../../../components/MyTextField';
+import RoundedButton from '../../../../../components/RoundedButton';
+import usePopover from '../../../../../hooks/usePopover';
 import clsx from 'clsx';
 import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided } from "react-beautiful-dnd";
 

@@ -27,7 +27,6 @@ import MyTextField from '../../../components/MyTextField';
 import NewMember from './NewMember';
 import userAvatar from '../../../assets/avatars/profile.jpg'
 import axios from 'axios';
-import useSnackbar from '../../../hooks/useSnackbar';
 import { useNotificationContext } from '../../../context/NotificationContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;

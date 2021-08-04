@@ -16,4 +16,7 @@ export class SprintDto{
 
     @ApiProperty()
     aspect?: string;
+
+    @ApiProperty()
+    order?: number;
 }

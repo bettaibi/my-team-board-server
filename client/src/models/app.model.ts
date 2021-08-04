@@ -26,6 +26,28 @@ export interface ProjectModel{
     createdAt?: Date;
 }
 
+interface TaskModel{
+    description: string;
+    order: number;
+    done: boolean;
+}
+
+export interface AspectModel {
+    _id?: string;
+    title: string;
+    project?: string;
+}
+
+export interface SprintModel {
+    _id?: string;
+    title: string;
+    description?: string;
+    dueDate: Date;
+    tasks?: TaskModel[];
+    aspect?: string;
+    order?: number;
+}
+
 export interface AppState{
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];
