@@ -23,27 +23,26 @@ import RoundedButton from '../../../../../components/RoundedButton';
 import usePopover from '../../../../../hooks/usePopover';
 import clsx from 'clsx';
 import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided } from "react-beautiful-dnd";
+import { SprintModel, TaskModel } from '../../../../../models/app.model';
+import useMutation from '../../../../../hooks/useMutation';
+import useConfirmDialog from '../../../../../hooks/useConfirmDialog';
 
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
-})
-const defaultValue = {
-    title: '',
-    description: '',
-    dueDate: ''
-}
+});
 
-const list = [
-    {
-        order: 1,
-        value: 'this is task 1'
-    },
-    {
-        order: 2,
-        value: 'you have to complete this task as well'
+const checklistSchema = yup.object().shape({
+    description: yup.string().required('task description is required'),
+});
+
+function some(array: TaskModel[]): number{
+    let s = 0;
+    for(let item of array){
+        if(item.done){ s++; }
     }
-];
+    return s;
+}
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -90,32 +89,57 @@ const useStyle = makeStyles((theme) => ({
 
 interface CardDetailsProps {
     onDialogClose: () => void;
+    sprint: SprintModel
 }
-const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
+const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint }) => {
     const classes = useStyle();
+    const [list, setList] = React.useState<TaskModel[]>(sprint.tasks || []);
+    const { onMutate, loading } = useMutation();
+
+    const defaultValue = {
+        ...sprint
+    };
 
     const ondragend = (result: DropResult) => {
         console.log(result);
         const { source, destination } = result;
-
-        
     };
 
+    async function onSubmitHandler(values: SprintModel) {
+        try {
+            const obj = {
+                ...values,
+                tasks: list
+            };
+            const res = await onMutate({
+                url: `/sprint/${sprint._id}`,
+                method: 'PUT',
+                data: obj
+            });
+            if(res.success){
+
+            }
+        }
+        catch (err) {
+
+        }
+    }
+
     return (
-        <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <Formik initialValues={defaultValue} validationSchema={schema} onSubmit={(values) => onSubmitHandler(values)}>
             {
                 ({ handleSubmit, handleBlur, handleChange, errors, touched, values }) => (
                     <Form onSubmit={handleSubmit} autoComplete='off'>
                         <Box p={2} borderBottom="1px solid lightgray" className={classes.root}
                             display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                             <div>
-                                <CardMenu />
+                                <CardMenu id={sprint._id || ''} />
                             </div>
 
                             <div>
                                 <RoundedButton variant="outlined" className={classes.iconColor} size="medium"
                                     onClick={onDialogClose} style={{ marginRight: '0.5rem' }}>Cancel</RoundedButton>
-                                <RoundedButton disableElevation variant="contained" color="primary" size="medium" type="submit">Save</RoundedButton>
+                                <RoundedButton disableElevation variant="contained" color="primary" size="medium" type="submit">{loading ? 'Loading...' : 'Save'}</RoundedButton>
                             </div>
                         </Box>
 
@@ -156,10 +180,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
                                     <label>
                                         Checklist items
                                     </label>
-                                    <NewCheckList />
+                                    <NewCheckList setList={setList} />
                                 </Box>
                                 <DragDropContext onDragEnd={ondragend}>
-                                    <CheckList />
+                                    <CheckList list={list}  setList={setList} />
                                 </DragDropContext>
                             </div>
                         </Box>
@@ -170,19 +194,26 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose }) => {
     )
 }
 
-const CheckList = () => {
+const CheckList = ({ list, setList }: { list: TaskModel[],  setList: React.Dispatch<React.SetStateAction<TaskModel[]>> }) => {
     const classes = useStyle();
-    const [checked, setChecked] = React.useState<boolean>(false);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
+    let countDone = some(list);
+
+    let percentage = list.length === 0 ? 0 : Math.trunc((countDone *  100)/ list.length);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>, order: number) => {
+        setList((state: TaskModel[])=> {
+            return state.map((item: TaskModel) => {return item.order === order? {
+                ...item, done: event.target.checked
+            }: item});
+        })
     };
 
     return (
         <React.Fragment>
-            <LinearProgress variant="determinate" value={20} style={{ marginBottom: '.25rem' }} />
+            <LinearProgress variant="determinate" value={percentage} style={{ marginBottom: '.25rem' }} />
             <Typography variant="body2" color="textSecondary" align="right">
-                20%
+                {percentage} %
             </Typography>
 
             <Droppable droppableId="reorderlist">
@@ -193,31 +224,31 @@ const CheckList = () => {
                             {...provided.droppableProps}>
 
                             {
-                                list.map((item: any, index: number) => (
-                                    <Draggable key={index + 'ddj'} index={index} draggableId={index+'item'}>
-                                       {
+                                list.map((item: TaskModel, index: number) => (
+                                    <Draggable key={index + 'ddj'} index={index} draggableId={index + 'item'}>
+                                        {
                                             (providedDraggable: DraggableProvided) => (
                                                 <div className={classes.checklist}
                                                     ref={providedDraggable.innerRef}
                                                     {...providedDraggable.draggableProps}
                                                     {...providedDraggable.dragHandleProps}>
                                                     <Checkbox
-                                                        checked={checked}
-                                                        onChange={handleChange}
+                                                        checked={item.done}
+                                                        onChange={(e)=> handleChange(e, item.order)}
                                                         color="primary"
                                                         inputProps={{ 'aria-label': 'primary checkbox' }}
                                                     />
                                                     <span className={clsx(classes.todo, {
-                                                        'done': checked
+                                                        'done': item.done
                                                     })} >
-                                                        {item.value}
+                                                        {item.description}
                                                     </span>
                                                     <IconButton >
                                                         <DragHandleOutlined />
                                                     </IconButton>
                                                 </div>
                                             )
-                                       }
+                                        }
                                     </Draggable>
                                 ))
                             }
@@ -231,8 +262,21 @@ const CheckList = () => {
     )
 }
 
-const NewCheckList = () => {
+const NewCheckList = ({ setList }: { setList: React.Dispatch<React.SetStateAction<TaskModel[]>> }) => {
     const { PopoverComponent, handleClick } = usePopover();
+
+    const defaultCheckListItem = {
+        description: ''
+    };
+
+    async function onSubmitHandler({description}: {description: string}){
+        try{
+            setList((state: TaskModel[]) => {return [...state, {description, done: false, order: state.length+1}]});
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
 
     return (
         <>
@@ -243,23 +287,55 @@ const NewCheckList = () => {
             </Tooltip>
             <PopoverComponent id="new_checklist">
                 <Box p={2}>
-                    <div className="form-group">
-                        <label>Add new item</label>
-                        <MyTextField name="checklist" size="small" fullWidth placeholder="new Item"
-                            type="text"
-                            variant="outlined"
-                            required={true}
-                        />
-                    </div>
-                    <Button variant="contained" color="primary" size="small" fullWidth>Add</Button>
+                    <Formik validationSchema={checklistSchema} initialValues={defaultCheckListItem}
+                        onSubmit={(values) => onSubmitHandler(values)}>
+                        {
+                            ({ handleSubmit, handleBlur, handleChange, touched, errors, values }) => (
+                                <Form onSubmit={handleSubmit}>
+                                    <div className="form-group">
+                                        <label>Add new item</label>
+                                        <MyTextField fullWidth name="description" variant="outlined" size="small" placeholder="task description..."
+                                            onChange={handleChange} onBlur={handleBlur}
+                                            value={values.description}
+                                            multiline
+                                            rows={2}
+                                            error={touched.description && !!errors.description}
+                                            helperText={touched.description && errors.description} />
+                                    </div>
+                                    <Button type="submit" variant="contained" color="primary" size="small" fullWidth>Add</Button>
+                                </Form>
+                            )
+                        }
+                    </Formik>
                 </Box>
             </PopoverComponent>
         </>
     )
 };
 
-const CardMenu = () => {
-    const { PopoverComponent, handleClick } = usePopover();
+const CardMenu = ({ id }: { id: string }) => {
+    const { PopoverComponent, handleClick, handleClose: closeMenu } = usePopover();
+    const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
+        onConfirmClick: onDelete,
+        message: 'Are you sure you want to delete this sprint.',
+    });
+    const { onMutate } = useMutation();
+
+    async function onDelete() {
+        try {
+            const res = await onMutate({
+                url: `/sprint/${id}`,
+                method: 'DELETE'
+            });
+
+            if (res.success) {
+                handleClose();
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
 
     return (
         <React.Fragment>
@@ -267,10 +343,11 @@ const CardMenu = () => {
                 <MoreHorizOutlined />
             </IconButton>
             <PopoverComponent id="card_menu">
-                <MenuItem style={{ padding: '1rem' }}>
+                <MenuItem style={{ padding: '1rem' }} onClick={() => { handleOpen(); closeMenu() }}>
                     Remove Card
                 </MenuItem>
             </PopoverComponent>
+            <ConfirmDialog />
         </React.Fragment>
     )
 };

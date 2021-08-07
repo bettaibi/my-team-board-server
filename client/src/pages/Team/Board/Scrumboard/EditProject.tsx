@@ -12,28 +12,76 @@ import RoundedButton from '../../../../components/RoundedButton';
 import useConfirmDialog from '../../../../hooks/useConfirmDialog';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as yup from "yup";
+import { AppState, ProjectModel, UserModel } from '../../../../models/app.model';
+import { useSelector } from 'react-redux';
+import userAvatar from '../../../../assets/avatars/profile.jpg';
+import useMutation from '../../../../hooks/useMutation';
+import { updateProject } from '../../../../store/actions/project.actions';
+import { useSharedContext } from '../../../../context';
 
-const InitialValue = {
-    title: '',
-    description: '',
-    members: [],
-};
-const options = [{ name: 'Bettaibi Nidhal' }, { name: 'Bettaibi Ridha' }, { name: 'Bettaibi Najet' }];
+const baseURL = process.env.REACT_APP_BASE_URL;
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required'),
-    description: yup.string().required('Description is required'),
-    members: yup.array().required("No member is chosen")
+    description: yup.string().required('Description is required')
 });
 
 
 interface EditProjectProps {
     onSidenavClose: () => void;
+    project: ProjectModel;
 }
-const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
+const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) => {
+    const selectedMembers = useSelector((state: AppState) => state.members);
+    const [members, setMembers] = React.useState<string[]>(
+        project.members.map((item: UserModel) => item._id || '')
+    );
+    const { loading, onMutate } = useMutation();
+    const { dispatch, currentUser } = useSharedContext();
+
+    const InitialValue = {
+        title: project.title,
+        description: project.description,
+        members: project.members,
+    };
+
+    function onEmailSelected(newValues: UserModel[]){
+        if(newValues !== null){
+            if(newValues.length === 0){
+                setMembers([]);
+            }
+            else{
+                setMembers([...newValues.map((item: UserModel) => item._id || '')]);
+            }
+        }
+    }
+
+    async function submitHandler(values: any){
+        try{
+            const obj = {
+                ...project,
+                ...values,
+                members
+            };
+            const res = await onMutate({
+                url: `/projects/${project._id}`,
+                method: 'PUT',
+                data: obj
+            });
+            if(res.success){
+                onSidenavClose();
+                setTimeout(() =>{
+                    dispatch(updateProject(obj));
+                },0);
+            }
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
 
     return (
-        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => console.log(values)}>
+        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={(values) => submitHandler(values)}>
             {
                 ({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
@@ -46,8 +94,8 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
 
                             <Box>
                                 <DeleteProjectButton />
-                                <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
-                                    Save
+                                <RoundedButton disabled={members.length===0} disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
+                                  {loading? 'Loading...':'Save'}
                                 </RoundedButton>
                             </Box>
                         </Box>
@@ -81,30 +129,31 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose }) => {
                                     Only selected members are able to work on this project
                                 </Typography>
                                 <Autocomplete
+                                    onChange={(e, newValue)=> onEmailSelected(newValue)}
                                     multiple
+                                    fullWidth
                                     limitTags={2}
+                                    clearOnBlur
                                     id="multiple-limit-tags"
-                                    options={options}
+                                    options={selectedMembers}
                                     getOptionLabel={(option) => option.name}
-                                    defaultValue={[]}
+                                    defaultValue={[...project.members]}
                                     renderTags={(value, getTagProps) =>
                                         value.map((option, index) => (
-                                            <Chip
-                                                variant="default"
-                                                color='primary'
-                                                label={option.name}
-                                                avatar={<Avatar>B</Avatar>}
-                                                {...getTagProps({ index })}
-                                            />
+                                          <Chip
+                                            variant="default"
+                                            color='primary'
+                                            label={option.name}
+                                            avatar={<Avatar alt="members"  src={option.avatar? `${baseURL}/files/${option.avatar}` : userAvatar} />}
+                                            {...getTagProps({ index })}
+                                          />
                                         ))
-                                    }
+                                      }
                                     renderInput={(params) => (
-                                        <MyTextField name="members" variant="outlined" size="small" placeholder="Add members to this project"
-                                            {...params}
-                                            error={touched.members && !!errors.members}
-                                            helperText={touched.members && errors.members} />
-                                    )}
-                                />
+                                        <MyTextField  name="members" variant="outlined" size="small" placeholder="Add members to this project"
+                                        {...params} />
+                                )}
+                              />
                             </div>
 
                         </Box>

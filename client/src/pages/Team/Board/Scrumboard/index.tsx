@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -11,43 +11,24 @@ import {
     EditOutlined,
 } from "@material-ui/icons";
 import { useHistory } from 'react-router-dom';
+import {Aspect, NewAspectContainer} from './Aspect';
 
 import { DropResult, DragDropContext, Droppable, DroppableProvided } from "react-beautiful-dnd";
+import { NewSprintContainer } from './Sprint';
+import { useSharedContext } from '../../../../context';
+import { useSelector } from 'react-redux';
+import { AppState, BoardModel, ProjectModel } from '../../../../models/app.model';
+import { newBoard } from '../../../../store/actions/board.actions';
 
-import { v4 } from 'uuid';
 import useSidenav from '../../../../hooks/useSidenav';
 import EditProject from './EditProject';
-import {Aspect, NewAspectContainer} from './Aspect';
-import { NewSprintContainer } from './Sprint';
-
-const aspects = [
-    {
-        _id: v4(),
-        title: 'aspect 2',
-        cards: [
-            { dueDate: new Date(), _id: v4(), title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { dueDate: new Date(), _id: v4(), title: 'Lorem ipsum dolor sit amet consectetur' },
-        ]
-    },
-    {
-        _id: v4(),
-        title: 'aspect 1',
-        cards: [
-            { dueDate: new Date(), _id: v4(), title: 'Lorem ipsum dolor sit amet consectetur' },
-            { dueDate: new Date(), _id: v4(), title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. dolorum, quia saepe nisi at unde, atque consequatur officia ab.' },
-            { dueDate: new Date(), _id: v4(), title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
-        ]
-    },
-    {
-        _id: v4(),
-        title: 'aspect 1',
-        cards: [
-            { dueDate: new Date(), _id: v4(), title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque maxime repellendus aliquid asperiores nobis et ut hic, debitis necessitatibus velit dolorum, quia saepe nisi at unde, atque consequatur officia ab.' }
-        ]
-    }
-]
+import axios from 'axios';
 
 const useStyle = makeStyles((theme) => ({
+    root: {
+        height: 'calc(100vh - 56px )',
+        overflow: 'hidden'
+    },
     header: {
         padding: '1.5rem 1rem',
         borderBottom: "1px solid lightgray",
@@ -79,9 +60,28 @@ const useStyle = makeStyles((theme) => ({
 const Scrumboard = (props: any) => {
     const classes = useStyle();
     const history = useHistory();
-    const [state, setState] = useState<any[]>(aspects);
+    let projectId = props.match.params.projectId;
+    const board: BoardModel | undefined = useSelector((state: AppState) => state.boards).find((item: BoardModel) => item.project._id === projectId);
+    const { dispatch } = useSharedContext();
+    
+    useEffect(() => {
+        const fetchBoard = async () =>{
+            try{
+                const {data} = await axios.get(`/aspects/${projectId}`);
+                if(data.success) {
+                    console.log("***** from server *****")
+                    dispatch(newBoard(data.data));
+                }
+            }
+            catch(err){
+                console.error(err);
+            }
+        };
 
-    console.log(props.match.params.projectId)
+        if(!board){
+            fetchBoard();
+        }
+    }, []);
 
     const goBack = () => {
         history.goBack();
@@ -113,12 +113,14 @@ const Scrumboard = (props: any) => {
         // })
     }
 
+    if(!board) return null;
+
     return (
-        <Box display="flex" flexDirection="column" overflow="hidden">
+        <Box display="flex" flexDirection="column" className={classes.root}>
             <Box className={clsx('bg-white', classes.header)} display="flex"
                 flexDirection="row" alignItems="center" justifyContent="space-between">
                 <Typography variant="h5" className="bg-text-primary fw-700">
-                    Project name
+                   {board.project.title}
                 </Typography>
                 <Box>
                     <RoundedButton variant="outlined" className={clsx(classes.iconColor, classes.mr)} size="medium"
@@ -126,26 +128,26 @@ const Scrumboard = (props: any) => {
                         <AppsOutlined className={classes.mr}></AppsOutlined>
                         <span>Boards</span>
                     </RoundedButton>
-                    <EditProjectDialog />
+                    <EditProjectDialog project = {board.project} />
                 </Box>
             </Box>
 
             {/* Cards */}
-            <Box p={2} display="flex" flexDirection="row" overflow="auto">
+            <Box p={2} display="flex" flexDirection="row" overflow="auto" height="100%">
                 <DragDropContext onDragEnd={handleDragEnd} >
                     {
-                        state.map((item: any) => (
+                        board.aspects.map((item: any) => (
                             <Droppable droppableId={item._id} key={item._id}>
                                 {
                                     (provided: DroppableProvided) => (
                                         <div className = {classes.aspect}
                                             ref={provided.innerRef}
-                                            {...provided.droppableProps}
-                                        >
-                                            <Aspect id={item._id} cards={item.cards} />
+                                            {...provided.droppableProps}>
+
+                                            <Aspect aspect = {item} />
                                             {provided.placeholder}
 
-                                            <NewSprintContainer />
+                                            <NewSprintContainer aspectId = {item._id || ''} />
                                         </div>
                                     )
                                 }
@@ -155,7 +157,7 @@ const Scrumboard = (props: any) => {
                 </DragDropContext>
                 {/* New Aspect */}
                 <div className = {classes.aspect}>
-                 <NewAspectContainer />
+                 <NewAspectContainer projectId = {board.project._id || ''} />
                 </div>
             </Box>
 
@@ -163,7 +165,7 @@ const Scrumboard = (props: any) => {
     )
 };
 
-const EditProjectDialog = () => {
+const EditProjectDialog = ({project}: {project: ProjectModel}) => {
     const { onSidenavClose, onSidenavOpen, SidenavComponent } = useSidenav('right', 'persistent');
     const classes = useStyle();
 
@@ -177,7 +179,7 @@ const EditProjectDialog = () => {
 
             <SidenavComponent>
                 <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px', }}>
-                    <EditProject onSidenavClose={onSidenavClose} />
+                    <EditProject onSidenavClose={onSidenavClose} project = {project} />
                 </div>
             </SidenavComponent>
         </React.Fragment>

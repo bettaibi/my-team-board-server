@@ -14,7 +14,7 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const NewSprint = () => {
+const NewSprint = ({aspectId}: {aspectId: string}) => {
     const { loading, onMutate } = useMutation();
 
     async function onSubmitHandler({title}: {title: string}, resetForm: () => void){
@@ -22,7 +22,7 @@ const NewSprint = () => {
             const res = await onMutate({
                 url: '/sprint',
                 method: 'POST',
-                data: {title, aspect: '610e6d68026a362ec0e13038'}
+                data: {title, aspect: aspectId}
             });
 
             if(res.success){

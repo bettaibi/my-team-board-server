@@ -16,6 +16,15 @@ import Moment from 'react-moment';
 import useDialog from '../../../../../hooks/useDialog';
 import CardDetails from './CardDetails';
 import NewSprint from './NewSprint';
+import { SprintModel, TaskModel } from '../../../../../models/app.model';
+
+function some(array: TaskModel[]): number{
+    let s = 0;
+    for(let item of array){
+        if(item.done){ s++; }
+    }
+    return s;
+}
 
 const useStyle = makeStyles((theme) => ({
     iconColor: {
@@ -36,16 +45,17 @@ const useStyle = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         width: '100%',
         borderRadius: 10,
-        color: '#64748B'
+        color: '#64748B',
     }
 }));
 
 interface CardProps {
     providedDraggable: DraggableProvided;
-    value: string;
+    value: SprintModel;
 }
 const Sprint: React.FC<CardProps> = ({ providedDraggable, value }) => {
     const classes = useStyle();
+    const numberOfDone = some(value.tasks || []);
     const { DialogComponent, onDialogClose, onDialogOpen } = useDialog();
 
     return (
@@ -54,31 +64,39 @@ const Sprint: React.FC<CardProps> = ({ providedDraggable, value }) => {
                 ref={providedDraggable.innerRef}
                 {...providedDraggable.draggableProps}
                 {...providedDraggable.dragHandleProps}>
-                {value}
+                <Typography variant="subtitle1">
+                  {value.title}
+                </Typography>
+               { value.description && <Typography variant="subtitle2" component="p" color="textSecondary">
+                  {value.description.length > 120 ? value.description.substr(0, 120) + '...' : value.description}
+                </Typography>}
                 <Box mt={1} display="flex" flexDirection="row" alignItems="center" justifyContent="space-between"
                     width="100%">
-                    <Typography variant="body2" color="secondary" >
+                   { value.dueDate && <Typography variant="body2" color="secondary" >
                         <Moment format="DD/MM/YYYY">
-                            {new Date()}
+                            {value.dueDate}
                         </Moment>
-                    </Typography>
-                    <Chip
-                        size="small"
-                        icon={<CheckBoxOutlined />}
-                        label="1 / 3"
-                        color="primary"
-                    />
+                    </Typography> }
+                    {
+                        value?.tasks && value?.tasks.length > 0 &&
+                        <Chip
+                            size="small"
+                            icon={<CheckBoxOutlined />}
+                            label={`${numberOfDone} / ${value.tasks.length}`}
+                            color="primary"
+                         />
+                    }
                 </Box>
             </div>
 
             <DialogComponent>
-                <CardDetails onDialogClose={onDialogClose} />
+                <CardDetails onDialogClose={onDialogClose} sprint = {value} />
             </DialogComponent>
         </React.Fragment>
     )
 }
 
-const NewSprintContainer = () => {
+const NewSprintContainer = ({aspectId}: {aspectId: string}) => {
     const classes = useStyle();
     const { PopoverComponent, handleClick } = UsePopover();
 
@@ -88,11 +106,11 @@ const NewSprintContainer = () => {
             <Button aria-describedby="new_sprint_menu"  onClick={handleClick}
              className={classes.addCardButton} size="small">
                 <AddCircleOutline className={classes.mr} />
-                <span>Add another sprint</span>
+                <span>Add A NEW sprint</span>
             </Button>
 
             <PopoverComponent id="new_sprint_menu">
-                <NewSprint />
+                <NewSprint aspectId = {aspectId} />
             </PopoverComponent>
         </React.Fragment>
     )

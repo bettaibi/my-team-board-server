@@ -3,13 +3,13 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class ProjectDto{
     @ApiProperty()
-    title: string;
+    title?: string;
 
     @ApiProperty()
-    description: string;
+    description?: string;
 
     @ApiProperty()
-    workspace: string;
+    workspace?: string;
 
     @ApiProperty()
     members?: string[];

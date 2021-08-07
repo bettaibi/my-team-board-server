@@ -26,7 +26,7 @@ export interface ProjectModel{
     createdAt?: Date;
 }
 
-interface TaskModel{
+export interface TaskModel{
     description: string;
     order: number;
     done: boolean;

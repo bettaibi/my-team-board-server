@@ -19,6 +19,7 @@ import EditAspect from './EditAspect';
 import NewAspect from './NewAspect';
 import useConfirmDialog from '../../../../../hooks/useConfirmDialog';
 import useMutation from '../../../../../hooks/useMutation';
+import { AspectModel } from '../../../../../models/app.model';
 
 const useStyle = makeStyles((theme) => ({
     iconColor: {
@@ -40,34 +41,34 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-const Aspect = ({ cards, id }: { cards: any[], id: string}) => {
+const Aspect = ({aspect}: {aspect: AspectModel}) => {
     const { PopoverComponent, handleClick } = UsePopover();
 
     return (
         <>
             <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
-                <EditAspectContainer />
+                <EditAspectContainer id={aspect._id || ''} title={aspect.title} />
 
                 <Box display="flex" flexDirection="row" alignItems="center">
-                    <Badge badgeContent={cards.length} color="primary" style={{ marginRight: '1rem' }} />
+                    <Badge badgeContent={aspect.cards? aspect.cards.length : 0} color="primary" style={{ marginRight: '1rem' }} />
 
                     <IconButton size="small" aria-describedby="simple_menu" onClick={handleClick}>
                         <MoreVertOutlined />
                     </IconButton>
 
                     <PopoverComponent id="simple_menu">
-                     <DeleteAspectContainer />
+                      <DeleteAspectContainer id = {aspect._id || ''} />
                     </PopoverComponent>
 
                 </Box>
             </Box>
             <React.Fragment>
                 {
-                    cards.map((item: any, index: number) => (
+                  aspect.cards && aspect.cards.map((item: any, index: number) => (
                         <Draggable key={item._id} index={index} draggableId={item._id}>
                             {
                                 (providedDraggable: DraggableProvided) => (
-                                    <Sprint value={item.title} providedDraggable={providedDraggable} />
+                                    <Sprint value={item} providedDraggable={providedDraggable} />
                                 )
                             }
                         </Draggable>
@@ -78,14 +79,13 @@ const Aspect = ({ cards, id }: { cards: any[], id: string}) => {
     )
 };
 
-const DeleteAspectContainer = () => {
+const DeleteAspectContainer = ({id}: {id: string}) => {
     const classes = useStyle();
     const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this aspect.',
     });
     const { onMutate } = useMutation();
-    const id = "610e6e92026a362ec0e13040";
 
     async function onDelete(){
         try{
@@ -113,7 +113,7 @@ const DeleteAspectContainer = () => {
     )
 };
 
-const EditAspectContainer = () => {
+const EditAspectContainer = ({title, id}: {title: string, id: string}) => {
     const classes = useStyle();
     const { PopoverComponent, handleClick } = UsePopover();
 
@@ -123,13 +123,13 @@ const EditAspectContainer = () => {
                 onClick={handleClick} className={classes.aspectTitle}>Aspect</Typography>
 
             <PopoverComponent id="edit_aspect_menu">
-                <EditAspect title="example" id="610e6e92026a362ec0e13040" />
+                <EditAspect title={title} id={id} />
             </PopoverComponent>
         </React.Fragment>
     )
 };
 
-const NewAspectContainer = () => {
+const NewAspectContainer = ({projectId}: {projectId: string}) => {
     const classes = useStyle();
     const { PopoverComponent, handleClick } = UsePopover();
 
@@ -142,7 +142,7 @@ const NewAspectContainer = () => {
             </Box>
 
             <PopoverComponent id="new_aspect_menu">
-                <NewAspect />
+                <NewAspect projectId = {projectId} />
             </PopoverComponent>
         </React.Fragment>
     )

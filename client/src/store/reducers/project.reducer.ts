@@ -1,3 +1,4 @@
+import { ProjectModel } from '../../models/app.model';
 import ActionType from '../actions/types';
 
 const ProjectReducer = (state = [], action: { type: string, payload?: any }) => {
@@ -9,6 +10,8 @@ const ProjectReducer = (state = [], action: { type: string, payload?: any }) => 
             return [...action.payload]
         case ActionType.NEW_PROJECT:
             return [action.payload, ...state];
+        case ActionType.UPDATE_PROJECT:
+            return [...state.map((item: ProjectModel)=> item._id != action.payload._id? item: action.payload)]
 
         default: return [...state]
     }

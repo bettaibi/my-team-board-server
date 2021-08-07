@@ -14,7 +14,7 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const NewAspect = () => {
+const NewAspect = ({projectId}: {projectId: string}) => {
     const { loading, onMutate } = useMutation();
 
     async function onSubmitHandler({title}: {title: string}, resetForm: () => void){
@@ -22,7 +22,7 @@ const NewAspect = () => {
             const res = await onMutate({
                 url: '/aspects',
                 method: 'POST',
-                data: {title, project: '610aee9ba051e60b5c590502'}
+                data: {title, project: projectId}
             });
 
             if(res.success){

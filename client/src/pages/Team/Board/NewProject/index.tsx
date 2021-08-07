@@ -11,11 +11,13 @@ import MyTextField from '../../../../components/MyTextField';
 import RoundedButton from '../../../../components/RoundedButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { AppState, ProjectModel, UserModel } from '../../../../models/app.model';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useSharedContext } from '../../../../context';
 import { newProject } from '../../../../store/actions/project.actions';
 import useMutation from '../../../../hooks/useMutation';
+import userAvatar from '../../../../assets/avatars/profile.jpg';
+
+const baseURL = process.env.REACT_APP_BASE_URL;
 
 const InitialValue = {
     title: '',
@@ -28,24 +30,23 @@ const schema = yup.object().shape({
     description: yup.string().required('Description is required')
 });
 
-let members: string[] = [];
-
 interface NewProjectProps {
     onSidenavClose: () => void;
 }
 
 const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
     const selectedMembers = useSelector((state: AppState) => state.members);
+    const [members, setMembers] = React.useState<string[]>([]);
     const { dispatch } = useSharedContext();
     const { loading, onMutate } = useMutation();
 
     function onEmailSelected(newValues: UserModel[]){
         if(newValues !== null){
             if(newValues.length === 0){
-                members = [];
+                setMembers([]);
             }
             else{
-                members = [...newValues.map((item: UserModel) => item._id || '')];
+                setMembers([...newValues.map((item: UserModel) => item._id || '')]);
             }
         }
     }
@@ -86,7 +87,7 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                 <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
                                     Cancel
                                 </RoundedButton>
-                                <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
+                                <RoundedButton disabled={members.length===0} disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                     {loading? 'Loading...':'Save'}
                                 </RoundedButton>
                             </Box>
@@ -136,7 +137,7 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                             variant="default"
                                             color='primary'
                                             label={option.name}
-                                            avatar={<Avatar>{option.name.charAt(0)}</Avatar>}
+                                            avatar={<Avatar alt="members"  src={option.avatar? `${baseURL}/files/${option.avatar}` : userAvatar} />}
                                             {...getTagProps({ index })}
                                           />
                                         ))

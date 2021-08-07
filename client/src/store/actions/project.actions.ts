@@ -23,3 +23,11 @@ export const newProject = (payload: ProjectModel) => {
         type: ActionType.NEW_PROJECT,
     };
 };
+
+export const updateProject = (payload: ProjectModel) => {
+
+    return {
+        payload,
+        type: ActionType.UPDATE_PROJECT,
+    };
+};
