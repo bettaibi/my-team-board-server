@@ -32,12 +32,6 @@ interface TaskModel{
     done: boolean;
 }
 
-export interface AspectModel {
-    _id?: string;
-    title: string;
-    project?: string;
-}
-
 export interface SprintModel {
     _id?: string;
     title: string;
@@ -48,8 +42,21 @@ export interface SprintModel {
     order?: number;
 }
 
+export interface AspectModel {
+    _id?: string;
+    title: string;
+    project?: string;
+    cards?: SprintModel[];
+}
+
+export interface BoardModel{
+    project: ProjectModel;
+    aspects: AspectModel[];
+}
+
 export interface AppState{
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];
     members: UserModel[];
+    boards: BoardModel[];
 }

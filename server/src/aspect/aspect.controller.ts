@@ -13,9 +13,9 @@ export class AspectController {
         private aspectService: AspectService,
     ){}
 
-    @Get()
-    async list(): Promise<any>{
-        return await this.aspectService.all();
+    @Get(':id')
+    async list(@Param('id') id: string): Promise<any>{
+        return await this.aspectService.all(id);
     }
 
     @Post()

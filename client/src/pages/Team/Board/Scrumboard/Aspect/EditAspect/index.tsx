@@ -4,21 +4,40 @@ import { Button, Box } from '@material-ui/core';
 import MyTextField from '../../../../../../components/MyTextField';
 
 import * as yup from 'yup';
-
-const defaultValue = {
-    title: ''
-};
+import useMutation from '../../../../../../hooks/useMutation';
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const EditAspect = () => {
+const EditAspect = ({title, id}: {title: string, id: string}) => {
+    const { loading, onMutate } = useMutation();
+
+    const defaultValue = {
+        title: title,
+    };
+
+    async function onSubmitHandler({title}: {title: string}){
+        try{
+            const res = await onMutate({
+                url: `/aspects/${id}`,
+                method: 'PUT',
+                data: {title}
+            });
+
+            if(res.success){
+              
+            }
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
 
     return (
         <React.Fragment>
             <Formik initialValues={defaultValue} validationSchema={schema}
-                onSubmit={(values) => console.log(values)}>
+                 onSubmit={(values) => onSubmitHandler(values)}>
                 {
                     ({ handleChange, handleSubmit, handleBlur, values, errors, touched }) => (
 
@@ -36,7 +55,7 @@ const EditAspect = () => {
                             </div>
 
                             <Button type="submit" variant="contained" color="primary" size="small" fullWidth>
-                                UPDATE
+                               {loading? 'Loading...':'UPDATE'} 
                             </Button>
                             </Box>
 

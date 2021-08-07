@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { toJson, toObjectID } from 'src/helpers';
 import { InjectModel } from '@nestjs/mongoose';
 import { Aspect, AspectDocument } from 'src/models/aspect.model';
+import { Project, ProjectDocument } from 'src/models/project.model';
 import { Model } from 'mongoose';
 import { AspectDto } from './aspect.dto';
 
@@ -9,12 +10,50 @@ import { AspectDto } from './aspect.dto';
 export class AspectService {
 
     constructor(
-        @InjectModel(Aspect.name) private readonly AspectModel: Model<AspectDocument>
+        @InjectModel(Aspect.name) private readonly AspectModel: Model<AspectDocument>,
+        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>
     ){}
 
-    async all(): Promise<any> {
+    async all(id: string): Promise<any> {
        try{
+         const project = await this.ProjectModel.findOne({_id: toObjectID(id)}, {
+            createdAt: 0, 
+            workspace: 0, 
+            __v: 0
+         }).populate({
+             path: 'members',
+             model: 'Member',
+             select: 'name avatar'
+         });
 
+         const aspects = await this. AspectModel.aggregate([
+            {
+                $match: {
+                    project: toObjectID(id)
+                }
+            },
+            {
+                $lookup: {
+                  from: 'sprints',
+                  localField: '_id',
+                  foreignField: 'aspect',
+                  as: 'cards'
+                }
+            },
+            {
+                $project: {
+                    "__v": 0,
+                    "project": 0,
+                    "cards.aspect": 0,
+                    "cards.__v": 0
+                }
+            }
+         ]);
+
+         if (!aspects){
+            return toJson(false, 'Failed to get aggregate aspects')
+         }
+         return toJson(true, 'Aggregated Aspects', {project, aspects});
        }
        catch(err){
            throw err;

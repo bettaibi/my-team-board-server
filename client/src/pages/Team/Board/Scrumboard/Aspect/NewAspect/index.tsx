@@ -2,6 +2,7 @@ import React from 'react';
 import { Formik, Form } from 'formik';
 import { Button, Box } from '@material-ui/core';
 import MyTextField from '../../../../../../components/MyTextField';
+import useMutation from '../../../../../../hooks/useMutation';
 
 import * as yup from 'yup';
 
@@ -14,11 +15,29 @@ const schema = yup.object().shape({
 });
 
 const NewAspect = () => {
+    const { loading, onMutate } = useMutation();
+
+    async function onSubmitHandler({title}: {title: string}, resetForm: () => void){
+        try{
+            const res = await onMutate({
+                url: '/aspects',
+                method: 'POST',
+                data: {title, project: '610aee9ba051e60b5c590502'}
+            });
+
+            if(res.success){
+                resetForm();
+            }
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
 
     return (
         <React.Fragment>
             <Formik initialValues={defaultValue} validationSchema={schema}
-                onSubmit={(values) => console.log(values)}>
+                onSubmit={(values, { resetForm }) => onSubmitHandler(values, resetForm)}>
                 {
                     ({ handleChange, handleSubmit, handleBlur, values, errors, touched }) => (
 
@@ -36,7 +55,7 @@ const NewAspect = () => {
                             </div>
 
                             <Button type="submit" variant="contained" color="primary" size="small" fullWidth>
-                                ADD
+                                {loading? 'Loading...':'ADD'}
                             </Button>
                             </Box>
 

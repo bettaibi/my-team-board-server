@@ -142,7 +142,7 @@ const Scrumboard = (props: any) => {
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
                                         >
-                                            <Aspect cards={item.cards} />
+                                            <Aspect id={item._id} cards={item.cards} />
                                             {provided.placeholder}
 
                                             <NewSprintContainer />

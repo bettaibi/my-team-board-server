@@ -18,7 +18,7 @@ import { Sprint } from '../Sprint';
 import EditAspect from './EditAspect';
 import NewAspect from './NewAspect';
 import useConfirmDialog from '../../../../../hooks/useConfirmDialog';
-import { useNotificationContext } from '../../../../../context/NotificationContext';
+import useMutation from '../../../../../hooks/useMutation';
 
 const useStyle = makeStyles((theme) => ({
     iconColor: {
@@ -29,7 +29,7 @@ const useStyle = makeStyles((theme) => ({
         cursor: 'pointer',
         padding: theme.spacing(1),
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center'
     },
     mr: {
@@ -40,9 +40,8 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-const Aspect = ({ cards }: { cards: any[] }) => {
-    const classes = useStyle();
-    const { PopoverComponent, handleClick, handleClose } = UsePopover();
+const Aspect = ({ cards, id }: { cards: any[], id: string}) => {
+    const { PopoverComponent, handleClick } = UsePopover();
 
     return (
         <>
@@ -85,17 +84,29 @@ const DeleteAspectContainer = () => {
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this aspect.',
     });
-    const { showMsg } = useNotificationContext();
+    const { onMutate } = useMutation();
+    const id = "610e6e92026a362ec0e13040";
 
     async function onDelete(){
-        console.log('onDelete');
+        try{
+            const res = await onMutate({
+                url: `/aspects/${id}`,
+                method: 'DELETE'
+            });
+            if(res.success){
+                handleClose();
+            }
+        }
+        catch(err){
+            console.error(err)
+        }
     }
 
     return (
         <React.Fragment>
             <MenuItem onClick={handleOpen} style={{ padding: '1rem' }}>
-                        <DeleteOutline className={classes.iconColor} />
-                        <span style={{ marginLeft: '0.8rem' }}>Delete List</span>
+                    <DeleteOutline className={classes.iconColor} />
+                    <span style={{ marginLeft: '0.8rem' }}>Delete List</span>
             </MenuItem>
             <ConfirmDialog />
         </React.Fragment>
@@ -112,7 +123,7 @@ const EditAspectContainer = () => {
                 onClick={handleClick} className={classes.aspectTitle}>Aspect</Typography>
 
             <PopoverComponent id="edit_aspect_menu">
-                <EditAspect />
+                <EditAspect title="example" id="610e6e92026a362ec0e13040" />
             </PopoverComponent>
         </React.Fragment>
     )
@@ -127,7 +138,7 @@ const NewAspectContainer = () => {
             <Box aria-describedby="new_aspect_menu" className={classes.newAspect}
                 onClick={handleClick} >
                 <Add className={classes.mr} />
-                <span>New Aspect</span>
+                <span>NEW ASPECT</span>
             </Box>
 
             <PopoverComponent id="new_aspect_menu">
