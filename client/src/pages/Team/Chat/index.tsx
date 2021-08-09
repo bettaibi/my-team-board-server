@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
     Box,
     makeStyles,
@@ -10,6 +10,7 @@ import {
     Tooltip,
     Divider
 } from '@material-ui/core';
+
 import {
     InfoOutlined,
     CropOriginal,
@@ -20,15 +21,23 @@ import {
     VideoCallOutlined,
     ArrowDropDownCircleOutlined
 } from '@material-ui/icons';
-import userAvatar from '../../../assets/avatars/Henderson.jpg';
 import { Picker } from 'emoji-mart';
+import { useSelector } from 'react-redux';
+import { AppState, MessageModel, UserModel } from '../../../models/app.model';
 import useToggle from '../../../hooks/useToggle';
 import useSidenav from '../../../hooks/useSidenav';
 import ChatDetails from './ChatDetails';
 import clsx from 'clsx';
 import bgImage from '../../../assets/chat/bg1.svg';
+import userAvatar from '../../../assets/avatars/profile.jpg';
+import axios from "axios";
 
 import "./chat.css";
+import { useSharedContext } from '../../../context';
+import useMutation from '../../../hooks/useMutation';
+import Moment from 'react-moment';
+
+const baseURL = process.env.REACT_APP_BASE_URL;
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -60,51 +69,68 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: '5px',
         marginTop: '5px',
         '&:hover': {
-           backgroundColor: "#556adc"
+            backgroundColor: "#556adc"
         }
-    }
+    },
+    imageList: {
+        width: 500,
+        height: 450,
+    },
 
 }));
 
-const Chat = () => {
+const Chat = (props: any) => {
     const classes = useStyles();
+    const memberId = props.match.params.memberId;
 
     return (
         <Box className={classes.root}>
-            
+
             <Box height="70px" boxShadow="0 .125rem .25rem rgba(0,0,0,.075)" p={2} display='flex' flexDirection="row" className="bg-white"
                 alignItems="center" justifyContent="space-between">
-
-                <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">
-                    <Avatar src={userAvatar} alt="user" />
-                    <Box display="flex" flexDirection="column" ml={1}>
-                        <Typography variant="subtitle2" className="bg-text-primary">
-                            Nidhal Bettaibi
-                        </Typography>
-                        <small className="bg-text-secondary">2 hours ago</small>
-                    </Box>
-                </Box>
-                <Box>
-                    <ChatDetailsDialog />
-                </Box>
+                <ChatHeader memberId={memberId} />
             </Box>
 
             <Box flexGrow={1} p={2} display="flex" flexDirection="Column" overflow="auto"
-            className="content-scroll">
-                <Messages />
+                className="content-scroll">
+                <Messages memberId={memberId} />
             </Box>
 
             <Box style={{ padding: '0.5rem 1rem' }} position="sticky" bottom={0} >
-                <MessageEditor />
+                <MessageEditor memberId={memberId} />
             </Box>
         </Box>
     )
 }
 
+const ChatHeader = ({ memberId }: { memberId: string }) => {
+    const member = useSelector((state: AppState) => state.members)
+        .find((item: UserModel) => item._id === memberId);
 
-const MessageEditor = () => {
+    return (
+        <React.Fragment>
+            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">
+                {member && <Avatar src={member.avatar ? `${baseURL}/files/${member.avatar}` : userAvatar} alt="receptor" />}
+                <Box display="flex" flexDirection="column" ml={1}>
+                    <Typography variant="subtitle2" className="bg-text-primary">
+                        {member?.name}
+                    </Typography>
+                    <small className="bg-text-secondary">2 hours ago</small>
+                </Box>
+            </Box>
+            <Box>
+                <ChatDetailsDialog member={member} />
+            </Box>
+        </React.Fragment>
+    )
+}
+
+const MessageEditor = ({ memberId }: { memberId: string }) => {
     const classes = useStyles();
+    const [text, setText] = React.useState<string>('');
     const { show, toggle: toggleImoji } = useToggle();
+    const { currentUser, selectedWorkspace, dispatch } = useSharedContext();
+    const { loading, onMutate } = useMutation();
     let fileRef = useRef<any>();
     let imageRef = useRef<any>();
 
@@ -113,10 +139,78 @@ const MessageEditor = () => {
         toggleImoji();
     }
 
+    function handleTextChange(e: any) {
+        setText(e.target.value);
+    }
+
+    async function onSubmitHandler() {
+        try {
+            const obj: MessageModel = {
+                text,
+                members: [memberId, currentUser._id || ''],
+                workspace: selectedWorkspace || '',
+                sender: currentUser._id || '',
+            };
+            const { data } = await axios.post('/messages', obj);
+            if (data.success) {
+                setText('');
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function handleImagesChange(e: any) {
+        try {
+            const result = window.confirm(`image(s) have been selected, confirm to send!`);
+            if (result) {
+                const fd = new FormData();
+                for (let file of e.target.files) {
+                    fd.append('pictures', file);
+                }
+                const res = await onMutate({
+                    url: `/files/pictures/${selectedWorkspace}/${memberId}`,
+                    method: 'PATCH',
+                    data: fd
+                });
+                if (res.success) {
+
+                }
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function handlefileChange(e: any) {
+        try {
+            const result = window.confirm(`file(s) have been selected, confirm to send!`);
+            if (result) {
+                const fd = new FormData();
+                fd.append('file', e.target.files[0]);
+                const res = await onMutate({
+                    url: `/files/attachment/${selectedWorkspace}/${memberId}`,
+                    method: 'PATCH',
+                    data: fd
+                });
+                if (res.success) {
+
+                }
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <Box borderRadius={5} border="1px solid lightgray" overflow="hidden" className="bg-white">
             <Box p={1}>
                 <InputBase
+                    onChange={handleTextChange}
+                    value={text}
                     multiline
                     rowsMax={3}
                     fullWidth
@@ -139,16 +233,18 @@ const MessageEditor = () => {
                                 <CropOriginal className={classes.iconColor} />
                             </IconButton>
                         </Tooltip>
-                        <input ref={imageRef} hidden multiple accept="image/*" type="file" />
+                        <input onChange={handleImagesChange} ref={imageRef} name="pictures"
+                            hidden multiple accept="image/*" type="file" />
                     </React.Fragment>
 
                     <React.Fragment>
-                        <Tooltip title="send attachments">
+                        <Tooltip title="send attachment">
                             <IconButton className={classes.mr} size="small" onClick={() => fileRef.current.click()}>
                                 <AttachFile className={classes.iconColor} />
                             </IconButton>
                         </Tooltip>
-                        <input ref={fileRef} hidden type="file" />
+                        <input onChange={handlefileChange} ref={fileRef} hidden type="file" name="file"
+                            accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.txt,.pdf" />
                     </React.Fragment>
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -164,9 +260,12 @@ const MessageEditor = () => {
                     </Tooltip>
                     <Divider orientation="vertical" flexItem style={{ margin: '0 0.6rem', width: '2px' }} />
                     <Tooltip title="send">
-                        <IconButton size="small">
-                            <SendOutlined className={classes.iconColor} />
-                        </IconButton>
+                        <span>
+                            <IconButton size="small" disabled={text === ''}
+                                onClick={onSubmitHandler}>
+                                <SendOutlined className={classes.iconColor} />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </div>
             </Box>
@@ -174,63 +273,134 @@ const MessageEditor = () => {
     )
 };
 
-const Messages = () => {
+const Messages = ({ memberId }: { memberId: string }) => {
+    const [messages, setMessages] = React.useState<MessageModel[]>([]);
+    const { selectedWorkspace, currentUser } = useSharedContext();
+
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const { data } = await axios.get(`/messages/${selectedWorkspace}/${memberId}`);
+                if (data.success) {
+                    setMessages(data.data);
+                    console.log(data.data)
+                }
+            }
+            catch (err) {
+                console.error(err)
+            }
+        }
+
+        fetchMessages();
+    }, []);
 
     return (
         <React.Fragment>
-            <div className="mine messages">
-                <div className="message">
-                    Dude
-                </div>
-                <div className="message last">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                </div>
-                <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">11:02</small>
-            </div>
-            <div className="yours messages">
-                <div className="message">
-                    Hey!
-                </div>
-                <div className="message">
-                    You there?
-                </div>
-                <FileAttachment />
-                <div className="message last">
-                    Hello, how's it going?
-                </div>
-                {/* <small style={{marginLeft:'0.5rem'}} className="bg-text-secondary">11:02</small> */}
-            </div>
-            <div className="mine messages">
-                <div className="message">
-                    Great thanks!
-                </div>
-                <div className="message last">
-                    How about you?
-                </div>
-                <small style={{ marginLeft: '0.5rem' }} className="bg-text-secondary">11:02</small>
-            </div>
+            {
+                messages.map((item: MessageModel, index)=> (
+                    <Message message= {item} myId={currentUser._id || ''}
+                    last={(index === messages.length -1 ) || messages[index + 1].sender != currentUser._id} />
+                ))
+            }
         </React.Fragment>
     );
 };
 
-const FileAttachment = () => {
+const FileAttachment = ({ message }: { message: MessageModel }) => {
     const classes = useStyles();
 
     return (
-      <Tooltip title="download">
+        <Tooltip title="download">
             <Box display="flex" flexDirection="row" alignItems="center" minWidth="260px"
-            borderRadius={20} className={clsx('', classes.fileAttachment)}>
-            <ArrowDropDownCircleOutlined />
-            <Box mx={1}>
-                <Typography variant="subtitle2"> File name here</Typography>
-                <small >Sent At: 14 sep 14:25</small>
+                borderRadius={20} className={clsx('', classes.fileAttachment)}>
+                <ArrowDropDownCircleOutlined />
+                <Box mx={1}>
+                    <Typography variant="subtitle2"> Click to download</Typography>
+                    <small >Sent At:             
+                    <Moment format="DD/MM/YYYY">
+                       {message?.sentAt}
+                    </Moment>
+                    </small>
+                </Box>
             </Box>
-        </Box>
-      </Tooltip>
+        </Tooltip>
     )
 }
 
-const ChatDetailsDialog = () => {
+const ImagesGrid = ({pictures}: {pictures: string[]}) => {
+    const classes = useStyles();
+
+    return (
+        <div>
+            {/* <ImageList rowHeight={160} className={classes.imageList} cols={3}>
+                {pictures.map((item, index) => (
+                    <ImageListItem key={`pic${index}`} cols={1}>
+                        <img src={item} alt={`pic${index}`} />
+                    </ImageListItem>
+                ))}
+            </ImageList> */}
+        </div>
+    )
+};
+
+const Message = ({ message, myId, last }: { message: MessageModel, myId: string, last: boolean }) => {
+
+
+    return (
+        <React.Fragment>
+            {
+                message.text && message.sender === myId ? (<>
+                    <div className="mine messages">
+                        {
+                            last ? (<>
+                                <div className="message last">
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                </div>
+                                <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">11:02</small>
+                            </>) : (
+                                <div className="message">
+                                    {message.text}
+                                </div>
+                            )
+                        }
+                    </div>
+                </>) : (
+                    <>
+                        <div className="yours messages">
+                            {
+                                last ? (<>
+                                    <div className="message last">
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                    </div>
+                                    <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">11:02</small>
+                                </>) : (
+                                    <div className="message">
+                                        {message.text}
+                                    </div>
+                                )
+                            }
+                        </div>
+                    </>
+                )
+            }
+            {
+                message.file && (
+                    <FileAttachment message={message} />
+                )
+            }
+            {
+                message.pictures && (
+                    <ImagesGrid pictures = {message.pictures} />
+                )
+            }
+        </React.Fragment>
+    )
+}
+
+interface ChatDetailsProps {
+    member: UserModel | undefined;
+}
+const ChatDetailsDialog: React.FC<ChatDetailsProps> = ({ member }) => {
     const classes = useStyles();
     const { SidenavComponent, onSidenavClose, onSidenavOpen } = useSidenav('right', 'persistent');
 
@@ -241,9 +411,9 @@ const ChatDetailsDialog = () => {
             </IconButton>
 
             <SidenavComponent>
-                <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px'}}>
-                  <ChatDetails onSidenavClose = {onSidenavClose} />
-               </div>
+                <div style={{ overflowY: 'auto', height: 'calc(100% - 56px)', marginTop: '56px' }}>
+                    <ChatDetails onSidenavClose={onSidenavClose} member={member} />
+                </div>
             </SidenavComponent>
         </React.Fragment>
     )

@@ -13,8 +13,11 @@ import {
     FindInPageOutlined,
     CloseOutlined
 } from '@material-ui/icons';
+import { UserModel } from '../../../models/app.model';
 import MyAccordion from '../../../components/MyAccordion';
 import clsx from 'clsx';
+import MyTextField from '../../../components/MyTextField';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
     lightGrayIcons: {
@@ -27,9 +30,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface ChatDetailsProps {
     onSidenavClose: () => void;
+    member: UserModel | undefined;
 }
-const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose }) => {
+const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose, member }) => {
     const classes = useStyles();
+
     return (
         <React.Fragment>
             <Box height="70px" p={2} boxShadow="0 .125rem .25rem rgba(0,0,0,.075)" display="flex" flex-direction="row" alignItems="center" justifyContent="space-between">
@@ -38,7 +43,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose }) => {
                         Details
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        #bettaibi-nidhal
+                        #{member?.name}
                     </Typography>
                 </Box>
 
@@ -72,7 +77,20 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose }) => {
             </Box>
 
             <MyAccordion label="About" isOpen={true}>
-                About this member
+                <Box display="flex" flexDirection="column" flexGrow={1}>
+                <div className="form-group">
+                    <label>Name</label>
+                    <MyTextField disabled fullWidth variant="outlined" size="small" value={member?.name} />
+                </div>
+                <div className="form-group">
+                    <label>Title</label>
+                    <MyTextField disabled fullWidth variant="outlined" size="small" value={member?.title || 'Not mention'} />
+                </div>
+                <div className="form-group">
+                    <label>Email</label>
+                    <MyTextField disabled fullWidth variant="outlined" size="small" value={member?.email} />
+                </div>
+                </Box>
             </MyAccordion>
             <MyAccordion label="View photos and videos" >
                 you will find all sent media in here

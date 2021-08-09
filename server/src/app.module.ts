@@ -11,6 +11,7 @@ import { FileModule } from './file/file.module';
 import { SettingModule } from './Setting/setting.module';
 import { SprintModule } from './sprint/sprint.module';
 import { AspectModule } from './aspect/aspect.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AspectModule } from './aspect/aspect.module';
     SettingModule,
     SprintModule,
     AspectModule,
+    MessageModule,
     FileModule,
   ],
   controllers: [AppController],

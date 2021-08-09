@@ -9,8 +9,7 @@ import {
     Paper,
     Avatar,
     Hidden,
-    Tooltip,
-    makeStyles
+    Tooltip
 } from '@material-ui/core';
 
 import { useSelector } from 'react-redux';

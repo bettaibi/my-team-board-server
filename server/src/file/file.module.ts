@@ -4,6 +4,7 @@ import { FileService } from './file.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Member, MemberSchema } from 'src/models/member.model';
+import { Message, MessageSchema } from 'src/models/message.model';
 import { diskStorage } from 'multer';
 import { CustomFile } from 'src/shared/customFile';
 import { JwtGuardModule } from 'src/shared/jwtGuard.module';
@@ -17,7 +18,8 @@ import { JwtGuardModule } from 'src/shared/jwtGuard.module';
       }),
     }),
     MongooseModule.forFeature([
-      {name: Member.name, schema: MemberSchema}
+      {name: Member.name, schema: MemberSchema},
+      {name: Message.name, schema: MessageSchema}
     ]),
     JwtGuardModule
   ],

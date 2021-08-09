@@ -54,6 +54,17 @@ export interface BoardModel{
     aspects: AspectModel[];
 }
 
+export interface MessageModel{
+    _id?: string;
+    text?: string;
+    file?: string;
+    workspace?: string;
+    sender?: string;
+    pictures?: string[];
+    members?: string[];
+    sentAt?: Date;
+}
+
 export interface AppState{
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];

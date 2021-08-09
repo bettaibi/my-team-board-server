@@ -32,11 +32,36 @@ export class FileController {
         }
     }
 
-    @Patch()
-    @UseInterceptors(FilesInterceptor('files'))
-    async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>): Promise<any>{
+    @Patch('attachment/:workspaceId/:receptorId')
+    @UseInterceptors(FileInterceptor('file'))
+    async addNewMessageAttachment(
+        @UploadedFile() file: Express.Multer.File,
+        @Param('workspaceId') workspaceId: string, 
+        @Param('receptorId') receptorId: string ,
+        @User() userID: string) : Promise<any>{
         try{
-            console.log(files)
+            if(file){
+                 return await this.fileService.addNewMessageAttachment(file.filename, userID, receptorId, workspaceId);
+            }
+            else{
+                return toJson(false, 'Failed to upload');
+            }
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    @Patch('pictures/:workspaceId/:receptorId')
+    @UseInterceptors(FilesInterceptor('pictures'))
+    async uploadFiles(
+        @UploadedFiles() files: Array<Express.Multer.File>,
+        @Param('workspaceId') workspaceId: string, 
+        @Param('receptorId') receptorId: string , 
+        @User() userID: string
+    ): Promise<any>{
+        try{
+            return await this.fileService.uploadPictures(files, userID, receptorId, workspaceId);
         }
         catch(err){
             throw err;

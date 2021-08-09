@@ -42,7 +42,7 @@ const Team = () => {
                             <Route path="/team/members" component={Members} />
                             <Route path="/team/profile" component={Profile} />
                             <Route path="/team/setting" component={Setting} />
-                            <Route path="/team/chat/:roomId" component={Chat} />
+                            <Route path="/team/chat/:memberId" component={Chat} />
                         </Switch>
                     </Suspense>
                 </main>
