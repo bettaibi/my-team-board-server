@@ -30,23 +30,24 @@ const schema = yup.object().shape({
     description: yup.string().required('Description is required')
 });
 
+let members: string[] = [];
+
 interface NewProjectProps {
     onSidenavClose: () => void;
 }
 
 const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
     const selectedMembers = useSelector((state: AppState) => state.members);
-    const [members, setMembers] = React.useState<string[]>([]);
-    const { dispatch } = useSharedContext();
+    const { dispatch, selectedWorkspace } = useSharedContext();
     const { loading, onMutate } = useMutation();
 
     function onEmailSelected(newValues: UserModel[]){
         if(newValues !== null){
             if(newValues.length === 0){
-                setMembers([]);
+                members = [];
             }
             else{
-                setMembers([...newValues.map((item: UserModel) => item._id || '')]);
+                members = [...newValues.map((item: UserModel) => item._id || '')];
             }
         }
     }
@@ -56,7 +57,7 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
             const payload: ProjectModel = {
                 ...values,
                 members: members,
-                workspace: localStorage.getItem('workspace') || ''
+                workspace: selectedWorkspace || ''
             };
             const res = await onMutate({
                 url: '/projects',
@@ -87,7 +88,7 @@ const NewProject: React.FC<NewProjectProps> = ({ onSidenavClose }) => {
                                 <RoundedButton className="bg-text-secondary" onClick={onSidenavClose} variant="outlined" color="default" size="medium" type="button">
                                     Cancel
                                 </RoundedButton>
-                                <RoundedButton disabled={members.length===0} disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
+                                <RoundedButton disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                     {loading? 'Loading...':'Save'}
                                 </RoundedButton>
                             </Box>

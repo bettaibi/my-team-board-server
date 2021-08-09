@@ -5,6 +5,8 @@ import MyTextField from '../../../../../../components/MyTextField';
 import useMutation from '../../../../../../hooks/useMutation';
 
 import * as yup from 'yup';
+import { useSharedContext } from '../../../../../../context';
+import { newAspect } from '../../../../../../store/actions/board.actions';
 
 const defaultValue = {
     title: ''
@@ -16,6 +18,7 @@ const schema = yup.object().shape({
 
 const NewAspect = ({projectId}: {projectId: string}) => {
     const { loading, onMutate } = useMutation();
+    const { dispatch } = useSharedContext();
 
     async function onSubmitHandler({title}: {title: string}, resetForm: () => void){
         try{
@@ -27,6 +30,7 @@ const NewAspect = ({projectId}: {projectId: string}) => {
 
             if(res.success){
                 resetForm();
+                dispatch(newAspect(projectId, res.data));
             }
         }
         catch(err){

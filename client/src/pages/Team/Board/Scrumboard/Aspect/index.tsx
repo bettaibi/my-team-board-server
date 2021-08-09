@@ -120,7 +120,7 @@ const EditAspectContainer = ({title, id}: {title: string, id: string}) => {
     return (
         <React.Fragment>
             <Typography variant="subtitle2" aria-describedby="edit_aspect_menu"
-                onClick={handleClick} className={classes.aspectTitle}>Aspect</Typography>
+                onClick={handleClick} className={classes.aspectTitle}>{title}</Typography>
 
             <PopoverComponent id="edit_aspect_menu">
                 <EditAspect title={title} id={id} />

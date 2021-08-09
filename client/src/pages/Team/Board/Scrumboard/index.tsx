@@ -61,7 +61,9 @@ const Scrumboard = (props: any) => {
     const classes = useStyle();
     const history = useHistory();
     let projectId = props.match.params.projectId;
-    const board: BoardModel | undefined = useSelector((state: AppState) => state.boards).find((item: BoardModel) => item.project._id === projectId);
+    const board: BoardModel | undefined = useSelector((state: AppState) => state.boards)
+    .find((item: BoardModel) => item.project._id == projectId);
+    console.log("subscription fired")
     const { dispatch } = useSharedContext();
     
     useEffect(() => {
