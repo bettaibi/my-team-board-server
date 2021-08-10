@@ -10,7 +10,6 @@ import {
     Tooltip,
     Divider
 } from '@material-ui/core';
-
 import {
     InfoOutlined,
     CropOriginal,
@@ -63,20 +62,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     fileAttachment: {
         cursor: "pointer",
-        backgroundColor: "#3f51b5",
         color: '#fff !important',
         padding: "8px 15px",
         marginBottom: '5px',
         marginTop: '5px',
+    },
+    downloadLink: {
         '&:hover': {
-            backgroundColor: "#556adc"
+            textDecoration: 'none !important',
         }
-    },
-    imageList: {
-        width: 500,
-        height: 450,
-    },
-
+    }
 }));
 
 const Chat = (props: any) => {
@@ -135,7 +130,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
     let imageRef = useRef<any>();
 
     function displayEmoji(emoji: any) {
-        console.log(emoji);
+        setText((state: string) => state.trim()+' '+emoji.native)
         toggleImoji();
     }
 
@@ -212,7 +207,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                     onChange={handleTextChange}
                     value={text}
                     multiline
-                    rowsMax={3}
+                    maxRows={3}
                     fullWidth
                     placeholder="enter your message right here.."
                     inputProps={{ 'aria-label': 'naked' }} />
@@ -292,105 +287,124 @@ const Messages = ({ memberId }: { memberId: string }) => {
         }
 
         fetchMessages();
-    }, []);
+    }, [memberId]);
 
     return (
         <React.Fragment>
             {
-                messages.map((item: MessageModel, index)=> (
-                    <Message message= {item} myId={currentUser._id || ''}
-                    last={(index === messages.length -1 ) || messages[index + 1].sender != currentUser._id} />
+                messages.map((item: MessageModel, index: number) => (
+                    <Message key={item._id} message={item} myId={currentUser._id || ''}
+                        last={messages.length === (index + 1)} />
                 ))
             }
         </React.Fragment>
     );
 };
 
-const FileAttachment = ({ message }: { message: MessageModel }) => {
+const FileAttachment = ({ message, mine }: { message: MessageModel, mine: boolean }) => {
     const classes = useStyles();
 
     return (
         <Tooltip title="download">
-            <Box display="flex" flexDirection="row" alignItems="center" minWidth="260px"
-                borderRadius={20} className={clsx('', classes.fileAttachment)}>
-                <ArrowDropDownCircleOutlined />
-                <Box mx={1}>
-                    <Typography variant="subtitle2"> Click to download</Typography>
-                    <small >Sent At:             
-                    <Moment format="DD/MM/YYYY">
-                       {message?.sentAt}
-                    </Moment>
-                    </small>
+            <a className={classes.downloadLink} target="_blank" href={`${baseURL}/files/${message.file}`} download={message.file}>
+                <Box display="flex" flexDirection="row" alignItems="center" maxWidth="280px"
+                    borderRadius={20} className={clsx(classes.fileAttachment, {
+                        'my-attachment': mine,
+                        'your-attachment': !mine
+                    })}>
+                    <ArrowDropDownCircleOutlined />
+                    <Box mx={1}>
+                        <Typography variant="subtitle2"> Click to download</Typography>
+                        <small >Sent At: &nbsp;
+                            <Moment format="DD/MM/YYYY">
+                                {message?.sentAt}
+                            </Moment>
+                        </small>
+                    </Box>
                 </Box>
-            </Box>
+            </a>
         </Tooltip>
     )
 }
 
-const ImagesGrid = ({pictures}: {pictures: string[]}) => {
+const ImagesGrid = ({ pictures }: { pictures: string[] }) => {
     const classes = useStyles();
 
     return (
-        <div>
-            {/* <ImageList rowHeight={160} className={classes.imageList} cols={3}>
-                {pictures.map((item, index) => (
-                    <ImageListItem key={`pic${index}`} cols={1}>
-                        <img src={item} alt={`pic${index}`} />
-                    </ImageListItem>
-                ))}
-            </ImageList> */}
+        <div className="gallery">
+            {
+                pictures.map((item, index) => (
+                    <figure key={`pic${index}`}>
+                        <a href={`${baseURL}/files/${item}`} download target="_blank">
+                          <img src={`${baseURL}/files/${item}`} alt={`pic${index}`} />  
+                        </a>
+                    </figure>
+                ))
+            }
         </div>
     )
 };
 
 const Message = ({ message, myId, last }: { message: MessageModel, myId: string, last: boolean }) => {
-
+    const { show, toggle } = useToggle();
 
     return (
         <React.Fragment>
             {
-                message.text && message.sender === myId ? (<>
-                    <div className="mine messages">
+                message.sender === myId ? (
+                    <div className="messages mine">
                         {
-                            last ? (<>
-                                <div className="message last">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                </div>
-                                <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">11:02</small>
-                            </>) : (
-                                <div className="message">
-                                    {message.text}
-                                </div>
+                            message.text && (
+                                <>
+                                    <div className={clsx('message', { 'last': last })} onClick={toggle}>
+                                        {message.text}
+                                    </div>
+                                    {show || last && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
+                                        <Moment fromNow>
+                                            {message.sentAt}
+                                        </Moment>
+                                    </small>}
+                                </>
+                            )
+                        }
+                        {
+                            message.file && (
+                                <FileAttachment message={message} mine={true} />
+                            )
+                        }
+                        {
+                            message.pictures && (
+                                <ImagesGrid pictures={message.pictures} />
                             )
                         }
                     </div>
-                </>) : (
-                    <>
-                        <div className="yours messages">
-                            {
-                                last ? (<>
-                                    <div className="message last">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                    </div>
-                                    <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">11:02</small>
-                                </>) : (
-                                    <div className="message">
+                ) : (
+                    <div className="messages yours">
+                        {
+                            message.text && (
+                                <>
+                                    <div className={clsx('message', { 'last': last })} onClick={toggle}>
                                         {message.text}
                                     </div>
-                                )
-                            }
-                        </div>
-                    </>
-                )
-            }
-            {
-                message.file && (
-                    <FileAttachment message={message} />
-                )
-            }
-            {
-                message.pictures && (
-                    <ImagesGrid pictures = {message.pictures} />
+                                    {show || last && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
+                                        <Moment fromNow>
+                                            {message.sentAt}
+                                        </Moment>
+                                    </small>}
+                                </>
+                            )
+                        }
+                        {
+                            message.file && (
+                                <FileAttachment message={message} mine={false} />
+                            )
+                        }
+                        {
+                            message.pictures && (
+                                <ImagesGrid pictures={message.pictures} />
+                            )
+                        }
+                    </div>
                 )
             }
         </React.Fragment>

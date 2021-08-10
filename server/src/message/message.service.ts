@@ -15,7 +15,7 @@ export class MessageService{
     async all(workspaceId: string, receptorId: string, userId: string): Promise<any>{
         try{
             const list = await this.MessageModel
-            .find({workspaceId: toObjectID(workspaceId), members: {$in: [userId, receptorId]}}, {
+            .find({workspace: toObjectID(workspaceId), members: {$in: [userId, receptorId]}}, {
                 members: 0,
                 workspace: 0
             });

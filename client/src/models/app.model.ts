@@ -1,4 +1,4 @@
-export interface UserModel{
+export interface UserModel {
     _id?: string;
     name: string;
     email: string;
@@ -10,14 +10,14 @@ export interface UserModel{
     phone?: string;
 }
 
-export interface WorkspaceModel{
+export interface WorkspaceModel {
     _id?: string;
     name: string;
     owner: any;
     members: any[];
 }
 
-export interface ProjectModel{
+export interface ProjectModel {
     _id?: string;
     title: string;
     description: string;
@@ -26,7 +26,7 @@ export interface ProjectModel{
     createdAt?: Date;
 }
 
-export interface TaskModel{
+export interface TaskModel {
     description: string;
     order: number;
     done: boolean;
@@ -49,23 +49,23 @@ export interface AspectModel {
     cards?: SprintModel[];
 }
 
-export interface BoardModel{
+export interface BoardModel {
     project: ProjectModel;
     aspects: AspectModel[];
 }
 
-export interface MessageModel{
+export interface MessageModel {
     _id?: string;
     text?: string;
     file?: string;
     workspace?: string;
-    sender?: string;
+    sender: string;
     pictures?: string[];
     members?: string[];
     sentAt?: Date;
 }
 
-export interface AppState{
+export interface AppState {
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];
     members: UserModel[];

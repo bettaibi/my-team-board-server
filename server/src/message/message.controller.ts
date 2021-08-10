@@ -14,9 +14,9 @@ export class MessageController{
         private messageService: MessageService,
     ){}
 
-    @Get(':workspaceID/:receptorId')
+    @Get('/:workspaceId/:receptorId')
     async list(
-        @Param('workspaceID') workspaceId: string, 
+        @Param('workspaceId') workspaceId: string, 
         @Param('receptorId') receptorId: string , 
         @User() userId: string): Promise<any>{
         try{
