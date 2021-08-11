@@ -23,6 +23,7 @@ import {
 import { Picker } from 'emoji-mart';
 import { useSelector } from 'react-redux';
 import { AppState, MessageModel, UserModel } from '../../../models/app.model';
+import { useSharedContext } from '../../../context';
 import useToggle from '../../../hooks/useToggle';
 import useSidenav from '../../../hooks/useSidenav';
 import ChatDetails from './ChatDetails';
@@ -30,11 +31,10 @@ import clsx from 'clsx';
 import bgImage from '../../../assets/chat/bg1.svg';
 import userAvatar from '../../../assets/avatars/profile.jpg';
 import axios from "axios";
+import Moment from 'react-moment';
+import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
-import { useSharedContext } from '../../../context';
-import useMutation from '../../../hooks/useMutation';
-import Moment from 'react-moment';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -334,7 +334,7 @@ const ImagesGrid = ({ pictures }: { pictures: string[] }) => {
         <div className="gallery">
             {
                 pictures.map((item, index) => (
-                    <figure key={`pic${index}`}>
+                    <figure key={`pic${index}`} className={`gallery_item${index}`}>
                         <a href={`${baseURL}/files/${item}`} download target="_blank">
                           <img src={`${baseURL}/files/${item}`} alt={`pic${index}`} />  
                         </a>
