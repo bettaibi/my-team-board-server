@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { ContextProvider } from '../../context';
 import { NotificationProvider } from '../../context/NotificationContext';
+import { Box, CircularProgress, Typography } from '@material-ui/core';
 import Header from '../../components/Header';
 
 const Board = lazy(() => import('./Board'));
@@ -35,7 +36,7 @@ const Team = () => {
                 <React.Fragment>
                 <main id="app-main" className={classes.open}>
                     <Header />
-                    <Suspense fallback={<span>loading content .....</span>}>
+                    <Suspense fallback={<LoadingPage />}>
                         <Switch>
                             <Route path="/team" exact component={Board} />
                             <Route path="/team/scrumboard/:projectId" component={Scrumboard} />
@@ -50,6 +51,19 @@ const Team = () => {
             </NotificationProvider>
 
         </ContextProvider>
+    )
+};
+
+const LoadingPage = () => {
+
+    return (
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" 
+        width="100%" height="calc(100vh - 56px)">
+            <Typography component="div" variant="subtitle1" color="textSecondary" gutterBottom>
+                Loading....
+            </Typography>
+            <CircularProgress disableShrink />
+        </Box>
     )
 };
 

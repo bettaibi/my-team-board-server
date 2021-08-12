@@ -1,6 +1,16 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema, Types } from "mongoose";
 
+export interface IMessage{
+    text?: string;
+    sentAt: Date;
+    pictures?: string[];
+    file?: string;
+    sender?: string;
+    workspace?: string;
+    members?: string[];
+}
+
 export type MessageDocument = Document & Message;
 
 @Schema()

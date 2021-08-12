@@ -36,7 +36,6 @@ const useStyle = makeStyles((theme) => ({
     padding: theme.spacing(2),
     cursor: 'pointer',
     borderRadius: 10,
-
   },
   separator: {
     width: '50px',

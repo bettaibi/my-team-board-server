@@ -4,6 +4,7 @@ import {
 } from '@material-ui/core';
 import {HashRouter, Route, Switch, Redirect} from 'react-router-dom';
 import PrivateRoute from './components/privateRoute';
+import AppSkeleton from './components/AppSkeleton';
 
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
@@ -15,7 +16,7 @@ function App() {
   return (
     <HashRouter basename="/">
       <CssBaseline />
-      <Suspense fallback={<span>Loading...</span>}>
+      <Suspense fallback={<AppSkeleton />}>
         <Switch>
           <Route path="/" exact>
             <Redirect to="/team" />

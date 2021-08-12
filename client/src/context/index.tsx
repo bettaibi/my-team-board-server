@@ -5,6 +5,7 @@ import { setWorkspaceMembers } from '../store/actions/members.actions';
 import { setWorkspaces } from '../store/actions/workspace.actions';
 import { UserModel } from '../models/app.model';
 import axios from 'axios';
+import AppSkeleton from '../components/AppSkeleton';
 
 interface ContextProps{
     dispatch: Dispatch<any>;
@@ -108,7 +109,7 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
     return(
         <Shared.Provider value = {value}>
            <React.Fragment>
-                {appLoading ? <span style={{color: 'red'}}>App Loading...</span> : children}
+                {appLoading ? <AppSkeleton /> : children}
            </React.Fragment>
         </Shared.Provider>
     )

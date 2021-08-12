@@ -12,6 +12,7 @@ import { SettingModule } from './Setting/setting.module';
 import { SprintModule } from './sprint/sprint.module';
 import { AspectModule } from './aspect/aspect.module';
 import { MessageModule } from './message/message.module';
+import { ChatGateway } from './gateways/chat.gateway';
 
 @Module({
   imports: [
@@ -27,9 +28,12 @@ import { MessageModule } from './message/message.module';
     SprintModule,
     AspectModule,
     MessageModule,
-    FileModule,
+    FileModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    ChatGateway
+  ],
 })
 export class AppModule {}
