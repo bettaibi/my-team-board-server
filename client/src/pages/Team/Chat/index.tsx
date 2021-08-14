@@ -18,7 +18,8 @@ import {
     SentimentVerySatisfiedOutlined,
     PhoneOutlined,
     VideoCallOutlined,
-    ArrowDropDownCircleOutlined
+    ArrowDropDownCircleOutlined,
+    Comment
 } from '@material-ui/icons';
 import { Picker } from 'emoji-mart';
 import { useSelector } from 'react-redux';
@@ -36,7 +37,7 @@ import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
 import { useSocketContext } from '../../../context/SocketContext';
-import { setChat } from '../../../store/actions/chat.actions';
+import { PostNewMessage, setChat } from '../../../store/actions/chat.actions';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -116,10 +117,10 @@ const ChatHeader = ({ memberId }: { memberId: string }) => {
                     <small className="bg-text-secondary">
                         {
                             member?._id &&
-                             onlineUsers.hasOwnProperty(member._id) ?
-                             onlineUsers[member._id].lastSeen ? (
-                                 <Moment fromNow>{onlineUsers[member._id].lastSeen}</Moment>
-                             ) : 'Active Now' : 'long time ago'
+                                onlineUsers.hasOwnProperty(member._id) ?
+                                onlineUsers[member._id].lastSeen ? (
+                                    <Moment fromNow>{onlineUsers[member._id].lastSeen}</Moment>
+                                ) : 'Active Now' : 'long time ago'
                         }
                     </small>
                 </Box>
@@ -141,7 +142,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
     let imageRef = useRef<any>();
 
     function displayEmoji(emoji: any) {
-        setText((state: string) => state.trim()+' '+emoji.native)
+        setText((state: string) => state.trim() + ' ' + emoji.native)
         toggleImoji();
     }
 
@@ -156,10 +157,12 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                 members: [memberId, currentUser._id || ''],
                 workspace: selectedWorkspace || '',
                 sender: currentUser._id || '',
+                sentAt: new Date()
             };
             const { data } = await axios.post('/messages', obj);
             if (data.success) {
                 setText('');
+                dispatch(PostNewMessage(data.data, memberId));
             }
         }
         catch (err) {
@@ -295,7 +298,6 @@ const Messages = ({ memberId }: { memberId: string }) => {
             try {
                 const { data } = await axios.get(`/messages/${selectedWorkspace}/${memberId}`);
                 if (data.success) {
-                    console.log("data is comming from the server")
                     dispatch(setChat(data.data, memberId));
                     setMessages(data.data);
                 }
@@ -305,21 +307,32 @@ const Messages = ({ memberId }: { memberId: string }) => {
             }
         }
 
-        if(!chat.hasOwnProperty(memberId)) {
+        if (!chat.hasOwnProperty(memberId)) {
             fetchMessages();
         }
-        else{
+        else {
             setMessages(chat[memberId])
         }
-    }, [memberId]);
+    }, [memberId, chat]);
+
+    if (messages.length === 0) {
+        return (
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
+                <Comment style={{ color: '#9e9e9e', fontSize: 60 }}/>
+                <Typography variant="h6" component="span" style={{ color: '#9e9e9e' }} gutterBottom>
+                    Start A new Conversation
+                </Typography>
+            </Box>
+        )
+    }
 
     return (
         <React.Fragment>
             {
                 messages.map((item: MessageModel, index: number) => (
-                    <div key={item._id} ref= {messageRef}>
+                    <div key={item._id} ref={messageRef}>
                         <Message message={item} myId={currentUser._id || ''}
-                        last={messages.length === (index + 1)} />
+                            last={messages.length === (index + 1)} />
                     </div>
                 ))
             }
@@ -362,7 +375,7 @@ const ImagesGrid = ({ pictures }: { pictures: string[] }) => {
                 pictures.map((item, index) => (
                     <figure key={`pic${index}`} className={`gallery_item${index}`}>
                         <a href={`${baseURL}/files/${item}`} download target="_blank">
-                          <img src={`${baseURL}/files/${item}`} alt={`pic${index}`} />  
+                            <img src={`${baseURL}/files/${item}`} alt={`pic${index}`} />
                         </a>
                     </figure>
                 ))
