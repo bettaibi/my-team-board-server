@@ -65,9 +65,14 @@ export interface MessageModel {
     sentAt?: Date;
 }
 
+export interface ChatModel{
+    [memberId: string]: MessageModel[];
+}
+
 export interface AppState {
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];
     members: UserModel[];
     boards: BoardModel[];
+    chat: ChatModel;
 }

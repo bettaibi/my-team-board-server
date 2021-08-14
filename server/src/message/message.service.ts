@@ -15,10 +15,10 @@ export class MessageService{
     async all(workspaceId: string, receptorId: string, userId: string): Promise<any>{
         try{
             const list = await this.MessageModel
-            .find({workspace: toObjectID(workspaceId), members: {$in: [userId, receptorId]}}, {
+            .find({workspace: toObjectID(workspaceId), members: {$all: [userId, receptorId]} }, {
                 members: 0,
                 workspace: 0
-            });
+            }).sort({_id: 1});
 
             if(!list){
                 return toJson(false, 'Failed to get list of messages');

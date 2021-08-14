@@ -36,6 +36,7 @@ import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
 import { useSocketContext } from '../../../context/SocketContext';
+import { setChat } from '../../../store/actions/chat.actions';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -279,16 +280,24 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
 };
 
 const Messages = ({ memberId }: { memberId: string }) => {
-    const [messages, setMessages] = React.useState<MessageModel[]>([]);
-    const { selectedWorkspace, currentUser } = useSharedContext();
+    const chat = useSelector((state: AppState) => state.chat);
+    const [messages, setMessages] = React.useState<MessageModel[]>(chat[memberId] || []);
+
+    const messageRef = useRef<HTMLDivElement>(null);
+    const { selectedWorkspace, currentUser, dispatch } = useSharedContext();
+
+    useEffect(() => {
+        messageRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     useEffect(() => {
         const fetchMessages = async () => {
             try {
                 const { data } = await axios.get(`/messages/${selectedWorkspace}/${memberId}`);
                 if (data.success) {
+                    console.log("data is comming from the server")
+                    dispatch(setChat(data.data, memberId));
                     setMessages(data.data);
-                    console.log(data.data)
                 }
             }
             catch (err) {
@@ -296,15 +305,22 @@ const Messages = ({ memberId }: { memberId: string }) => {
             }
         }
 
-        fetchMessages();
+        if(!chat.hasOwnProperty(memberId)) {
+            fetchMessages();
+        }
+        else{
+            setMessages(chat[memberId])
+        }
     }, [memberId]);
 
     return (
         <React.Fragment>
             {
                 messages.map((item: MessageModel, index: number) => (
-                    <Message key={item._id} message={item} myId={currentUser._id || ''}
+                    <div key={item._id} ref= {messageRef}>
+                        <Message message={item} myId={currentUser._id || ''}
                         last={messages.length === (index + 1)} />
+                    </div>
                 ))
             }
         </React.Fragment>
@@ -369,7 +385,12 @@ const Message = ({ message, myId, last }: { message: MessageModel, myId: string,
                                     <div className={clsx('message', { 'last': last })} onClick={toggle}>
                                         {message.text}
                                     </div>
-                                    {show || last && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
+                                    {last && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
+                                        <Moment fromNow>
+                                            {message.sentAt}
+                                        </Moment>
+                                    </small>}
+                                    {!last && show && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
                                         <Moment fromNow>
                                             {message.sentAt}
                                         </Moment>

@@ -21,6 +21,9 @@ const ActionType = {
     NEW_SPRINT: 'NEW_SPRINT',
     EDIT_SPRINT: 'EDIT_SPRINT',
     DELETE_SPRINT: 'DELETE_SPRINT',
+    GET_CHAT: 'GET_CHAT',
+    SET_CHAT:  'SET_CHAT',
+    POST_MESSAGE: 'POST_MESSAGE'
 };
 
 export default ActionType;
