@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Box,
     Grid,
@@ -17,6 +17,7 @@ import { useSharedContext } from '../../context';
 import { useSelector } from 'react-redux';
 import { AppState, UserModel } from '../../models/app.model';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { SocketEvents, useSocketContext } from '../../context/SocketContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -181,10 +182,20 @@ const Pages: React.FC<PagesNavProps> = React.memo(({classes}) => {
 const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
     const members = useSelector((state: AppState) => state.members);
     const history = useHistory();
+    const { onlineUsers } = useSocketContext();
 
+    console.log(onlineUsers);
     const navigateTo = (path: string) => {
         history.push(path);
     };
+
+    function isOline (id: string | undefined): boolean {
+        if(id){
+           return onlineUsers.hasOwnProperty(id) && !onlineUsers[id].lastSeen ? true: false;
+        }
+
+        return false;
+    }
 
     return (
         <>
@@ -193,7 +204,7 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
                     <Box key={item._id} className={clsx(classes.navItem, { [classes.activeItem]: history.location.pathname === `/team/chat/${item._id}` })} onClick={() => navigateTo(`/team/chat/${item._id}`)}
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
-                        <StyledBadge
+                       { isOline(item._id) ? <StyledBadge
                             overlap="circle"
                             anchorOrigin={{
                                 vertical: 'bottom',
@@ -202,7 +213,9 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
                             variant="dot"
                         >
                             <Avatar alt="team member" src={item.avatar? `${baseURL}/files/${item.avatar}` : userAvatar} />
-                        </StyledBadge>
+                        </StyledBadge>:
+                        <Avatar alt="team member" src={item.avatar? `${baseURL}/files/${item.avatar}` : userAvatar} />
+                       }
                         <Box display="flex" flexDirection="column" ml={1} className={classes.textWhite}>
                             <span >{item.name}</span>
                             <small >{item.title || 'Not mention'}</small>

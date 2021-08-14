@@ -35,6 +35,7 @@ import Moment from 'react-moment';
 import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
+import { useSocketContext } from '../../../context/SocketContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -101,6 +102,7 @@ const Chat = (props: any) => {
 const ChatHeader = ({ memberId }: { memberId: string }) => {
     const member = useSelector((state: AppState) => state.members)
         .find((item: UserModel) => item._id === memberId);
+    const { onlineUsers } = useSocketContext();
 
     return (
         <React.Fragment>
@@ -110,7 +112,15 @@ const ChatHeader = ({ memberId }: { memberId: string }) => {
                     <Typography variant="subtitle2" className="bg-text-primary">
                         {member?.name}
                     </Typography>
-                    <small className="bg-text-secondary">2 hours ago</small>
+                    <small className="bg-text-secondary">
+                        {
+                            member?._id &&
+                             onlineUsers.hasOwnProperty(member._id) ?
+                             onlineUsers[member._id].lastSeen ? (
+                                 <Moment fromNow>{onlineUsers[member._id].lastSeen}</Moment>
+                             ) : 'Active Now' : 'long time ago'
+                        }
+                    </small>
                 </Box>
             </Box>
             <Box>

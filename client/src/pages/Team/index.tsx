@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { ContextProvider } from '../../context';
 import { NotificationProvider } from '../../context/NotificationContext';
+import { SocketProvider } from '../../context/SocketContext';
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import Header from '../../components/Header';
 
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         open: {
             [theme.breakpoints.up('sm')]: {
-                
+
                 transition: theme.transitions.create(['margin', 'width'], {
                     easing: theme.transitions.easing.easeOut,
                     duration: theme.transitions.duration.enteringScreen,
@@ -32,24 +33,25 @@ const Team = () => {
 
     return (
         <ContextProvider>
-            <NotificationProvider>
-                <React.Fragment>
-                <main id="app-main" className={classes.open}>
-                    <Header />
-                    <Suspense fallback={<LoadingPage />}>
-                        <Switch>
-                            <Route path="/team" exact component={Board} />
-                            <Route path="/team/scrumboard/:projectId" component={Scrumboard} />
-                            <Route path="/team/members" component={Members} />
-                            <Route path="/team/profile" component={Profile} />
-                            <Route path="/team/setting" component={Setting} />
-                            <Route path="/team/chat/:memberId" component={Chat} />
-                        </Switch>
-                    </Suspense>
-                </main>
-                </React.Fragment>
-            </NotificationProvider>
-
+            <SocketProvider>
+                <NotificationProvider>
+                    <React.Fragment>
+                        <main id="app-main" className={classes.open}>
+                            <Header />
+                            <Suspense fallback={<LoadingPage />}>
+                                <Switch>
+                                    <Route path="/team" exact component={Board} />
+                                    <Route path="/team/scrumboard/:projectId" component={Scrumboard} />
+                                    <Route path="/team/members" component={Members} />
+                                    <Route path="/team/profile" component={Profile} />
+                                    <Route path="/team/setting" component={Setting} />
+                                    <Route path="/team/chat/:memberId" component={Chat} />
+                                </Switch>
+                            </Suspense>
+                        </main>
+                    </React.Fragment>
+                </NotificationProvider>
+            </SocketProvider>
         </ContextProvider>
     )
 };
@@ -57,8 +59,8 @@ const Team = () => {
 const LoadingPage = () => {
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" 
-        width="100%" height="calc(100vh - 56px)">
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center"
+            width="100%" height="calc(100vh - 56px)">
             <Typography component="div" variant="subtitle1" color="textSecondary" gutterBottom>
                 Loading....
             </Typography>
