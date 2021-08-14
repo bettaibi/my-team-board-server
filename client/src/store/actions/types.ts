@@ -23,6 +23,7 @@ const ActionType = {
     DELETE_SPRINT: 'DELETE_SPRINT',
     GET_CHAT: 'GET_CHAT',
     SET_CHAT:  'SET_CHAT',
+    INIT_CHAT: 'INIT_CHAT',
     POST_MESSAGE: 'POST_MESSAGE'
 };
 

@@ -17,6 +17,8 @@ const ChatReducer = (state: ChatModel = {}, action: { type: string, payload?: an
                 return {...state, [action.key]: messages};
             }
             return {...state};
+        case ActionType.INIT_CHAT: 
+         return {};
 
         default: return {...state}
     }

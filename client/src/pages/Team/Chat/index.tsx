@@ -137,6 +137,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
     const [text, setText] = React.useState<string>('');
     const { show, toggle: toggleImoji } = useToggle();
     const { currentUser, selectedWorkspace, dispatch } = useSharedContext();
+    const { sendMessage } = useSocketContext();
     const { loading, onMutate } = useMutation();
     let fileRef = useRef<any>();
     let imageRef = useRef<any>();
@@ -163,6 +164,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
             if (data.success) {
                 setText('');
                 dispatch(PostNewMessage(data.data, memberId));
+                sendMessage(selectedWorkspace, memberId, data.data)
             }
         }
         catch (err) {
@@ -184,7 +186,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                     data: fd
                 });
                 if (res.success) {
-
+                    dispatch(PostNewMessage(res.data, memberId));
                 }
             }
         }
@@ -205,7 +207,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                     data: fd
                 });
                 if (res.success) {
-
+                    dispatch(PostNewMessage(res.data, memberId));
                 }
             }
         }
@@ -303,7 +305,7 @@ const Messages = ({ memberId }: { memberId: string }) => {
                 }
             }
             catch (err) {
-                console.error(err)
+                console.error(err);
             }
         }
 
@@ -311,7 +313,7 @@ const Messages = ({ memberId }: { memberId: string }) => {
             fetchMessages();
         }
         else {
-            setMessages(chat[memberId])
+            setMessages(chat[memberId]);
         }
     }, [memberId, chat]);
 
@@ -430,7 +432,12 @@ const Message = ({ message, myId, last }: { message: MessageModel, myId: string,
                                     <div className={clsx('message', { 'last': last })} onClick={toggle}>
                                         {message.text}
                                     </div>
-                                    {show || last && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
+                                    {last && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
+                                        <Moment fromNow>
+                                            {message.sentAt}
+                                        </Moment>
+                                    </small>}
+                                    {!last && show && <small style={{ marginRight: '0.5rem' }} className="bg-text-secondary">
                                         <Moment fromNow>
                                             {message.sentAt}
                                         </Moment>

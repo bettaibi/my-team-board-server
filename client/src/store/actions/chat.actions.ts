@@ -25,3 +25,10 @@ export const PostNewMessage = (payload: MessageModel, key: string) => {
         type: ActionType.POST_MESSAGE,
     };
 };
+
+export const initChat = () => {
+
+    return {
+        type: ActionType.INIT_CHAT,
+    };
+};

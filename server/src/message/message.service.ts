@@ -33,7 +33,6 @@ export class MessageService{
     async create(payload: MessageDto): Promise<any>{
         try{
             const saved = await this.MessageModel.create({...payload});
-
             if(!saved){
                 return toJson(false, 'Failed to create a new messages');
             }

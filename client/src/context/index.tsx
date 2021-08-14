@@ -4,6 +4,7 @@ import { setProjects } from '../store/actions/project.actions';
 import { setWorkspaceMembers } from '../store/actions/members.actions';
 import { setWorkspaces } from '../store/actions/workspace.actions';
 import { UserModel } from '../models/app.model';
+import { initChat } from '../store/actions/chat.actions';
 import axios from 'axios';
 import AppSkeleton from '../components/AppSkeleton';
 
@@ -82,6 +83,7 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
                         localStorage.setItem('workspace', selectedWorkspace);
                         dispatch(setProjects(data.data.projects));
                         dispatch(setWorkspaceMembers(data.data.members));
+                        dispatch(initChat());
                         setAppLoading(false);
                     }
                 }

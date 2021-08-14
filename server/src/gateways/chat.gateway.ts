@@ -82,11 +82,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     sendMessage(@MessageBody() payload: { workspaceId:string, receiverId: string, data: IMessage }): void {
         const socketId = this.findReceiver(payload.workspaceId, payload.receiverId);
         if(socketId){
-            this.server.to(payload.workspaceId).emit(socketId, payload.data);
+            this.server.to(socketId).emit(SocketEvents.NEW_MESSAGE, payload.data);
         }
     }
 
     handleDisconnect(client: Socket) {
         this.logger.log('Client has been Disconnected');
+       client.removeAllListeners();
     }
 }
