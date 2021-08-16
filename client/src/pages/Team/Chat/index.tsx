@@ -25,6 +25,8 @@ import { Picker } from 'emoji-mart';
 import { useSelector } from 'react-redux';
 import { AppState, MessageModel, UserModel } from '../../../models/app.model';
 import { useSharedContext } from '../../../context';
+import { useSocketContext } from '../../../context/SocketContext';
+import { PostNewMessage, setChat } from '../../../store/actions/chat.actions';
 import useToggle from '../../../hooks/useToggle';
 import useSidenav from '../../../hooks/useSidenav';
 import ChatDetails from './ChatDetails';
@@ -36,8 +38,7 @@ import Moment from 'react-moment';
 import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
-import { useSocketContext } from '../../../context/SocketContext';
-import { PostNewMessage, setChat } from '../../../store/actions/chat.actions';
+import { useVideoCallContext } from './VideoCallContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -137,8 +138,9 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
     const [text, setText] = React.useState<string>('');
     const { show, toggle: toggleImoji } = useToggle();
     const { currentUser, selectedWorkspace, dispatch } = useSharedContext();
+    const { onCallStart } = useVideoCallContext();
     const { sendMessage } = useSocketContext();
-    const { loading, onMutate } = useMutation();
+    const { onMutate } = useMutation();
     let fileRef = useRef<any>();
     let imageRef = useRef<any>();
 
@@ -260,7 +262,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                 </div>
                 <div style={{ display: 'flex' }}>
                     <Tooltip title="audio call">
-                        <IconButton className={classes.mr} size="small">
+                        <IconButton className={classes.mr} size="small" onClick={onCallStart}>
                             <PhoneOutlined className={classes.iconColor} />
                         </IconButton>
                     </Tooltip>
@@ -320,7 +322,7 @@ const Messages = ({ memberId }: { memberId: string }) => {
     if (messages.length === 0) {
         return (
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                <Comment style={{ color: '#9e9e9e', fontSize: 60 }}/>
+                <Comment style={{ color: '#9e9e9e', fontSize: 60 }} />
                 <Typography variant="h6" component="span" style={{ color: '#9e9e9e' }} gutterBottom>
                     Start A new Conversation
                 </Typography>

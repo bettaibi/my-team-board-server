@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Members = () => {
     const classes = useStyles();
     const members = useSelector((state: AppState) => state.members);
-    console.log('Members page component')
+
     return (
         <Box className="bg-white" width="100%" height="100%">
             <Box p={3}>

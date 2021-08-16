@@ -6,6 +6,7 @@ import { NotificationProvider } from '../../context/NotificationContext';
 import { SocketProvider } from '../../context/SocketContext';
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import Header from '../../components/Header';
+import { VideoCallProvider } from './Chat/VideoCallContext';
 
 const Board = lazy(() => import('./Board'));
 const Scrumboard = lazy(() => import('./Board/Scrumboard'));
@@ -33,25 +34,27 @@ const Team = () => {
 
     return (
         <ContextProvider>
-            <SocketProvider>
-                <NotificationProvider>
-                    <React.Fragment>
-                        <main id="app-main" className={classes.open}>
-                            <Header />
-                            <Suspense fallback={<LoadingPage />}>
-                                <Switch>
-                                    <Route path="/team" exact component={Board} />
-                                    <Route path="/team/scrumboard/:projectId" component={Scrumboard} />
-                                    <Route path="/team/members" component={Members} />
-                                    <Route path="/team/profile" component={Profile} />
-                                    <Route path="/team/setting" component={Setting} />
-                                    <Route path="/team/chat/:memberId" component={Chat} />
-                                </Switch>
-                            </Suspense>
-                        </main>
-                    </React.Fragment>
-                </NotificationProvider>
-            </SocketProvider>
+            <VideoCallProvider>
+                <SocketProvider>
+                    <NotificationProvider>
+                        <React.Fragment>
+                            <main id="app-main" className={classes.open}>
+                                <Header />
+                                <Suspense fallback={<LoadingPage />}>
+                                    <Switch>
+                                        <Route path="/team" exact component={Board} />
+                                        <Route path="/team/scrumboard/:projectId" component={Scrumboard} />
+                                        <Route path="/team/members" component={Members} />
+                                        <Route path="/team/profile" component={Profile} />
+                                        <Route path="/team/setting" component={Setting} />
+                                        <Route path="/team/chat/:memberId" component={Chat} />
+                                    </Switch>
+                                </Suspense>
+                            </main>
+                        </React.Fragment>
+                    </NotificationProvider>
+                </SocketProvider>
+            </VideoCallProvider>
         </ContextProvider>
     )
 };
