@@ -107,6 +107,12 @@ const ChatHeader = ({ memberId }: { memberId: string }) => {
         .find((item: UserModel) => item._id === memberId);
     const { onlineUsers } = useSocketContext();
 
+    useEffect(() => {
+        if(member){
+            sessionStorage.setItem('userToCall', JSON.stringify(member));
+        }
+    }, [memberId]);
+
     return (
         <React.Fragment>
             <Box display="flex" flexDirection="row" alignItems="center" justifyContent="start">

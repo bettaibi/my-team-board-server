@@ -6,8 +6,6 @@ import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 import { MessageModel } from '../models/app.model';
 import { PostNewMessage } from '../store/actions/chat.actions';
 
-// import * as msgTone from '../assets/audio/wsn.mp3';
-
 interface OnlineUserProps{
     [userId: string]: {socketId: string, lastSeen?: Date};
 }
@@ -30,16 +28,16 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
     const { currentUser, selectedWorkspace, dispatch } = useSharedContext();
     const [onlineUsers, setOnlineUsers] = React.useState<OnlineUserProps>({});
 
-    // const msgRingTone = new Audio(msgTone);
+    const msgRingTone = new Audio('/audio/wsn.mp3');
 
-    // useEffect(() => {
-    //     msgRingTone.load();
+    useEffect(() => {
+        msgRingTone.load();
 
-    //     return () => {
-    //         msgRingTone.pause();
-    //         msgRingTone.currentTime = 0;
-    //     }
-    // },[]);
+        return () => {
+            msgRingTone.pause();
+            msgRingTone.currentTime = 0;
+        }
+    },[]);
 
     useEffect(()=> {
         console.log("Socket Members Array");
@@ -51,7 +49,7 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
             socket.on(SocketEvents.NEW_MESSAGE, (data: MessageModel)=>{
                 console.log(data);
                 dispatch(PostNewMessage(data, data.sender));
-                // msgRingTone.play();
+                msgRingTone.play();
             });
 
             socket.on('disconnect', ()=> {
