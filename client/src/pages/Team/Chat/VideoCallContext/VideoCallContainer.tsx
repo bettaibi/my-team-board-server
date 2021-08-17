@@ -84,7 +84,7 @@ const VideoCallContainer = () => {
                 <VideoChat />
 
                  <Box className={classes.footer}>
-                    <Typography component="span" variant="body2" color="textSecondary">
+                    <Typography component="span" variant="body2" style={{color:'#ccc'}}>
                             Created by Nidhal Bettaibi
                     </Typography>
                  </Box>

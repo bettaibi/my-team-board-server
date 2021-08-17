@@ -1,24 +1,21 @@
 import React, { useRef, useEffect } from 'react';
 import {
-    IconButton,
-    Avatar,
-    Typography,
     Box,
-    Paper,
     makeStyles,
     Theme
 } from '@material-ui/core';
 import {
     CallEnd,
-    MicOff,
+    MicOffOutlined,
+    MicNoneOutlined,
     VideocamOffOutlined,
+    VideocamOutlined,
+    StopScreenShareOutlined,
     ScreenShareOutlined,
-
 } from '@material-ui/icons';
-import clsx from 'clsx';
-import stream from 'stream';
 import { SpeedDial, SpeedDialAction, SpeedDialIcon, SpeedDialProps } from '@material-ui/lab';
 import useToggle from '../../../../hooks/useToggle';
+import { useVideoCallContext } from '.';
 
 const useStyle = makeStyles((theme: Theme) => ({
     videoPartner: {
@@ -57,6 +54,7 @@ const VideoChat = () => {
     const partnerRefStream = useRef<HTMLVideoElement>(null);
     const myVideoRefStream = useRef<HTMLVideoElement>(null);
     let stream: any;
+    const { onCallEnd } = useVideoCallContext();
 
     useEffect(() => {
         loadMedia();
@@ -64,8 +62,10 @@ const VideoChat = () => {
         return () => {
             try {
                 if (stream) {
-                    var track = stream?.getTracks()[0];
-                    track.stop();
+                    const tracks = stream.getTracks();
+                    tracks.forEach(function(track: any) {
+                        track.stop();
+                    });
                 }
             }
             catch (err) {
@@ -76,7 +76,7 @@ const VideoChat = () => {
 
     async function loadMedia() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
             if (partnerRefStream.current && myVideoRefStream.current) {
                 partnerRefStream.current.srcObject = stream;
                 partnerRefStream.current.play();
@@ -89,6 +89,56 @@ const VideoChat = () => {
         }
     }
 
+    function onVideoOff(){
+        try{
+            stream.getVideoTracks()[0].enabled = !(stream.getVideoTracks()[0].enabled);
+        }
+        catch(err){
+            console.error(err.message);
+        }
+    }
+
+    function onSwitchMic(){
+        try{
+            stream.getAudioTracks()[0].enabled = !( stream.getAudioTracks()[0].enabled);
+        }
+        catch(err){
+            console.error(err.message);
+        }
+    }
+
+    async function onShareScreen(){
+        try{
+            // @ts-ignore
+            stream = await navigator.mediaDevices.getDisplayMedia({
+                video: {
+                    cursor: "always"
+                },
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100
+                }
+            });
+            if (partnerRefStream.current) {
+                partnerRefStream.current.srcObject = stream;
+                partnerRefStream.current.play();
+            }
+        }
+        catch(err){
+            console.error(err.message);
+        }
+    }
+
+    function onCallEnded(){
+        try{
+            onCallEnd();
+        }
+        catch(err){
+            console.error(err.message);
+        }
+    }
+
     return (
         <Box width="100%" height="100vh" position="relative">
             <video ref={partnerRefStream} className={classes.videoPartner} autoPlay />
@@ -96,21 +146,42 @@ const VideoChat = () => {
             <Box className={classes.myVideoContainer}>
                 <video className={classes.myVideo} ref={myVideoRefStream} autoPlay />
             </Box>
-            <MenuActionButtons />
+            <MenuActionButtons onVideoOff = {onVideoOff} onSwitchMic = {onSwitchMic}
+             onCallEnded = {onCallEnded} onShareScreen = {onShareScreen} />
         </Box>
     )
 };
 
-const MenuActionButtons = () => {
+interface MenuActionsProps{
+    onSwitchMic: () => void;
+    onShareScreen: () => void;
+    onVideoOff: () => void;
+    onCallEnded: () => void;
+}
+const MenuActionButtons: React.FC<MenuActionsProps> = ({onSwitchMic, onShareScreen, onCallEnded, onVideoOff}) => {
     const { handleClose, handleOpen, show } = useToggle();
     const classes = useStyle();
+    const [actions, setActions] = React.useState(
+        [
+            { icon: <CallEnd />, name: 'End Call', index: 1, isOn: true},
+            { icon: <MicNoneOutlined />, name: 'Mute', index: 2,  iconOff: <MicOffOutlined />, isOn: true},
+            { icon: <VideocamOutlined />, name: 'Video Camera Off', index: 3, iconOff: <VideocamOffOutlined />, isOn: true },
+            { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4,  iconOff: <StopScreenShareOutlined />, isOn: true}
+        ]
+    );
 
-    const actions = [
-        { icon: <CallEnd />, name: 'End Call' },
-        { icon: <MicOff />, name: 'Mute' },
-        { icon: <VideocamOffOutlined />, name: 'Video Camera Off' },
-        { icon: <ScreenShareOutlined />, name: 'Share Screen' }
-    ];
+    function switchIcon(index: number): void {
+        setActions([...actions.map((item: any) => item.index != index ? item : {...item, isOn: !item.isOn} )]);
+    }
+
+    function actionHandler(index: number): void {
+        switch(index){
+            case 1: onCallEnded(); break;
+            case 2: onSwitchMic(); switchIcon(index); break;
+            case 3: onVideoOff(); switchIcon(index);  break;
+            case 4: onShareScreen(); switchIcon(index); break;
+        }
+    }
 
     return (
         <React.Fragment>
@@ -126,9 +197,9 @@ const MenuActionButtons = () => {
                 {actions.map((action) => (
                     <SpeedDialAction
                         key={action.name}
-                        icon={action.icon}
+                        icon={action.isOn ? action.icon : action.iconOff}
                         tooltipTitle={action.name}
-                        onClick={handleClose}
+                        onClick={()=> actionHandler(action.index)}
                     />
                 ))}
             </SpeedDial>
