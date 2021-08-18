@@ -4,19 +4,15 @@ import {
     Typography,
     Container,
     makeStyles,
-    Theme,
-    Tooltip,
-    Avatar
+    Theme
 } from '@material-ui/core';
-import { UserModel } from '../../../../models/app.model';
 import { useSharedContext } from '../../../../context';
 import Dial from './Dial';
 import AnswerCall from './AnswerCall';
 import VideoChat from './VideoChat';
 
-import userAvatar from '../../../../assets/avatars/profile.jpg';
+import { ComponentSeverity } from '.';
 
-const baseURL = process.env.REACT_APP_BASE_URL;
 
 const useStyle = makeStyles((theme: Theme) => ({
     root: {
@@ -55,33 +51,23 @@ const useStyle = makeStyles((theme: Theme) => ({
     }
 }))
 
-const VideoCallContainer = () => {
-    const classes = useStyle();
-    const userToCall: UserModel = JSON.parse(sessionStorage.getItem('userToCall') || '') || null;
+const VideoCallContainer = ({initialComponent}: {initialComponent: ComponentSeverity}) => {
+
+    const [currentComponent, setCurrentComponent] = React.useState<ComponentSeverity>(initialComponent);
     const { currentUser } = useSharedContext();
+    const classes = useStyle();
+
+    const onCallAccepted = () => {
+        setCurrentComponent('videoChat');
+    };
 
     return (
        <Box className={classes.root}>
             <Container maxWidth="md" className={classes.BoxContainer}>
-                <Box className={classes.header}>
-                {
-                    userToCall && <>
-                    <Tooltip title={currentUser.name}>
-                        <Avatar src={currentUser.avatar ? `${baseURL}/files/${currentUser.avatar}` : userAvatar} 
-                        alt="mine" className={classes.mr} />
-                    </Tooltip>
 
-                    <Tooltip title={userToCall?.name}>
-                      <Avatar src={userToCall.avatar ? `${baseURL}/files/${userToCall.avatar}` : userAvatar} 
-                        alt="userToCall" />
-                    </Tooltip>
-                    </>
-                }
-                </Box>
-
-                {/* <Dial userToCall = {userToCall} /> */}
-                {/* <AnswerCall UserToAnswer = {currentUser} /> */}
-                <VideoChat />
+               {currentComponent === 'dial' && <Dial  currentUser = {currentUser} onCallAccepted = {onCallAccepted} />}
+               {currentComponent === 'answer' && <AnswerCall currentUser = {currentUser} onCallAccepted = {onCallAccepted} />}
+               {currentComponent === 'videoChat' && <VideoChat currentUser = {currentUser} />}
 
                  <Box className={classes.footer}>
                     <Typography component="span" variant="body2" style={{color:'#ccc'}}>

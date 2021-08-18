@@ -34,8 +34,8 @@ const Team = () => {
 
     return (
         <ContextProvider>
-            <VideoCallProvider>
-                <SocketProvider>
+            <SocketProvider>
+                <VideoCallProvider>
                     <NotificationProvider>
                         <React.Fragment>
                             <main id="app-main" className={classes.open}>
@@ -53,8 +53,8 @@ const Team = () => {
                             </main>
                         </React.Fragment>
                     </NotificationProvider>
-                </SocketProvider>
-            </VideoCallProvider>
+                </VideoCallProvider>
+            </SocketProvider>
         </ContextProvider>
     )
 };

@@ -1,4 +1,8 @@
 export const SocketEvents = {
     ONLINE_USERS: 'ONLINE_USERS',
-    NEW_MESSAGE: 'NEW_MESSAGE'
+    NEW_MESSAGE: 'NEW_MESSAGE',
+    CALL: 'CALL',
+    ANSWER: 'ANSWER',
+    CALL_ACCEPTED: 'CALL_ACCEPTED',
+    CALL_END: 'CALL_END',
 }

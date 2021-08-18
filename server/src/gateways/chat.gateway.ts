@@ -12,6 +12,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { SocketEvents } from './events';
 import { IMessage } from "src/models/message.model";
+import { IMember } from "src/models/member.model";
 
 interface OnlineUsersModel{
     [roomId: string]: {[userId: string]: {socketId: string, lastSeen?: Date}};
@@ -84,6 +85,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if(socketId){
             this.server.to(socketId).emit(SocketEvents.NEW_MESSAGE, payload.data);
         }
+    }
+
+    @SubscribeMessage('dial')
+    onCallHandler(@MessageBody() payload: {to: string, from: IMember}) {
+        this.server.to(payload.to).emit(SocketEvents.CALL, payload.from);
+    }
+
+    @SubscribeMessage('cancelCall')
+    onCallEndHandler(@MessageBody() payload: string) {
+        this.server.to(payload).emit(SocketEvents.CALL_END);
+    }
+
+    @SubscribeMessage('onCallAccepted')
+    onCallAcceptedHandler(@MessageBody() payload: string) {
+        this.server.to(payload).emit(SocketEvents.CALL_ACCEPTED);
     }
 
     handleDisconnect(client: Socket) {

@@ -31,6 +31,16 @@ export class Member {
 
     @Prop()
     phone: string;
+};
+
+export interface IMember{
+    name?: string;
+    title?: string;
+    email?: string;
+    address?: string;
+    country?: string;
+    city?: string;
+    phone?: string;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);

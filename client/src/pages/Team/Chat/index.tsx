@@ -39,6 +39,8 @@ import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
 import { useVideoCallContext } from './VideoCallContext';
+import { isMemberConnected } from './helpers';
+import { useNotificationContext } from '../../../context/NotificationContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -145,8 +147,10 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
     const { show, toggle: toggleImoji } = useToggle();
     const { currentUser, selectedWorkspace, dispatch } = useSharedContext();
     const { onCallStart } = useVideoCallContext();
-    const { sendMessage } = useSocketContext();
+    const { sendMessage, onlineUsers } = useSocketContext();
+    const { showMsg } = useNotificationContext();
     const { onMutate } = useMutation();
+
     let fileRef = useRef<any>();
     let imageRef = useRef<any>();
 
@@ -177,6 +181,36 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
         }
         catch (err) {
             console.log(err)
+        }
+    }
+
+    async function audioCallHandler(){
+        try{
+            const isMemberAvailable = isMemberConnected(memberId, onlineUsers);
+            if(!isMemberAvailable){
+                showMsg('Member is not available right now, call him later', 'warning');
+            }
+            else{
+                onCallStart('dial');
+            }
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
+
+    async function videoCallHandler(){
+        try{
+            const isMemberAvailable = isMemberConnected(memberId, onlineUsers);
+            if(!isMemberAvailable){
+                showMsg('Member is not available right now, call him later', 'warning');
+            }
+            else{
+                onCallStart('dial');
+            }
+        }
+        catch(err){
+            console.error(err)
         }
     }
 
@@ -268,12 +302,12 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                 </div>
                 <div style={{ display: 'flex' }}>
                     <Tooltip title="audio call">
-                        <IconButton className={classes.mr} size="small" onClick={onCallStart}>
+                        <IconButton className={classes.mr} size="small" onClick={audioCallHandler}>
                             <PhoneOutlined className={classes.iconColor} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="video call">
-                        <IconButton size="small">
+                        <IconButton size="small" onClick={videoCallHandler}>
                             <VideoCallOutlined className={classes.iconColor} />
                         </IconButton>
                     </Tooltip>
@@ -293,6 +327,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
 };
 
 const Messages = ({ memberId }: { memberId: string }) => {
+
     const chat = useSelector((state: AppState) => state.chat);
     const [messages, setMessages] = React.useState<MessageModel[]>(chat[memberId] || []);
 
