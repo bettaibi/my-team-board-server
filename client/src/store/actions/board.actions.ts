@@ -1,4 +1,4 @@
-import { AspectModel, BoardModel, DynamicBoard, ProjectModel } from '../../models/app.model';
+import { AspectModel, BoardModel, DynamicBoard, ProjectModel, SprintModel } from '../../models/app.model';
 import ActionType from './types';
 
 export const getBoards = () => {
@@ -19,6 +19,7 @@ export const newBoard = (payload: DynamicBoard) => {
 export const editBoard = (id: string, payload: ProjectModel) => {
 
     return {
+        id,
         payload,
         type: ActionType.EDIT_BOARD,
     };
@@ -43,5 +44,23 @@ export const deleteAspect = (id: string, payload: string) => {
         id,
         payload,
         type: ActionType.DELETE_ASPECT,
+    };
+};
+
+export const newSprint = (id: string, payload: SprintModel) => {
+
+    return {
+        id,
+        payload,
+        type: ActionType.NEW_SPRINT,
+    };
+};
+
+export const editSprint = (id: string, payload: SprintModel) => {
+
+    return {
+        id,
+        payload,
+        type: ActionType.EDIT_SPRINT,
     };
 };

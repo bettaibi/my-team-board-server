@@ -5,6 +5,9 @@ import MyTextField from '../../../../../components/MyTextField';
 
 import * as yup from 'yup';
 import useMutation from '../../../../../hooks/useMutation';
+import { useSharedContext } from '../../../../../context';
+import { newSprint } from '../../../../../store/actions/board.actions';
+import { AspectModel } from '../../../../../models/app.model';
 
 const defaultValue = {
     title: ''
@@ -14,19 +17,23 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const NewSprint = ({aspectId}: {aspectId: string}) => {
+const NewSprint = ({aspect, handleClose}: {aspect: AspectModel, handleClose: () => void}) => {
     const { loading, onMutate } = useMutation();
+    const { dispatch } = useSharedContext();
 
-    async function onSubmitHandler({title}: {title: string}, resetForm: () => void){
+    async function onSubmitHandler({title}: {title: string}){
         try{
             const res = await onMutate({
                 url: '/sprint',
                 method: 'POST',
-                data: {title, aspect: aspectId}
+                data: {title, aspect: aspect._id}
             });
 
             if(res.success){
-                resetForm();
+               handleClose();
+               setTimeout(() => {
+                dispatch(newSprint(aspect?.project || '', res.data));
+               },0);
             }
         }
         catch(err){
@@ -37,7 +44,7 @@ const NewSprint = ({aspectId}: {aspectId: string}) => {
     return (
         <React.Fragment>
             <Formik initialValues={defaultValue} validationSchema={schema}
-                onSubmit={(values, { resetForm }) => onSubmitHandler(values, resetForm)}>
+                onSubmit={(values) => onSubmitHandler(values)}>
                 {
                     ({ handleChange, handleSubmit, handleBlur, values, errors, touched }) => (
 

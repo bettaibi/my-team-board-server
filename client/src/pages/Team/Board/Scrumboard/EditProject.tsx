@@ -72,8 +72,8 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
             if(res.success){
                 onSidenavClose();
                 setTimeout(() =>{
-                    dispatch(updateProject(obj));
-                    dispatch(editBoard(project._id || '', obj));
+                    dispatch(updateProject(res.data));
+                    dispatch(editBoard(res.data._id, res.data));
                 },0);
             }
         }

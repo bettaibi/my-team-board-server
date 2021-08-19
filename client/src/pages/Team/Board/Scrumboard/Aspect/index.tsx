@@ -70,7 +70,7 @@ const Aspect = ({aspect}: {aspect: AspectModel}) => {
                         <Draggable key={item._id} index={index} draggableId={item._id}>
                             {
                                 (providedDraggable: DraggableProvided) => (
-                                    <Sprint value={item} providedDraggable={providedDraggable} />
+                                    <Sprint value={item} providedDraggable={providedDraggable} projectId = {aspect.project || ''} />
                                 )
                             }
                         </Draggable>

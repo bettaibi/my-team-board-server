@@ -1,4 +1,4 @@
-import { AspectModel, DynamicBoard } from '../../models/app.model';
+import { AspectModel, DynamicBoard, SprintModel } from '../../models/app.model';
 import ActionType from '../actions/types';
 
 interface ActionPayload{
@@ -50,6 +50,38 @@ const BoardReducer = (state: DynamicBoard = {}, action: ActionPayload) => {
         else{
             return {...state};
         }
+
+        case ActionType.NEW_SPRINT: 
+            if(action.id){
+                let found = state[action.id].aspects;
+                let index = state[action.id].aspects.findIndex((item: AspectModel)=> {
+                    return item._id == action.payload.aspect
+                });
+                if(index > -1){
+                    found[index].cards = [...found[index].cards || [], action.payload];
+                    return {...state, [action.id]: {project: state[action.id].project, aspects: found} } 
+                }
+                else{ return {...state}}
+            }
+            else {return {...state}}
+        
+        case ActionType.EDIT_SPRINT: 
+        if(action.id){
+            let aspects = state[action.id].aspects;
+            let index = state[action.id].aspects.findIndex((item: AspectModel)=> {
+                return item._id == action.payload.aspect
+            });
+            if(index > -1 && aspects[index].cards){
+                aspects[index].cards = aspects[index].cards?.map((item: SprintModel)=> {
+                   return item._id != action.payload._id ? item : action.payload
+                });
+                return {...state, [action.id]: {project: state[action.id].project, aspects} } 
+            }
+            else{ return {...state}}
+        }
+        else { return {...state}};
+
+        
 
         default: return {...state};
     }

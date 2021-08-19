@@ -45,7 +45,6 @@ export class AspectService {
             {
                 $project: {
                     "__v": 0,
-                    "cards.aspect": 0,
                     "cards.__v": 0
                 }
             }

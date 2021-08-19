@@ -26,6 +26,8 @@ import { DropResult, DragDropContext, Droppable, Draggable, DroppableProvided, D
 import { SprintModel, TaskModel } from '../../../../../models/app.model';
 import useMutation from '../../../../../hooks/useMutation';
 import useConfirmDialog from '../../../../../hooks/useConfirmDialog';
+import { useSharedContext } from '../../../../../context';
+import { editSprint } from '../../../../../store/actions/board.actions';
 
 
 const schema = yup.object().shape({
@@ -89,12 +91,14 @@ const useStyle = makeStyles((theme) => ({
 
 interface CardDetailsProps {
     onDialogClose: () => void;
-    sprint: SprintModel
+    sprint: SprintModel,
+    projectId: string;
 }
-const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint }) => {
+const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projectId }) => {
     const classes = useStyle();
     const [list, setList] = React.useState<TaskModel[]>(sprint.tasks || []);
     const { onMutate, loading } = useMutation();
+    const {dispatch} = useSharedContext();
 
     const defaultValue = {
         ...sprint
@@ -108,8 +112,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint }) => {
     async function onSubmitHandler(values: SprintModel) {
         try {
             const obj = {
+                ...sprint,
+                tasks: list,
                 ...values,
-                tasks: list
             };
             const res = await onMutate({
                 url: `/sprint/${sprint._id}`,
@@ -117,7 +122,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint }) => {
                 data: obj
             });
             if(res.success){
+                onDialogClose();
 
+                setTimeout(()=> {
+                    dispatch(editSprint(projectId, obj));
+                },0);
             }
         }
         catch (err) {

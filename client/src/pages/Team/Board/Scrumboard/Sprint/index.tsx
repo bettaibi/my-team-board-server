@@ -16,7 +16,7 @@ import Moment from 'react-moment';
 import useDialog from '../../../../../hooks/useDialog';
 import CardDetails from './CardDetails';
 import NewSprint from './NewSprint';
-import { SprintModel, TaskModel } from '../../../../../models/app.model';
+import { AspectModel, SprintModel, TaskModel } from '../../../../../models/app.model';
 
 function some(array: TaskModel[]): number{
     let s = 0;
@@ -52,8 +52,9 @@ const useStyle = makeStyles((theme) => ({
 interface CardProps {
     providedDraggable: DraggableProvided;
     value: SprintModel;
+    projectId: string;
 }
-const Sprint: React.FC<CardProps> = ({ providedDraggable, value }) => {
+const Sprint: React.FC<CardProps> = ({ providedDraggable, value, projectId }) => {
     const classes = useStyle();
     const numberOfDone = some(value.tasks || []);
     const { DialogComponent, onDialogClose, onDialogOpen } = useDialog();
@@ -90,15 +91,15 @@ const Sprint: React.FC<CardProps> = ({ providedDraggable, value }) => {
             </div>
 
             <DialogComponent>
-                <CardDetails onDialogClose={onDialogClose} sprint = {value} />
+                <CardDetails onDialogClose={onDialogClose} sprint = {value} projectId= {projectId} />
             </DialogComponent>
         </React.Fragment>
     )
 }
 
-const NewSprintContainer = ({aspectId}: {aspectId: string}) => {
+const NewSprintContainer = ({aspect}: {aspect: AspectModel}) => {
     const classes = useStyle();
-    const { PopoverComponent, handleClick } = UsePopover();
+    const { PopoverComponent, handleClick, handleClose} = UsePopover();
 
     return (
         <React.Fragment>
@@ -110,7 +111,7 @@ const NewSprintContainer = ({aspectId}: {aspectId: string}) => {
             </Button>
 
             <PopoverComponent id="new_sprint_menu">
-                <NewSprint aspectId = {aspectId} />
+                <NewSprint aspect = {aspect} handleClose = {handleClose} />
             </PopoverComponent>
         </React.Fragment>
     )

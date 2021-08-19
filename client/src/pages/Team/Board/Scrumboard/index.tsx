@@ -150,7 +150,7 @@ const Scrumboard = (props: any) => {
                                             <Aspect aspect = {item} />
                                             {provided.placeholder}
 
-                                            <NewSprintContainer aspectId = {item._id || ''} />
+                                            <NewSprintContainer aspect = {item} />
                                         </div>
                                     )
                                 }

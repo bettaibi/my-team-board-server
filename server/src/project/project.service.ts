@@ -60,7 +60,16 @@ export class ProjectService{
             if(!updated){
                 return toJson(false, 'Failed to update');
             }
-            return toJson(true, 'Project has been updated successfully');
+            const populated = await this.ProjectModel.findOne({_id: toObjectID(id)})
+            .populate({
+                path: 'members',
+                model: 'Member',
+                select: 'name avatar'
+            });
+            if(!populated){
+                return toJson(false, 'Failed to update');
+            }
+            return toJson(true, 'Project has been updated successfully', populated);
         }
         catch(err){
             throw err;
