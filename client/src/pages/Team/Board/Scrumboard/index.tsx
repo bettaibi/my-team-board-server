@@ -17,7 +17,7 @@ import { DropResult, DragDropContext, Droppable, DroppableProvided } from "react
 import { NewSprintContainer } from './Sprint';
 import { useSharedContext } from '../../../../context';
 import { useSelector } from 'react-redux';
-import { AppState, BoardModel, ProjectModel } from '../../../../models/app.model';
+import { AppState, BoardModel, DynamicBoard, ProjectModel } from '../../../../models/app.model';
 import { newBoard } from '../../../../store/actions/board.actions';
 
 import useSidenav from '../../../../hooks/useSidenav';
@@ -61,8 +61,8 @@ const Scrumboard = (props: any) => {
     const classes = useStyle();
     const history = useHistory();
     let projectId = props.match.params.projectId;
-    const board: BoardModel | undefined = useSelector((state: AppState) => state.boards)
-    .find((item: BoardModel) => item.project._id == projectId);
+    const boards: DynamicBoard = useSelector((state: AppState) => state.boards);
+    const board = boards[projectId] || null;
     console.log("subscription fired")
     const { dispatch } = useSharedContext();
     
@@ -72,6 +72,7 @@ const Scrumboard = (props: any) => {
                 const {data} = await axios.get(`/aspects/${projectId}`);
                 if(data.success) {
                     console.log("***** from server *****")
+                    console.log(data)
                     dispatch(newBoard(data.data));
                 }
             }
@@ -80,7 +81,7 @@ const Scrumboard = (props: any) => {
             }
         };
 
-        if(!board){
+        if(!boards.hasOwnProperty(projectId)){
             fetchBoard();
         }
     }, []);
@@ -122,7 +123,7 @@ const Scrumboard = (props: any) => {
             <Box className={clsx('bg-white', classes.header)} display="flex"
                 flexDirection="row" alignItems="center" justifyContent="space-between">
                 <Typography variant="h5" className="bg-text-primary fw-700">
-                   {board.project.title}
+                   {board?.project.title}
                 </Typography>
                 <Box>
                     <RoundedButton variant="outlined" className={clsx(classes.iconColor, classes.mr)} size="medium"
@@ -130,7 +131,7 @@ const Scrumboard = (props: any) => {
                         <AppsOutlined className={classes.mr}></AppsOutlined>
                         <span>Boards</span>
                     </RoundedButton>
-                    <EditProjectDialog project = {board.project} />
+                    <EditProjectDialog project = {board?.project} />
                 </Box>
             </Box>
 
@@ -138,7 +139,7 @@ const Scrumboard = (props: any) => {
             <Box p={2} display="flex" flexDirection="row" overflow="auto" height="100%">
                 <DragDropContext onDragEnd={handleDragEnd} >
                     {
-                        board.aspects.map((item: any) => (
+                        board?.aspects.map((item: any) => (
                             <Droppable droppableId={item._id} key={item._id}>
                                 {
                                     (provided: DroppableProvided) => (
@@ -159,7 +160,7 @@ const Scrumboard = (props: any) => {
                 </DragDropContext>
                 {/* New Aspect */}
                 <div className = {classes.aspect}>
-                 <NewAspectContainer projectId = {board.project._id || ''} />
+                 <NewAspectContainer projectId = {projectId} />
                 </div>
             </Box>
 

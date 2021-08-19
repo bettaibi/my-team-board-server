@@ -1,4 +1,4 @@
-import { AspectModel, BoardModel } from '../../models/app.model';
+import { AspectModel, BoardModel, DynamicBoard, ProjectModel } from '../../models/app.model';
 import ActionType from './types';
 
 export const getBoards = () => {
@@ -8,11 +8,19 @@ export const getBoards = () => {
     };
 };
 
-export const newBoard = (payload: BoardModel) => {
+export const newBoard = (payload: DynamicBoard) => {
 
     return {
         payload,
         type: ActionType.NEW_BOARD,
+    };
+};
+
+export const editBoard = (id: string, payload: ProjectModel) => {
+
+    return {
+        payload,
+        type: ActionType.EDIT_BOARD,
     };
 };
 

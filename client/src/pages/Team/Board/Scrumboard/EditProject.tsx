@@ -18,6 +18,7 @@ import userAvatar from '../../../../assets/avatars/profile.jpg';
 import useMutation from '../../../../hooks/useMutation';
 import { updateProject } from '../../../../store/actions/project.actions';
 import { useSharedContext } from '../../../../context';
+import { editBoard } from '../../../../store/actions/board.actions';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -37,7 +38,7 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
         project.members.map((item: UserModel) => item._id || '')
     );
     const { loading, onMutate } = useMutation();
-    const { dispatch, currentUser } = useSharedContext();
+    const { dispatch } = useSharedContext();
 
     const InitialValue = {
         title: project.title,
@@ -72,6 +73,7 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
                 onSidenavClose();
                 setTimeout(() =>{
                     dispatch(updateProject(obj));
+                    dispatch(editBoard(project._id || '', obj));
                 },0);
             }
         }

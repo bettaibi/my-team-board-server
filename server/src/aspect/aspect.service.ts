@@ -3,6 +3,7 @@ import { toJson, toObjectID } from 'src/helpers';
 import { InjectModel } from '@nestjs/mongoose';
 import { Aspect, AspectDocument } from 'src/models/aspect.model';
 import { Project, ProjectDocument } from 'src/models/project.model';
+import { Sprint, SprintDocument } from 'src/models/sprint.model';
 import { Model } from 'mongoose';
 import { AspectDto } from './aspect.dto';
 
@@ -11,7 +12,8 @@ export class AspectService {
 
     constructor(
         @InjectModel(Aspect.name) private readonly AspectModel: Model<AspectDocument>,
-        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>
+        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>,
+        @InjectModel(Sprint.name) private readonly SprintModel: Model<SprintDocument>
     ){}
 
     async all(id: string): Promise<any> {
@@ -43,7 +45,6 @@ export class AspectService {
             {
                 $project: {
                     "__v": 0,
-                    "project": 0,
                     "cards.aspect": 0,
                     "cards.__v": 0
                 }
@@ -53,7 +54,7 @@ export class AspectService {
          if (!aspects){
             return toJson(false, 'Failed to get aggregate aspects')
          }
-         return toJson(true, 'Aggregated Aspects', {project, aspects});
+         return toJson(true, 'Aggregated Aspects', {[project._id]: {project, aspects}});
        }
        catch(err){
            throw err;
@@ -92,9 +93,14 @@ export class AspectService {
        try{
         const deleted = await this.AspectModel.deleteOne({_id: toObjectID(id)});
         if(!deleted){
-            toJson(false, 'Failed to delete')
+            toJson(false, 'Failed to delete');
         }
-        return toJson(true, 'Aspect has been Successfully deleted')
+
+        const sprints = await this.SprintModel.deleteMany({aspect: toObjectID(id)});
+        if(!sprints){
+            toJson(false, 'Failed to delete related aspects');
+        }
+        return toJson(true, 'Aspect has been Successfully deleted');
        }
        catch(err){
            throw err;

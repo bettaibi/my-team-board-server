@@ -5,16 +5,20 @@ import MyTextField from '../../../../../../components/MyTextField';
 
 import * as yup from 'yup';
 import useMutation from '../../../../../../hooks/useMutation';
+import { useSharedContext } from '../../../../../../context';
+import { AspectModel } from '../../../../../../models/app.model';
+import { editAspect } from '../../../../../../store/actions/board.actions';
 
 const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const EditAspect = ({title, id}: {title: string, id: string}) => {
+const EditAspect = ({currentAspect, id, handleClose}: {currentAspect: AspectModel, id: string, handleClose: () => void}) => {
     const { loading, onMutate } = useMutation();
+    const {dispatch} = useSharedContext();
 
     const defaultValue = {
-        title: title,
+        title: currentAspect.title,
     };
 
     async function onSubmitHandler({title}: {title: string}){
@@ -26,7 +30,10 @@ const EditAspect = ({title, id}: {title: string, id: string}) => {
             });
 
             if(res.success){
-              
+              handleClose();
+              setTimeout(() =>{
+                  dispatch(editAspect(currentAspect.project || '', {...currentAspect, title}));
+              },0);
             }
         }
         catch(err){

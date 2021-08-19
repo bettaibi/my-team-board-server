@@ -16,11 +16,11 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const NewAspect = ({projectId}: {projectId: string}) => {
+const NewAspect = ({projectId, handleClose}: {projectId: string, handleClose: () => void}) => {
     const { loading, onMutate } = useMutation();
     const { dispatch } = useSharedContext();
 
-    async function onSubmitHandler({title}: {title: string}, resetForm: () => void){
+    async function onSubmitHandler({title}: {title: string}){
         try{
             const res = await onMutate({
                 url: '/aspects',
@@ -29,8 +29,10 @@ const NewAspect = ({projectId}: {projectId: string}) => {
             });
 
             if(res.success){
-                resetForm();
-                dispatch(newAspect(projectId, res.data));
+                handleClose();
+                setTimeout(()=> {
+                    dispatch(newAspect(projectId, res.data));
+                },0);
             }
         }
         catch(err){
@@ -41,7 +43,7 @@ const NewAspect = ({projectId}: {projectId: string}) => {
     return (
         <React.Fragment>
             <Formik initialValues={defaultValue} validationSchema={schema}
-                onSubmit={(values, { resetForm }) => onSubmitHandler(values, resetForm)}>
+                onSubmit={(values) => onSubmitHandler(values)}>
                 {
                     ({ handleChange, handleSubmit, handleBlur, values, errors, touched }) => (
 

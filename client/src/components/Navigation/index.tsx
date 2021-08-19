@@ -157,7 +157,7 @@ const Pages: React.FC<PagesNavProps> = React.memo(({classes}) => {
     return (
         <Box p={2} >
             <Typography variant="subtitle2" color="primary">
-                Workspaces
+                Workspace
             </Typography>
             <small className={classes.textSecondary}>
                 Workspace Managment

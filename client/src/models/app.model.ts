@@ -53,6 +53,9 @@ export interface BoardModel {
     project: ProjectModel;
     aspects: AspectModel[];
 }
+export interface DynamicBoard {
+    [projectId: string]: BoardModel;
+}
 
 export interface MessageModel {
     _id?: string;
@@ -65,7 +68,7 @@ export interface MessageModel {
     sentAt?: Date;
 }
 
-export interface ChatModel{
+export interface ChatModel {
     [memberId: string]: MessageModel[];
 }
 
@@ -73,6 +76,6 @@ export interface AppState {
     workspaces: WorkspaceModel[];
     projects: ProjectModel[];
     members: UserModel[];
-    boards: BoardModel[];
+    boards: DynamicBoard;
     chat: ChatModel;
 }

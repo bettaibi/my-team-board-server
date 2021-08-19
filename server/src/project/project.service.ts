@@ -3,13 +3,15 @@ import { ProjectDto } from './project.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from 'src/models/project.model';
+import { Aspect, AspectDocument } from 'src/models/aspect.model';
 import { toJson, toObjectID } from 'src/helpers';
 
 @Injectable()
 export class ProjectService{
 
     constructor(
-        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>
+        @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>,
+        @InjectModel(Aspect.name) private readonly AspectModel: Model<AspectDocument>,
     ){};
 
     async all(workspaceID: string, userID: string): Promise<any>{
@@ -72,6 +74,11 @@ export class ProjectService{
             if(!removed){
                 return toJson(false, 'Failed to delete');
             }
+            const aspects = await this.AspectModel.deleteMany({project: toObjectID(id)});
+            if(!aspects){
+                return toJson(false, 'Failed to delete related aspects');
+            }
+
             return toJson(true, 'Project has been deleted successfully');
         }
         catch(err){

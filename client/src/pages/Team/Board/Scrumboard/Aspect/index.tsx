@@ -20,6 +20,8 @@ import NewAspect from './NewAspect';
 import useConfirmDialog from '../../../../../hooks/useConfirmDialog';
 import useMutation from '../../../../../hooks/useMutation';
 import { AspectModel } from '../../../../../models/app.model';
+import { useSharedContext } from '../../../../../context';
+import { deleteAspect } from '../../../../../store/actions/board.actions';
 
 const useStyle = makeStyles((theme) => ({
     iconColor: {
@@ -47,7 +49,7 @@ const Aspect = ({aspect}: {aspect: AspectModel}) => {
     return (
         <>
             <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
-                <EditAspectContainer id={aspect._id || ''} title={aspect.title} />
+                <EditAspectContainer id={aspect._id || ''} currentAspect={aspect} />
 
                 <Box display="flex" flexDirection="row" alignItems="center">
                     <Badge badgeContent={aspect.cards? aspect.cards.length : 0} color="primary" style={{ marginRight: '1rem' }} />
@@ -57,7 +59,7 @@ const Aspect = ({aspect}: {aspect: AspectModel}) => {
                     </IconButton>
 
                     <PopoverComponent id="simple_menu">
-                      <DeleteAspectContainer id = {aspect._id || ''} />
+                      <DeleteAspectContainer currentAspect = {aspect} />
                     </PopoverComponent>
 
                 </Box>
@@ -79,22 +81,27 @@ const Aspect = ({aspect}: {aspect: AspectModel}) => {
     )
 };
 
-const DeleteAspectContainer = ({id}: {id: string}) => {
+const DeleteAspectContainer = ({currentAspect}: {currentAspect: AspectModel}) => {
     const classes = useStyle();
     const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this aspect.',
     });
     const { onMutate } = useMutation();
+    const {dispatch} = useSharedContext();
 
     async function onDelete(){
         try{
             const res = await onMutate({
-                url: `/aspects/${id}`,
+                url: `/aspects/${currentAspect._id}`,
                 method: 'DELETE'
             });
             if(res.success){
                 handleClose();
+
+                setTimeout(() =>{
+                    dispatch(deleteAspect(currentAspect.project || '', currentAspect._id || ''));
+                },0);
             }
         }
         catch(err){
@@ -113,17 +120,17 @@ const DeleteAspectContainer = ({id}: {id: string}) => {
     )
 };
 
-const EditAspectContainer = ({title, id}: {title: string, id: string}) => {
+const EditAspectContainer = ({currentAspect, id}: {currentAspect: AspectModel, id: string}) => {
     const classes = useStyle();
-    const { PopoverComponent, handleClick } = UsePopover();
+    const { PopoverComponent, handleClick, handleClose } = UsePopover();
 
     return (
         <React.Fragment>
             <Typography variant="subtitle2" aria-describedby="edit_aspect_menu"
-                onClick={handleClick} className={classes.aspectTitle}>{title}</Typography>
+                onClick={handleClick} className={classes.aspectTitle}>{currentAspect.title}</Typography>
 
             <PopoverComponent id="edit_aspect_menu">
-                <EditAspect title={title} id={id} />
+                <EditAspect currentAspect={currentAspect} id={id} handleClose= {handleClose} />
             </PopoverComponent>
         </React.Fragment>
     )
@@ -131,7 +138,7 @@ const EditAspectContainer = ({title, id}: {title: string, id: string}) => {
 
 const NewAspectContainer = ({projectId}: {projectId: string}) => {
     const classes = useStyle();
-    const { PopoverComponent, handleClick } = UsePopover();
+    const { PopoverComponent, handleClick, handleClose } = UsePopover();
 
     return (
         <React.Fragment>
@@ -142,7 +149,7 @@ const NewAspectContainer = ({projectId}: {projectId: string}) => {
             </Box>
 
             <PopoverComponent id="new_aspect_menu">
-                <NewAspect projectId = {projectId} />
+                <NewAspect projectId = {projectId} handleClose = {handleClose} />
             </PopoverComponent>
         </React.Fragment>
     )
