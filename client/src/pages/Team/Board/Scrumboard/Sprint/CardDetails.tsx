@@ -27,7 +27,7 @@ import { SprintModel, TaskModel } from '../../../../../models/app.model';
 import useMutation from '../../../../../hooks/useMutation';
 import useConfirmDialog from '../../../../../hooks/useConfirmDialog';
 import { useSharedContext } from '../../../../../context';
-import { editSprint } from '../../../../../store/actions/board.actions';
+import { deleteSprint, editSprint } from '../../../../../store/actions/board.actions';
 
 
 const schema = yup.object().shape({
@@ -113,8 +113,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projec
         try {
             const obj = {
                 ...sprint,
-                tasks: list,
                 ...values,
+                tasks: list
             };
             const res = await onMutate({
                 url: `/sprint/${sprint._id}`,
@@ -142,7 +142,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projec
                         <Box p={2} borderBottom="1px solid lightgray" className={classes.root}
                             display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                             <div>
-                                <CardMenu id={sprint._id || ''} />
+                                <CardMenu currentSprint={sprint} projectId = {projectId} />
                             </div>
 
                             <div>
@@ -180,6 +180,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projec
                                 <MyTextField name="dueDate" size="small" fullWidth placeholder="Due date"
                                     type="date"
                                     variant="outlined"
+                                    value={values.dueDate}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                 />
@@ -322,23 +323,27 @@ const NewCheckList = ({ setList }: { setList: React.Dispatch<React.SetStateActio
     )
 };
 
-const CardMenu = ({ id }: { id: string }) => {
+const CardMenu = ({ currentSprint, projectId }: { currentSprint: SprintModel, projectId: string }) => {
     const { PopoverComponent, handleClick, handleClose: closeMenu } = usePopover();
     const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this sprint.',
     });
     const { onMutate } = useMutation();
+    const { dispatch } = useSharedContext();
 
     async function onDelete() {
         try {
             const res = await onMutate({
-                url: `/sprint/${id}`,
+                url: `/sprint/${currentSprint._id}`,
                 method: 'DELETE'
             });
 
             if (res.success) {
                 handleClose();
+                setTimeout(() =>{
+                    dispatch(deleteSprint(projectId ,currentSprint));
+                },0);
             }
         }
         catch (err) {

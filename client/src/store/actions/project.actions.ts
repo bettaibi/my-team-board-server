@@ -31,3 +31,11 @@ export const updateProject = (payload: ProjectModel) => {
         type: ActionType.UPDATE_PROJECT,
     };
 };
+
+export const deleteProject = (payload: string) => {
+
+    return {
+        payload,
+        type: ActionType.DELETE_PROJECT,
+    };
+}

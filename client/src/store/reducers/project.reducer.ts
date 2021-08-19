@@ -13,6 +13,9 @@ const ProjectReducer = (state = [], action: { type: string, payload?: any }) => 
         case ActionType.UPDATE_PROJECT:
             return [...state.map((item: ProjectModel)=> item._id != action.payload._id? item: action.payload)]
 
+        case ActionType.DELETE_PROJECT:
+            return [...state.filter((item: ProjectModel)=> item._id != action.payload)];
+            
         default: return [...state]
     }
 };

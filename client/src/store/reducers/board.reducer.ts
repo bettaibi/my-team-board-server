@@ -81,7 +81,32 @@ const BoardReducer = (state: DynamicBoard = {}, action: ActionPayload) => {
         }
         else { return {...state}};
 
-        
+        case ActionType.DELETE_SPRINT:
+            if(action.id){
+                let aspects = state[action.id].aspects;
+                let index = state[action.id].aspects.findIndex((item: AspectModel)=> {
+                    return item._id == action.payload.aspect
+                });
+                if(index > -1 && aspects[index].cards){
+                    aspects[index].cards = aspects[index].cards?.filter((item: SprintModel)=>{
+                        return item._id != action.payload._id
+                    });
+                    return {...state, [action.id]: {project: state[action.id].project, aspects} } 
+                }
+                else{
+                    return {...state};
+                }
+            }
+            else{
+                return {...state};
+            }
+
+        case ActionType.DELETE_BOARD: 
+        if(action.id){
+            delete state[action.id];
+            return {...state};
+        }
+        else{ return {...state}}
 
         default: return {...state};
     }

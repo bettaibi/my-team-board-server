@@ -6,7 +6,6 @@ import {
     Avatar,
     Chip
 } from '@material-ui/core';
-import { useNotificationContext } from '../../../../context/NotificationContext';
 import MyTextField from '../../../../components/MyTextField';
 import RoundedButton from '../../../../components/RoundedButton';
 import useConfirmDialog from '../../../../hooks/useConfirmDialog';
@@ -16,9 +15,9 @@ import { AppState, ProjectModel, UserModel } from '../../../../models/app.model'
 import { useSelector } from 'react-redux';
 import userAvatar from '../../../../assets/avatars/profile.jpg';
 import useMutation from '../../../../hooks/useMutation';
-import { updateProject } from '../../../../store/actions/project.actions';
+import { deleteProject, updateProject } from '../../../../store/actions/project.actions';
 import { useSharedContext } from '../../../../context';
-import { editBoard } from '../../../../store/actions/board.actions';
+import { deleteBoard, editBoard } from '../../../../store/actions/board.actions';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -95,7 +94,7 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
                             </RoundedButton>
 
                             <Box>
-                                <DeleteProjectButton />
+                                <DeleteProjectButton projectId = {project._id || ''} />
                                 <RoundedButton disabled={members.length===0} disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                   {loading? 'Loading...':'Save'}
                                 </RoundedButton>
@@ -166,15 +165,32 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
     )
 }
 
-const DeleteProjectButton = () => {
+const DeleteProjectButton = ({projectId}: {projectId: string}) => {
     const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this project, by deleting this project all linked aspects will be deleted.',
     });
-    const { showMsg } = useNotificationContext();
+    const { dispatch } = useSharedContext();
+    const { onMutate } = useMutation();
 
     async function onDelete(){
-        console.log('onDelete');
+        try{
+            const res = await onMutate({
+                url: `/projects/${projectId}`,
+                method: 'DELETE'
+            });
+            if(res.success){
+                handleClose();
+
+                setTimeout(() =>{
+                    dispatch(deleteProject(projectId));
+                    dispatch(deleteBoard(projectId));
+                }, 0);
+            }
+        }
+        catch(err){
+            console.error(err);
+        }
     }
 
     return (
