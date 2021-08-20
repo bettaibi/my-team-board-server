@@ -67,12 +67,14 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
     const callRingtone = new Audio('/audio/app_call.mp3');
 
     useEffect(() => {
-
+        var timer: NodeJS.Timeout;
         const init = async () => {
             try{
-                callRingtone.load();
                 callRingtone.loop = true;
-                callRingtone.play();
+
+                timer = setTimeout(() =>{
+                    callRingtone.play();
+                },300);
 
                 socket.on(SocketEvents.CALL_END , ()=> {
                     receiveCallEnd();
@@ -92,6 +94,7 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
         return () => {
             callRingtone.pause();
             callRingtone.currentTime = 0;
+            clearTimeout(timer);
             socket.off(SocketEvents.CALL_END);
             socket.off(SocketEvents.CALL_ACCEPTED);
         }
@@ -105,6 +108,7 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
     }
 
     async function CallEndHandler() {
+       try{
         SetCallState('Call Ended.')
         const socketId = await getSocketId(UserToAnswer._id || '', onlineUsers);
         if(socketId)
@@ -113,13 +117,22 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
         setTimeout(() => {
             onCallEnd();
         }, 1000);
+       }
+       catch(err){
+           throw err;
+       }
     }
 
     async function CallAcceptedHandler(){
-        const socketId = await getSocketId(UserToAnswer._id || '', onlineUsers);
-        if(socketId)
-        socket.emit('onCallAccepted', socketId);
-        onCallAccepted();
+       try{
+            const socketId = await getSocketId(UserToAnswer._id || '', onlineUsers);
+            if(socketId)
+            socket.emit('onCallAccepted', socketId);
+            onCallAccepted();
+       }
+       catch(err){
+           console.error(err)
+       }
     }
 
     return (

@@ -102,6 +102,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to(payload).emit(SocketEvents.CALL_ACCEPTED);
     }
 
+    @SubscribeMessage('receiveSignal')
+    onReciveSignal(@MessageBody() payload: {to: string, dataSignal: any}){
+        this.server.to(payload.to).emit(SocketEvents.EMIT_SIGNAL, payload.dataSignal);
+    }
+
     handleDisconnect(client: Socket) {
         this.logger.log('Client has been Disconnected');
        client.removeAllListeners();

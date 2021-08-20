@@ -64,7 +64,8 @@ const Dial = ({currentUser, onCallAccepted}: {currentUser: UserModel, onCallAcce
     const { onCallEnd } = useVideoCallContext();
     const { socket, onlineUsers } = useSocketContext();
     const classes = useStyle();
-    const userToCall: UserModel = JSON.parse(sessionStorage.getItem('userToCall') || '') || null;
+    let ob = sessionStorage.getItem('userToCall');
+    const userToCall: UserModel = ob ? JSON.parse(ob) : null;
     const callRingtone = new Audio('/audio/caller.mp3');
 
     useEffect(() => {

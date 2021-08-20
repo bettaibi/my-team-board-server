@@ -31,13 +31,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Team = () => {
     const classes = useStyles();
-
+    console.log('team component')
     return (
         <ContextProvider>
             <SocketProvider>
                 <VideoCallProvider>
                     <NotificationProvider>
                         <React.Fragment>
+                        {console.log('team view')}
                             <main id="app-main" className={classes.open}>
                                 <Header />
                                 <Suspense fallback={<LoadingPage />}>

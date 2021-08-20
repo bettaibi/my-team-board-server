@@ -1,10 +1,20 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
-import useDialog from '../../../../hooks/useDialog';
+import useToggle from '../../../../hooks/useToggle';
 import { UserModel } from '../../../../models/app.model';
 import VideoCallContainer from './VideoCallContainer';
+import Slide from '@material-ui/core/Slide';
+import { TransitionProps } from '@material-ui/core/transitions';
+import { Dialog } from '@material-ui/core';
 
-export type ComponentSeverity = 'dial' | 'answer' | 'videoChat';
+export type ComponentSeverity = 'dial' | 'answer' | 'videoChat' | null;
+
+const SlideTransition = React.forwardRef(function Transition(
+    props: TransitionProps & { children?: React.ReactElement<any, any> },
+    ref: React.Ref<unknown>,
+  ) {
+    return <Slide direction="right" ref={ref} {...props} />;
+});
 
 interface ContextProps {
     onCallStart: (c: ComponentSeverity) => void;
@@ -14,10 +24,10 @@ interface ContextProps {
 
 const VideoCallContext = React.createContext({} as ContextProps);
 
-export const VideoCallProvider = ({ children }: { children: JSX.Element }) => {
-    const { DialogComponent, onDialogClose: onCallEnd, onDialogOpen } = useDialog(true);
+export const VideoCallProvider = React.memo(({ children }: { children: JSX.Element }) => {
+    const { DialogComponent, onDialogClose, onDialogOpen } = useDialogComponent();
     const { socket } = useSocketContext();
-    const [initialComponent, setInitialComponent] = React.useState<ComponentSeverity>('dial');
+    const [currentComponent, setCurrentComponent] = React.useState<ComponentSeverity>(null);
    const [caller, setCaller] = React.useState<UserModel>({} as UserModel);
 
    console.log('iside video call component')
@@ -36,11 +46,16 @@ export const VideoCallProvider = ({ children }: { children: JSX.Element }) => {
    }, []);
 
     function onCallStart(c: ComponentSeverity){
-        setInitialComponent(c);
+        setCurrentComponent(c);
 
         setTimeout(() => {
             onDialogOpen();
         })
+    };
+
+    function onCallEnd(){
+        onDialogClose();
+        setCaller({} as UserModel);
     }
     
     const value = {
@@ -53,14 +68,38 @@ export const VideoCallProvider = ({ children }: { children: JSX.Element }) => {
         <VideoCallContext.Provider value = {value}>
             <React.Fragment>
                 <DialogComponent>
-                   <VideoCallContainer initialComponent = {initialComponent} />
+                   <VideoCallContainer currentComponent = {currentComponent} />
                 </DialogComponent>
 
                 {children}
             </React.Fragment>
         </VideoCallContext.Provider>
     );
+});
+
+const useDialogComponent = () => {
+    const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
+    console.log('Chat dialog rerender')
+
+    const DialogComponent: React.FC = useCallback(({children}) => {
+        return(
+        <Dialog 
+            onClose={onDialogClose} 
+            aria-labelledby="video-chat-dialog" 
+            open={show}
+            TransitionComponent={SlideTransition}
+            fullScreen={true}>
+            {children}
+        </Dialog>)
+    }, [show]);
+
+    return {
+        DialogComponent,
+        onDialogClose,
+        onDialogOpen
+    }
 };
+
 
 export const useVideoCallContext = () => {
     const values = useContext(VideoCallContext);

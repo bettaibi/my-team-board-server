@@ -23,6 +23,7 @@ import { UserModel } from '../../../../models/app.model';
 import userAvatar from '../../../../assets/avatars/profile.jpg';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
 import { getSocketId } from '../helpers';
+import Peer from "simple-peer";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -72,26 +73,44 @@ const useStyle = makeStyles((theme: Theme) => ({
     }
 }));
 
-const VideoChat = ({ currentUser }: { currentUser: UserModel }) => {
+const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
 
     const classes = useStyle();
     const { onCallEnd, caller } = useVideoCallContext();
     const { socket, onlineUsers } = useSocketContext();
 
+    let ob = sessionStorage.getItem('userToCall');
+    const userToCall: UserModel = ob ? JSON.parse(ob) : null;
+
     const partnerRefStream = useRef<HTMLVideoElement>(null);
     const myVideoRefStream = useRef<HTMLVideoElement>(null);
 
-    const userToCall: UserModel = JSON.parse(sessionStorage.getItem('userToCall') || '') || null;
+    const myPartner = React.useMemo(() => {
+       return caller.hasOwnProperty('_id') ? caller : userToCall;
+    }, [currentUser, caller]);
+
+    const socketId = React.useMemo(async() => {
+        return await getSocketId(myPartner._id || '', onlineUsers);
+    }, [])
+
+    console.log(myPartner)
 
     let stream: any;
+    let partnerPeer = new Peer();
 
     useEffect(() => {
         socket.on(SocketEvents.CALL_END, () => {
             onCallEnd();
         });
 
+        socket.on(SocketEvents.EMIT_SIGNAL, (dataSignal: Peer.SignalData) => {
+            console.log("handshake has been succesfully done")
+            partnerPeer.signal(dataSignal);
+        });
+
         return () => {
             socket.off(SocketEvents.CALL_END);
+            socket.off(SocketEvents.EMIT_SIGNAL);
         }
     }, []);
 
@@ -105,6 +124,8 @@ const VideoChat = ({ currentUser }: { currentUser: UserModel }) => {
                     tracks.forEach(function (track: any) {
                         track.stop();
                     });
+
+                    // partnerPeer.destroy();
                 }
             }
             catch (err) {
@@ -113,18 +134,43 @@ const VideoChat = ({ currentUser }: { currentUser: UserModel }) => {
         }
     }, []);
 
-    async function loadMedia() {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-            if (partnerRefStream.current && myVideoRefStream.current) {
-                partnerRefStream.current.srcObject = stream;
-                partnerRefStream.current.play();
-                myVideoRefStream.current.srcObject = stream;
+    function loadMedia() {
+        navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        }).then(gotMedia).catch((err) => {console.error(err)});
+    }
+
+    async function gotMedia(st: MediaStream){
+        try{
+            if(myVideoRefStream.current){
+                myVideoRefStream.current.srcObject = st;
                 myVideoRefStream.current.play();
+                stream = st;
             }
+            const initiator = !caller.hasOwnProperty('_id');
+            let to = await socketId;
+            if(initiator) {
+                let peer = new Peer({ initiator: initiator, stream: st });
+                peer.on('signal', data => {
+                   socket.emit('receiveSignal', {to: to, dataSignal: data});
+                });
+            }
+
+            partnerPeer.on('signal', data => {
+                socket.emit('receiveSignal', {to: to, dataSignal: data});
+            });
+
+            partnerPeer.on('stream', stream => {
+                console.log("Stream has been recieved");
+                if(partnerRefStream.current){
+                    partnerRefStream.current.srcObject = stream;
+                    partnerRefStream.current.play();
+                }
+            });
         }
-        catch (err) {
-            console.error(err.message);
+        catch(err){
+            throw err;
         }
     }
 
@@ -171,17 +217,13 @@ const VideoChat = ({ currentUser }: { currentUser: UserModel }) => {
 
     async function onCallEnded() {
         try {
-            if (caller._id == currentUser._id) {
-                const socketId = await getSocketId(userToCall._id || '', onlineUsers);
-                if (socketId)
-                socket.emit('cancelCall', socketId);
-            }
-            else {
-                const socketId = await getSocketId(caller._id || '', onlineUsers);
-                if (socketId)
-                socket.emit('cancelCall', socketId);
-            }
-            onCallEnd();
+            const to = await socketId;
+            if (to)
+            socket.emit('cancelCall', to);
+
+            setTimeout(()=>{
+                onCallEnd();
+            },0);
         }
         catch (err) {
             console.error(err.message);
@@ -203,23 +245,14 @@ const VideoChat = ({ currentUser }: { currentUser: UserModel }) => {
                     <Avatar src={currentUser.avatar ? `${baseURL}/files/${currentUser.avatar}` : userAvatar}
                         alt="mine" className={classes.mr} />
                 </Tooltip>
-                <>
-                    {
-                        caller.name ?
-                            <Tooltip title={caller?.name}>
-                                <Avatar src={caller.avatar ? `${baseURL}/files/${caller.avatar}` : userAvatar}
-                                    alt="userToCall" />
-                            </Tooltip>
-                            : <Tooltip title={userToCall?.name}>
-                                <Avatar src={userToCall.avatar ? `${baseURL}/files/${userToCall.avatar}` : userAvatar}
-                                    alt="userToCall" />
-                            </Tooltip>
-                    }
-                </>
+                <Tooltip title={myPartner?.name}>
+                    <Avatar src={myPartner.avatar ? `${baseURL}/files/${myPartner.avatar}` : userAvatar}
+                        alt="userToCall" />
+                </Tooltip>
             </Box>
         </Box>
     )
-};
+});
 
 interface MenuActionsProps {
     onSwitchMic: () => void;

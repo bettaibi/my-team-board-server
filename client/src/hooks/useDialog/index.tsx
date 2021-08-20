@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     Dialog, 
     useTheme
@@ -25,13 +25,14 @@ const FadeTransition = React.forwardRef(function Transition(
 const useDialog = (fullSize?: boolean) => {
     const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
     const theme = useTheme();
-    const isXs = useMediaQuery(theme.breakpoints.down('xs'))
+    const isXs = useMediaQuery(theme.breakpoints.down('xs'));
+    console.log('dialog rerender')
     const fullScreen = fullSize || isXs;
 
-    const DialogComponent: React.FC = ({children}) => {
+
+    const DialogComponent: React.FC = useCallback(({children}) => {
         return(
         <Dialog 
-            disableBackdropClick
             onClose={onDialogClose} 
             aria-labelledby="customized-dialog-content" 
             open={show}
@@ -39,7 +40,7 @@ const useDialog = (fullSize?: boolean) => {
             fullScreen={fullScreen}>
             {children}
         </Dialog> )
-    }
+    }, [show, fullScreen]);
 
     return {
         DialogComponent,

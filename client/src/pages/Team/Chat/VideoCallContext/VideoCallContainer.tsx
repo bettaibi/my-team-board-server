@@ -51,23 +51,25 @@ const useStyle = makeStyles((theme: Theme) => ({
     }
 }))
 
-const VideoCallContainer = ({initialComponent}: {initialComponent: ComponentSeverity}) => {
-
-    const [currentComponent, setCurrentComponent] = React.useState<ComponentSeverity>(initialComponent);
+interface VideoCallContainerProps{
+    currentComponent: ComponentSeverity;
+}
+const VideoCallContainer: React.FC<VideoCallContainerProps> = ({currentComponent}) => {
     const { currentUser } = useSharedContext();
+    const [activeComponent, setActiveComponent] = React.useState<ComponentSeverity>(currentComponent);
     const classes = useStyle();
 
     const onCallAccepted = () => {
-        setCurrentComponent('videoChat');
+        setActiveComponent('videoChat');
     };
 
     return (
        <Box className={classes.root}>
             <Container maxWidth="md" className={classes.BoxContainer}>
 
-               {currentComponent === 'dial' && <Dial  currentUser = {currentUser} onCallAccepted = {onCallAccepted} />}
-               {currentComponent === 'answer' && <AnswerCall currentUser = {currentUser} onCallAccepted = {onCallAccepted} />}
-               {currentComponent === 'videoChat' && <VideoChat currentUser = {currentUser} />}
+               {activeComponent === 'dial' && <Dial  currentUser = {currentUser} onCallAccepted = {onCallAccepted} />}
+               {activeComponent === 'answer' && <AnswerCall currentUser = {currentUser} onCallAccepted = {onCallAccepted} />}
+               {activeComponent === 'videoChat' && <VideoChat currentUser = {currentUser} />}
 
                  <Box className={classes.footer}>
                     <Typography component="span" variant="body2" style={{color:'#ccc'}}>

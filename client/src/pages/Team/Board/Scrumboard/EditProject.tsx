@@ -6,18 +6,19 @@ import {
     Avatar,
     Chip
 } from '@material-ui/core';
-import MyTextField from '../../../../components/MyTextField';
-import RoundedButton from '../../../../components/RoundedButton';
-import useConfirmDialog from '../../../../hooks/useConfirmDialog';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as yup from "yup";
 import { AppState, ProjectModel, UserModel } from '../../../../models/app.model';
 import { useSelector } from 'react-redux';
-import userAvatar from '../../../../assets/avatars/profile.jpg';
-import useMutation from '../../../../hooks/useMutation';
 import { deleteProject, updateProject } from '../../../../store/actions/project.actions';
 import { useSharedContext } from '../../../../context';
 import { deleteBoard, editBoard } from '../../../../store/actions/board.actions';
+
+import useMutation from '../../../../hooks/useMutation';
+import userAvatar from '../../../../assets/avatars/profile.jpg';
+import MyTextField from '../../../../components/MyTextField';
+import useConfirmDialog from '../../../../hooks/useConfirmDialog';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import RoundedButton from '../../../../components/RoundedButton';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 

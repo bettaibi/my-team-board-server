@@ -17,7 +17,7 @@ import { useSharedContext } from '../../context';
 import { useSelector } from 'react-redux';
 import { AppState, UserModel } from '../../models/app.model';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { SocketEvents, useSocketContext } from '../../context/SocketContext';
+import { useSocketContext } from '../../context/SocketContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -111,7 +111,7 @@ interface PagesNavProps{
     classes: ClassNameMap;
 }
 
-const Navigation = () => {
+const Navigation = React.memo(() => {
     const classes = useStyles();
     console.log("navigation component")
 
@@ -144,7 +144,7 @@ const Navigation = () => {
             </Grid>
         </Grid>
     )
-}
+});
 
 const Pages: React.FC<PagesNavProps> = React.memo(({classes}) => {
     const history = useHistory();
@@ -189,13 +189,12 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
         history.push(path);
     };
 
-    function isOline (id: string | undefined): boolean {
+    const isOline = React.useCallback( (id: string | undefined): boolean => {
         if(id){
            return onlineUsers.hasOwnProperty(id) && !onlineUsers[id].lastSeen ? true: false;
         }
-
         return false;
-    }
+    }, [onlineUsers]);
 
     return (
         <>
@@ -205,7 +204,7 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
                         display="flex" flexDirection="row" alignItems="center" justifyContent="start">
 
                        { isOline(item._id) ? <StyledBadge
-                            overlap="circle"
+                            overlap="circular"
                             anchorOrigin={{
                                 vertical: 'bottom',
                                 horizontal: 'right',
@@ -228,7 +227,7 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
 
 });
 
-const CurrentUser = React.memo(() => {
+const CurrentUser = () => {
     const classes = useStyles();
     const { currentUser } = useSharedContext();
 
@@ -244,6 +243,6 @@ const CurrentUser = React.memo(() => {
             </small>
         </Box>
     )
-});
+};
 
 export default Navigation;

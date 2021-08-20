@@ -5,4 +5,6 @@ export const SocketEvents = {
     ANSWER: 'ANSWER',
     CALL_ACCEPTED: 'CALL_ACCEPTED',
     CALL_END: 'CALL_END',
+    EMIT_SIGNAL: 'EMIT_SIGNAL',
+    DATA_STREAM: 'DATA_STREAM',
 }
