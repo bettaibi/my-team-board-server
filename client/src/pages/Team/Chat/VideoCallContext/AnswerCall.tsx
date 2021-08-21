@@ -58,13 +58,14 @@ const useStyle = makeStyles((theme: Theme) => ({
     }
 }));
 
+const callRingtone = new Audio('/audio/app_call.mp3');
+
 const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, onCallAccepted: () => void }) => {
 
     const classes = useStyle();
     const { onCallEnd, caller: UserToAnswer } = useVideoCallContext();
     const { socket, onlineUsers } = useSocketContext();
     const [callState, SetCallState] = React.useState<string>('Calling...');
-    const callRingtone = new Audio('/audio/app_call.mp3');
 
     useEffect(() => {
         var timer: NodeJS.Timeout;
@@ -76,11 +77,11 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
                     callRingtone.play();
                 },300);
 
-                socket.on(SocketEvents.CALL_END , ()=> {
+                socket.once(SocketEvents.CALL_END , ()=> {
                     receiveCallEnd();
                 });
 
-                socket.on(SocketEvents.CALL_ACCEPTED, () => {
+                socket.once(SocketEvents.CALL_ACCEPTED, () => {
                     onCallAccepted();
                 });
             }

@@ -191,7 +191,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                 showMsg('Member is not available right now, call him later', 'warning');
             }
             else{
-                onCallStart('dial');
+                onCallStart('dial', false);
             }
         }
         catch(err){
@@ -206,7 +206,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
                 showMsg('Member is not available right now, call him later', 'warning');
             }
             else{
-                onCallStart('dial');
+                onCallStart('dial', true);
             }
         }
         catch(err){

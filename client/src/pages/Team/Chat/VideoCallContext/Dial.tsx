@@ -61,7 +61,7 @@ const useStyle = makeStyles((theme: Theme) => ({
 
 const Dial = ({currentUser, onCallAccepted}: {currentUser: UserModel, onCallAccepted: () => void}) => {
     const [callState, SetCallState] = React.useState<string>('Dialing...');
-    const { onCallEnd } = useVideoCallContext();
+    const { onCallEnd, isVideo } = useVideoCallContext();
     const { socket, onlineUsers } = useSocketContext();
     const classes = useStyle();
     let ob = sessionStorage.getItem('userToCall');
@@ -75,16 +75,16 @@ const Dial = ({currentUser, onCallAccepted}: {currentUser: UserModel, onCallAcce
                 if(userToCall){
                     const socketId = await getSocketId(userToCall._id || '', onlineUsers);
                     if(socketId){
-                        socket.emit('dial', {to: socketId, from: currentUser});
+                        socket.emit('dial', {to: socketId, from: currentUser, isVideo});
                     }
                     callRingtone.loop = true;
                     callRingtone.play();
 
-                    socket.on(SocketEvents.CALL_END , () => {
+                    socket.once(SocketEvents.CALL_END , () => {
                         receiveCallEnd();
                     });
 
-                    socket.on(SocketEvents.CALL_ACCEPTED, () => {
+                    socket.once(SocketEvents.CALL_ACCEPTED, () => {
                         onCallAccepted();
                     });
                 } 

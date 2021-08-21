@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect } from 'react';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
-import useToggle from '../../../../hooks/useToggle';
 import { UserModel } from '../../../../models/app.model';
+import { Dialog } from '@material-ui/core';
+import { TransitionProps } from '@material-ui/core/transitions';
 import VideoCallContainer from './VideoCallContainer';
 import Slide from '@material-ui/core/Slide';
-import { TransitionProps } from '@material-ui/core/transitions';
-import { Dialog } from '@material-ui/core';
+import useToggle from '../../../../hooks/useToggle';
 
 export type ComponentSeverity = 'dial' | 'answer' | 'videoChat' | null;
 
@@ -17,26 +17,34 @@ const SlideTransition = React.forwardRef(function Transition(
 });
 
 interface ContextProps {
-    onCallStart: (c: ComponentSeverity) => void;
+    onCallStart: (c: ComponentSeverity, isVideo: boolean) => void;
     onCallEnd : () => void;
     caller: UserModel;
+    isVideo: boolean;
 }
 
 const VideoCallContext = React.createContext({} as ContextProps);
 
 export const VideoCallProvider = React.memo(({ children }: { children: JSX.Element }) => {
-    const { DialogComponent, onDialogClose, onDialogOpen } = useDialogComponent();
+    const { DialogComponent, onDialogClose, onDialogOpen, show } = useDialogComponent();
     const { socket } = useSocketContext();
     const [currentComponent, setCurrentComponent] = React.useState<ComponentSeverity>(null);
    const [caller, setCaller] = React.useState<UserModel>({} as UserModel);
+   const [isVideo, setIsVideo] = React.useState<boolean>(true);
 
    console.log('iside video call component')
 
    useEffect(()=> {
-    socket.on(SocketEvents.CALL, (user: UserModel) => {
+    socket.on(SocketEvents.CALL, ({user, isVideo}: {user: UserModel, isVideo: boolean}) => {
         if(user){
             setCaller(user);
-            onCallStart('answer');
+            onCallStart('answer', isVideo);
+        }
+    });
+
+    socket.on('disconnect', ()=> {
+        if(show){
+            onCallEnd()
         }
     });
 
@@ -45,7 +53,8 @@ export const VideoCallProvider = React.memo(({ children }: { children: JSX.Eleme
     }
    }, []);
 
-    function onCallStart(c: ComponentSeverity){
+    function onCallStart(c: ComponentSeverity, isVideoChat: boolean) {
+        setIsVideo(isVideoChat);
         setCurrentComponent(c);
 
         setTimeout(() => {
@@ -61,7 +70,8 @@ export const VideoCallProvider = React.memo(({ children }: { children: JSX.Eleme
     const value = {
         onCallStart,
         onCallEnd,
-        caller
+        caller,
+        isVideo
     };
 
     return (
@@ -96,7 +106,8 @@ const useDialogComponent = () => {
     return {
         DialogComponent,
         onDialogClose,
-        onDialogOpen
+        onDialogOpen,
+        show
     }
 };
 

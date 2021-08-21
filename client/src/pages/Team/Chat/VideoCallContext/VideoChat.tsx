@@ -4,7 +4,10 @@ import {
     makeStyles,
     Theme,
     Tooltip,
-    Avatar
+    Avatar,
+    Typography,
+    Paper,
+    IconButton
 } from '@material-ui/core';
 import {
     CallEnd,
@@ -24,6 +27,7 @@ import userAvatar from '../../../../assets/avatars/profile.jpg';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
 import { getSocketId } from '../helpers';
 import Peer from "simple-peer";
+import clsx from 'clsx';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -37,6 +41,13 @@ const useStyle = makeStyles((theme: Theme) => ({
     },
     mr: {
         marginRight: theme.spacing(1)
+    },
+    mt: {
+        marginTop: theme.spacing(1)
+    },
+    lgAvatar: {
+        width: theme.spacing(11),
+        height: theme.spacing(11),
     },
     myVideoContainer: {
         width: theme.spacing(12),
@@ -70,13 +81,31 @@ const useStyle = makeStyles((theme: Theme) => ({
         alignItems: 'center',
         width: '100%',
         zIndex: 99999999
+    },
+    audioPartner: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)'
+    },
+    paper: {
+        padding: theme.spacing(4),
+        borderRadius: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center'
+    },
+    buttonIcons: {
+        backgroundColor: '#f5f4f4'
     }
 }));
 
 const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
 
     const classes = useStyle();
-    const { onCallEnd, caller } = useVideoCallContext();
+    const { onCallEnd, caller, isVideo } = useVideoCallContext();
     const { socket, onlineUsers } = useSocketContext();
 
     let ob = sessionStorage.getItem('userToCall');
@@ -86,26 +115,24 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
     const myVideoRefStream = useRef<HTMLVideoElement>(null);
 
     const myPartner = React.useMemo(() => {
-       return caller.hasOwnProperty('_id') ? caller : userToCall;
+        return caller.hasOwnProperty('_id') ? caller : userToCall;
     }, [currentUser, caller]);
 
-    const socketId = React.useMemo(async() => {
+    const socketId = React.useMemo(async () => {
         return await getSocketId(myPartner._id || '', onlineUsers);
     }, [])
 
-    console.log(myPartner)
-
     let stream: any;
-    let partnerPeer = new Peer();
+    let myPeer: Peer.Instance;
 
     useEffect(() => {
-        socket.on(SocketEvents.CALL_END, () => {
+        socket.once(SocketEvents.CALL_END, () => {
             onCallEnd();
         });
 
-        socket.on(SocketEvents.EMIT_SIGNAL, (dataSignal: Peer.SignalData) => {
+        socket.once(SocketEvents.EMIT_SIGNAL, (dataSignal: Peer.SignalData) => {
             console.log("handshake has been succesfully done")
-            partnerPeer.signal(dataSignal);
+            myPeer.signal(dataSignal);
         });
 
         return () => {
@@ -125,7 +152,9 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
                         track.stop();
                     });
 
-                    // partnerPeer.destroy();
+                    if (myPeer) {
+                        myPeer.destroy();
+                    }
                 }
             }
             catch (err) {
@@ -135,41 +164,60 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
     }, []);
 
     function loadMedia() {
-        navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        }).then(gotMedia).catch((err) => {console.error(err)});
+        if (navigator.mediaDevices === undefined) {
+            navigator.getUserMedia({
+                video: isVideo,
+                audio: true
+            }, gotMedia, (err) => { console.error(err) });
+        }
+        else {
+            navigator.mediaDevices.getUserMedia({
+                video: isVideo,
+                audio: true
+            }).then(gotMedia).catch((err) => { console.error(err) });
+        }
     }
 
-    async function gotMedia(st: MediaStream){
-        try{
-            if(myVideoRefStream.current){
-                myVideoRefStream.current.srcObject = st;
-                myVideoRefStream.current.play();
-                stream = st;
+    async function gotMedia(st: MediaStream) {
+        try {
+            if (isVideo && myVideoRefStream.current) {
+                if ("srcObject" in myVideoRefStream.current) {
+                    myVideoRefStream.current.srcObject = st;
+                } else {
+                    // Avoid using this in new browsers, as it is going away.
+                    // @ts-ignore
+                    myVideoRefStream.current.src = window.URL.createObjectURL(st);
+                }
+                myVideoRefStream.current.onloadedmetadata = function (e) {
+                    myVideoRefStream.current?.play();
+                };
             }
+            stream = st;
             const initiator = !caller.hasOwnProperty('_id');
             let to = await socketId;
-            if(initiator) {
-                let peer = new Peer({ initiator: initiator, stream: st });
-                peer.on('signal', data => {
-                   socket.emit('receiveSignal', {to: to, dataSignal: data});
-                });
-            }
 
-            partnerPeer.on('signal', data => {
-                socket.emit('receiveSignal', {to: to, dataSignal: data});
+            myPeer = new Peer({ initiator: initiator, stream: st, trickle: false });
+            myPeer.on('signal', data => {
+                socket.emit('receiveSignal', { to: to, dataSignal: data });
             });
 
-            partnerPeer.on('stream', stream => {
+            myPeer.on('stream', stream => {
                 console.log("Stream has been recieved");
-                if(partnerRefStream.current){
-                    partnerRefStream.current.srcObject = stream;
-                    partnerRefStream.current.play();
+                if (partnerRefStream.current) {
+                    if ("srcObject" in partnerRefStream.current) {
+                        partnerRefStream.current.srcObject = stream;
+                    } else {
+                        // Avoid using this in new browsers, as it is going away.
+                        // @ts-ignore
+                        partnerRefStream.current.src = window.URL.createObjectURL(stream);
+                    }
+                    partnerRefStream.current.onloadedmetadata = function (e) {
+                        partnerRefStream.current?.play();
+                    };
                 }
             });
         }
-        catch(err){
+        catch (err) {
             throw err;
         }
     }
@@ -219,26 +267,74 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
         try {
             const to = await socketId;
             if (to)
-            socket.emit('cancelCall', to);
+                socket.emit('cancelCall', to);
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 onCallEnd();
-            },0);
+            }, 0);
         }
         catch (err) {
             console.error(err.message);
         }
     }
 
+    function callContent(): JSX.Element {
+        if (isVideo) {
+            return (
+                <React.Fragment>
+                    <video ref={partnerRefStream} className={classes.videoPartner} autoPlay />
+
+                    <Box className={classes.myVideoContainer}>
+                        <video className={classes.myVideo} ref={myVideoRefStream} muted autoPlay />
+                    </Box>
+
+                </React.Fragment>
+            )
+        }
+        else {
+            return (
+                <React.Fragment>
+                    <video ref={partnerRefStream} className={classes.videoPartner} autoPlay />
+                    <Box width="100%" height="100%" display="flex" className={classes.audioPartner}
+                        flexDirection="column" alignItems="center" justifyContent="center">
+                        <Paper elevation={3} className={classes.paper}>
+                            <Avatar src={myPartner.avatar ? `${baseURL}/files/${myPartner.avatar}` : userAvatar}
+                                alt="partner" className={classes.lgAvatar} />
+                            <Typography component="div" variant="h5" className={clsx('bg-text-primary', classes.mt)} gutterBottom>
+                                {myPartner?.name}
+                            </Typography>
+                            <Typography component="span" variant="body2" color="textSecondary" gutterBottom>
+                                03:51
+                            </Typography>
+                            <Box>
+                               <IconButton className={clsx(classes.mr, classes.buttonIcons)}
+                                    onClick={onSwitchMic}>
+                                    <MicNoneOutlined />
+                                </IconButton>
+
+                                <IconButton className={clsx(classes.mr, classes.buttonIcons)}
+                                    onClick={onShareScreen}>
+                                    <ScreenShareOutlined />
+                                </IconButton>
+
+                                <IconButton className={classes.buttonIcons}
+                                    onClick={onCallEnded}>
+                                    <CallEnd />
+                                </IconButton>
+                            </Box>
+                        </Paper>
+                    </Box>
+                </React.Fragment>
+            )
+        }
+    }
+
     return (
         <Box width="100%" height="100vh" position="relative">
-            <video ref={partnerRefStream} className={classes.videoPartner} autoPlay />
+            {callContent()}
 
-            <Box className={classes.myVideoContainer}>
-                <video className={classes.myVideo} ref={myVideoRefStream} autoPlay />
-            </Box>
             <MenuActionButtons onVideoOff={onVideoOff} onSwitchMic={onSwitchMic}
-                onCallEnded={onCallEnded} onShareScreen={onShareScreen} />
+                onCallEnded={onCallEnded} onShareScreen={onShareScreen} isVideo={isVideo} />
 
             <Box className={classes.header}>
                 <Tooltip title={currentUser.name}>
@@ -259,8 +355,9 @@ interface MenuActionsProps {
     onShareScreen: () => void;
     onVideoOff: () => void;
     onCallEnded: () => void;
+    isVideo: boolean;
 }
-const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScreen, onCallEnded, onVideoOff }) => {
+const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScreen, onCallEnded, onVideoOff, isVideo }) => {
     const { handleClose, handleOpen, show } = useToggle();
     const classes = useStyle();
     const [actions, setActions] = React.useState(
@@ -271,6 +368,16 @@ const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScr
             { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4, iconOff: <StopScreenShareOutlined />, isOn: true }
         ]
     );
+
+    React.useEffect(() => {
+        if (!isVideo) {
+            setActions([
+                { icon: <CallEnd />, name: 'End Call', index: 1, isOn: true },
+                { icon: <MicNoneOutlined />, name: 'Mute', index: 2, iconOff: <MicOffOutlined />, isOn: true },
+                { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4, iconOff: <StopScreenShareOutlined />, isOn: true }
+            ]);
+        }
+    }, []);
 
     function switchIcon(index: number): void {
         setActions([...actions.map((item: any) => item.index != index ? item : { ...item, isOn: !item.isOn })]);
@@ -298,7 +405,7 @@ const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScr
             >
                 {actions.map((action) => (
                     <SpeedDialAction
-                        key={action.name}
+                        key={action.index}
                         icon={action.isOn ? action.icon : action.iconOff}
                         tooltipTitle={action.name}
                         onClick={() => actionHandler(action.index)}

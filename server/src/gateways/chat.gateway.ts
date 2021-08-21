@@ -88,8 +88,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @SubscribeMessage('dial')
-    onCallHandler(@MessageBody() payload: {to: string, from: IMember}) {
-        this.server.to(payload.to).emit(SocketEvents.CALL, payload.from);
+    onCallHandler(@MessageBody() payload: {to: string, from: IMember, isVideo: boolean}) {
+        this.server.to(payload.to).emit(SocketEvents.CALL, {user: payload.from, isVideo: payload.isVideo});
     }
 
     @SubscribeMessage('cancelCall')
