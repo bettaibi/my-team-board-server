@@ -5,9 +5,7 @@ import {
     Theme,
     Tooltip,
     Avatar,
-    Typography,
-    Paper,
-    IconButton
+    Typography
 } from '@material-ui/core';
 import {
     CallEnd,
@@ -27,7 +25,7 @@ import userAvatar from '../../../../assets/avatars/profile.jpg';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
 import { getSocketId } from '../helpers';
 import Peer from "simple-peer";
-import clsx from 'clsx';
+import posterImg from '../../../../assets/chat/poster.jpg';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -44,10 +42,6 @@ const useStyle = makeStyles((theme: Theme) => ({
     },
     mt: {
         marginTop: theme.spacing(1)
-    },
-    lgAvatar: {
-        width: theme.spacing(11),
-        height: theme.spacing(11),
     },
     myVideoContainer: {
         width: theme.spacing(12),
@@ -82,24 +76,16 @@ const useStyle = makeStyles((theme: Theme) => ({
         width: '100%',
         zIndex: 99999999
     },
-    audioPartner: {
+    counter: {
         position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
+        top: theme.spacing(8),
+        width: '100%',
+        color: 'white',
+        [theme.breakpoints.down('xs')]: {
+            color: '#1E293B',
+            top: theme.spacing(10),
+        },
     },
-    paper: {
-        padding: theme.spacing(4),
-        borderRadius: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center'
-    },
-    buttonIcons: {
-        backgroundColor: '#f5f4f4'
-    }
 }));
 
 const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
@@ -131,7 +117,6 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
         });
 
         socket.once(SocketEvents.EMIT_SIGNAL, (dataSignal: Peer.SignalData) => {
-            console.log("handshake has been succesfully done")
             myPeer.signal(dataSignal);
         });
 
@@ -196,13 +181,16 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
             const initiator = !caller.hasOwnProperty('_id');
             let to = await socketId;
 
+            if (initiator === false) {
+                socket.emit('onCallAccepted', to);
+            }
+
             myPeer = new Peer({ initiator: initiator, stream: st, trickle: false });
             myPeer.on('signal', data => {
                 socket.emit('receiveSignal', { to: to, dataSignal: data });
             });
 
             myPeer.on('stream', stream => {
-                console.log("Stream has been recieved");
                 if (partnerRefStream.current) {
                     if ("srcObject" in partnerRefStream.current) {
                         partnerRefStream.current.srcObject = stream;
@@ -215,6 +203,10 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
                         partnerRefStream.current?.play();
                     };
                 }
+            });
+
+            myPeer.on('error', (err)=>{
+                onCallEnded();
             });
         }
         catch (err) {
@@ -243,19 +235,19 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
     async function onShareScreen() {
         try {
             // @ts-ignore
-            stream = await navigator.mediaDevices.getDisplayMedia({
-                video: {
-                    cursor: "always"
-                },
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    sampleRate: 44100
-                }
-            });
+            let screenStream = await navigator.mediaDevices.getDisplayMedia({cursor: true});
+
             if (partnerRefStream.current) {
-                partnerRefStream.current.srcObject = stream;
-                partnerRefStream.current.play();
+                myPeer.replaceTrack(stream.getVideoTracks()[0],screenStream.getVideoTracks()[0],stream)
+                partnerRefStream.current.srcObject=screenStream
+               
+                screenStream.getTracks()[0].onended = () =>{
+                    if(myPeer){
+                        myPeer.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],stream)
+                        if (partnerRefStream.current)
+                        partnerRefStream.current.srcObject=stream
+                    }
+                }
             }
         }
         catch (err) {
@@ -278,52 +270,34 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
         }
     }
 
+
+
     function callContent(): JSX.Element {
         if (isVideo) {
             return (
                 <React.Fragment>
-                    <video ref={partnerRefStream} className={classes.videoPartner} autoPlay />
+                    <video ref={partnerRefStream} className={classes.videoPartner} 
+                    autoPlay playsInline />
 
                     <Box className={classes.myVideoContainer}>
                         <video className={classes.myVideo} ref={myVideoRefStream} muted autoPlay />
                     </Box>
-
                 </React.Fragment>
             )
         }
         else {
             return (
                 <React.Fragment>
-                    <video ref={partnerRefStream} className={classes.videoPartner} autoPlay />
-                    <Box width="100%" height="100%" display="flex" className={classes.audioPartner}
-                        flexDirection="column" alignItems="center" justifyContent="center">
-                        <Paper elevation={3} className={classes.paper}>
-                            <Avatar src={myPartner.avatar ? `${baseURL}/files/${myPartner.avatar}` : userAvatar}
-                                alt="partner" className={classes.lgAvatar} />
-                            <Typography component="div" variant="h5" className={clsx('bg-text-primary', classes.mt)} gutterBottom>
-                                {myPartner?.name}
-                            </Typography>
-                            <Typography component="span" variant="body2" color="textSecondary" gutterBottom>
-                                03:51
-                            </Typography>
-                            <Box>
-                               <IconButton className={clsx(classes.mr, classes.buttonIcons)}
-                                    onClick={onSwitchMic}>
-                                    <MicNoneOutlined />
-                                </IconButton>
-
-                                <IconButton className={clsx(classes.mr, classes.buttonIcons)}
-                                    onClick={onShareScreen}>
-                                    <ScreenShareOutlined />
-                                </IconButton>
-
-                                <IconButton className={classes.buttonIcons}
-                                    onClick={onCallEnded}>
-                                    <CallEnd />
-                                </IconButton>
-                            </Box>
-                        </Paper>
+                    <Box className={classes.counter} display="flex" flexDirection="column"
+                        alignItems="center" justifyContent="center" textAlign="center">
+                        <Typography component="span" variant="subtitle1" gutterBottom>
+                            Incoming call...
+                        </Typography>
+                        <TimeCounter />
                     </Box>
+                    <video ref={partnerRefStream} className={classes.videoPartner}
+                        autoPlay poster={posterImg} playsInline />
+
                 </React.Fragment>
             )
         }
@@ -365,7 +339,7 @@ const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScr
             { icon: <CallEnd />, name: 'End Call', index: 1, isOn: true },
             { icon: <MicNoneOutlined />, name: 'Mute', index: 2, iconOff: <MicOffOutlined />, isOn: true },
             { icon: <VideocamOutlined />, name: 'Video Camera Off', index: 3, iconOff: <VideocamOffOutlined />, isOn: true },
-            { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4, iconOff: <StopScreenShareOutlined />, isOn: true }
+            { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4, iconOff: <StopScreenShareOutlined />, isOn: false }
         ]
     );
 
@@ -374,10 +348,10 @@ const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScr
             setActions([
                 { icon: <CallEnd />, name: 'End Call', index: 1, isOn: true },
                 { icon: <MicNoneOutlined />, name: 'Mute', index: 2, iconOff: <MicOffOutlined />, isOn: true },
-                { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4, iconOff: <StopScreenShareOutlined />, isOn: true }
+                { icon: <ScreenShareOutlined />, name: 'Share Screen', index: 4, iconOff: <StopScreenShareOutlined />, isOn: false }
             ]);
         }
-    }, []);
+    }, [])
 
     function switchIcon(index: number): void {
         setActions([...actions.map((item: any) => item.index != index ? item : { ...item, isOn: !item.isOn })]);
@@ -415,5 +389,40 @@ const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScr
         </React.Fragment>
     )
 }
+
+const TimeCounter = () => {
+    const [seconds, setSeconds] = React.useState<number>(0);
+    const [minutes, setMinutes] = React.useState<number>(0);
+    const [hour, setHour] = React.useState<number>(0);
+
+    React.useEffect(() => {
+        let interval = setInterval( async () => {
+            if(seconds < 59){
+                setSeconds(s => s + 1);
+            }
+            else{
+                setSeconds(0);
+                if(minutes <59){
+                    setMinutes(m => m + 1);
+                }
+                else{
+                    setMinutes(0);
+                    setHour(h => h + 1);
+                }
+            }
+            
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    return (
+        <span>
+            {`${hour} : ${minutes} : ${seconds}`}
+        </span>
+    )
+};
 
 export default VideoChat;

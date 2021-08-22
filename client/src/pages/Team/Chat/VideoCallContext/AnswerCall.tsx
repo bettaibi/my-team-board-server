@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     IconButton,
     Avatar,
@@ -14,6 +14,7 @@ import { UserModel } from '../../../../models/app.model';
 import { useVideoCallContext } from '.';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
 import { getSocketId } from '../helpers';
+import {Howl} from 'howler'
 import clsx from 'clsx';
 import userAvatar from '../../../../assets/avatars/profile.jpg';
 
@@ -58,7 +59,11 @@ const useStyle = makeStyles((theme: Theme) => ({
     }
 }));
 
-const callRingtone = new Audio('/audio/app_call.mp3');
+const callRingtone = new Howl({
+    src: '/audio/app_call.mp3',
+    loop: true,
+    preload: true
+  })
 
 const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, onCallAccepted: () => void }) => {
 
@@ -66,23 +71,18 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
     const { onCallEnd, caller: UserToAnswer } = useVideoCallContext();
     const { socket, onlineUsers } = useSocketContext();
     const [callState, SetCallState] = React.useState<string>('Calling...');
+    const audioRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         var timer: NodeJS.Timeout;
         const init = async () => {
             try{
-                callRingtone.loop = true;
-
                 timer = setTimeout(() =>{
-                    callRingtone.play();
-                },300);
+                    audioRef.current?.click();
+                },1000);
 
                 socket.once(SocketEvents.CALL_END , ()=> {
                     receiveCallEnd();
-                });
-
-                socket.once(SocketEvents.CALL_ACCEPTED, () => {
-                    onCallAccepted();
                 });
             }
             catch(err){
@@ -93,13 +93,15 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
         init();
 
         return () => {
-            callRingtone.pause();
-            callRingtone.currentTime = 0;
+            callRingtone.stop();
             clearTimeout(timer);
             socket.off(SocketEvents.CALL_END);
-            socket.off(SocketEvents.CALL_ACCEPTED);
         }
     }, []);
+
+    function audionHandler(){
+        callRingtone.play();
+    }
 
     function receiveCallEnd (){
         SetCallState('Call Ended.');
@@ -125,10 +127,7 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
     }
 
     async function CallAcceptedHandler(){
-       try{
-            const socketId = await getSocketId(UserToAnswer._id || '', onlineUsers);
-            if(socketId)
-            socket.emit('onCallAccepted', socketId);
+       try{            
             onCallAccepted();
        }
        catch(err){
@@ -154,6 +153,8 @@ const AnswerCall = ({ currentUser, onCallAccepted }: { currentUser: UserModel, o
                         </Typography>
 
                         <Box>
+                            <button hidden ref={audioRef} onClick={audionHandler}></button>
+
                             <IconButton className={clsx('wobble', classes.mr)} style={{ backgroundColor: '#04AA6D', color: '#fff' }}
                                 onClick={CallAcceptedHandler}>
                                 <Call />

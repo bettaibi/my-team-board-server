@@ -55,7 +55,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose, member }) => 
                 </Tooltip>
             </Box>
 
-            <Box p={2} display="flex" flexDirection="row"
+            {/* <Box p={2} display="flex" flexDirection="row"
                 alignItems="center" justifyContent="center">
                 <Tooltip title="Audio call">
                     <IconButton className={clsx(classes.lightGrayIcons, classes.mr)}>
@@ -74,7 +74,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ onSidenavClose, member }) => 
                         <FindInPageOutlined />
                     </IconButton>
                 </Tooltip>
-            </Box>
+            </Box> */}
 
             <MyAccordion label="About" isOpen={true}>
                 <Box display="flex" flexDirection="column" flexGrow={1}>
