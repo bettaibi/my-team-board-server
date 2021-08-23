@@ -8,14 +8,10 @@ import {
     Theme,
 } from '@material-ui/core';
 import {
-    PhoneOutlined,
-    VideoCallOutlined,
-    FindInPageOutlined,
     CloseOutlined
 } from '@material-ui/icons';
 import { UserModel } from '../../../models/app.model';
 import MyAccordion from '../../../components/MyAccordion';
-import clsx from 'clsx';
 import MyTextField from '../../../components/MyTextField';
 
 

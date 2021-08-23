@@ -17,6 +17,10 @@ interface OnlineUsersModel{
     [roomId: string]: {[userId: string]: {socketId: string, lastSeen?: Date}};
 }
 
+interface RegistredSockets{
+    [socketId: string]: {userId: string, workspaceId: string}
+}
+
 @WebSocketGateway({ namespace: 'chat', cors: true })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
     @WebSocketServer()
@@ -24,6 +28,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     private logger: Logger = new Logger('Socket Gateway');
     private users : OnlineUsersModel = {};
+    private registredSockets: RegistredSockets = {};
 
     afterInit(server: Server) {
         this.logger.log('Socket Initialized');
@@ -67,6 +72,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.JoinNewRoom(payload.workspaceId, payload.userId, client.id);
         client.join(payload.workspaceId);
         this.server.to(payload.workspaceId).emit(SocketEvents.ONLINE_USERS, this.users[payload.workspaceId]);
+        this.registredSockets = {...this.registredSockets, [client.id]: {userId: payload.userId, workspaceId: payload.workspaceId}}
         this.logger.log(`${payload.userId} has been joined the room ${payload.workspaceId}`)
     }
 
@@ -74,7 +80,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     leaveWorkspace(client: Socket, payload: { workspaceId: string, userId: string }): void {
         this.leaveRoom(payload.workspaceId, payload.userId, client.id);
         client.leave(payload.workspaceId);
-        this.server.to(payload.workspaceId).emit(SocketEvents.ONLINE_USERS, this.users[payload.workspaceId])
+        this.server.to(payload.workspaceId).emit(SocketEvents.ONLINE_USERS, this.users[payload.workspaceId]);
         this.logger.log(`${payload.userId} left the room ${payload.workspaceId}`)
     }
 
@@ -106,8 +112,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to(payload.to).emit(SocketEvents.EMIT_SIGNAL, payload.dataSignal);
     }
 
+    onUserDisconnect(socketId: string){
+        if(this.registredSockets.hasOwnProperty(socketId)){
+            const {workspaceId, userId} = this.registredSockets[socketId];
+            this.leaveRoom(workspaceId, userId, socketId);
+            this.server.to(workspaceId).emit(SocketEvents.ONLINE_USERS, this.users[workspaceId]);
+        }
+    }
+
     handleDisconnect(client: Socket) {
         this.logger.log('Client has been Disconnected');
-       client.removeAllListeners();
+        this.onUserDisconnect(client.id);
+        client.removeAllListeners();
     }
 }

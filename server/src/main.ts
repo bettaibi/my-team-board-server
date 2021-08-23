@@ -13,13 +13,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   let configService = app.get(ConfigService);
 
+  app.setGlobalPrefix('api');
   app.use(helmet());
   app.enableCors({
     origin: configService.get('ORIGIN'),
     credentials: true
   });
   app.use(compression());
-  app.setGlobalPrefix('api');
   app.use(cookieParser());
 
   // View Engine

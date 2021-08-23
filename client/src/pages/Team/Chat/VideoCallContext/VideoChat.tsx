@@ -237,15 +237,14 @@ const VideoChat = React.memo(({ currentUser }: { currentUser: UserModel }) => {
             // @ts-ignore
             let screenStream = await navigator.mediaDevices.getDisplayMedia({cursor: true});
 
-            if (partnerRefStream.current) {
-                myPeer.replaceTrack(stream.getVideoTracks()[0],screenStream.getVideoTracks()[0],stream)
-                partnerRefStream.current.srcObject=screenStream
+            if (myVideoRefStream.current) {
+                myPeer.replaceTrack(stream.getVideoTracks()[0], screenStream.getVideoTracks()[0], stream)
+                myVideoRefStream.current.srcObject = screenStream
                
                 screenStream.getTracks()[0].onended = () =>{
-                    if(myPeer){
-                        myPeer.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],stream)
-                        if (partnerRefStream.current)
-                        partnerRefStream.current.srcObject=stream
+                    if(myVideoRefStream.current){
+                        myPeer.replaceTrack(screenStream.getVideoTracks()[0], stream.getVideoTracks()[0], stream)
+                        myVideoRefStream.current.srcObject=stream
                     }
                 }
             }
@@ -390,37 +389,36 @@ const MenuActionButtons: React.FC<MenuActionsProps> = ({ onSwitchMic, onShareScr
     )
 }
 
+interface TimeConterProps{
+    seconds: number;
+    minutes: number;
+    hours: number;
+}
 const TimeCounter = () => {
-    const [seconds, setSeconds] = React.useState<number>(0);
-    const [minutes, setMinutes] = React.useState<number>(0);
-    const [hour, setHour] = React.useState<number>(0);
+    const [time, setTime] = React.useState<TimeConterProps>({seconds: 0, minutes: 0, hours: 0});
 
     React.useEffect(() => {
-        let interval = setInterval( async () => {
-            if(seconds < 59){
-                setSeconds(s => s + 1);
+        let interval = setInterval( () => {
+            
+            if(time.seconds < 59){
+                setTime(state => {return {...state, seconds: state.seconds + 1}});
+            }
+            else if( time.minutes < 59){
+                setTime(state => {return {...state, seconds: 0, minutes: state.minutes + 1}});
             }
             else{
-                setSeconds(0);
-                if(minutes <59){
-                    setMinutes(m => m + 1);
-                }
-                else{
-                    setMinutes(0);
-                    setHour(h => h + 1);
-                }
+                setTime(state => {return {hours: state.hours + 1, seconds: 0, minutes: 0}});
             }
-            
         }, 1000);
 
         return () => {
             clearInterval(interval);
         };
-    }, []);
+    }, [time]);
 
     return (
         <span>
-            {`${hour} : ${minutes} : ${seconds}`}
+            {`${time.hours} : ${time.minutes} : ${time.seconds}`}
         </span>
     )
 };
