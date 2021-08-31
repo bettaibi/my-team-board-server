@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,12 +21,10 @@ export class AuthService {
             const found = await this.MemberModel.findOne({email: payload.email});
             if(!found){
                 throw new BadRequestException('No such Account');
-                // return toJson(false, 'No such Account');
             }
             const isMatch = await onCompare(payload.password, found.password);
             if(!isMatch){
-                throw new BadRequestException('Password mismatch');
-                // return toJson(false, 'Password mismatch');
+                throw new HttpException('Password mismatch', HttpStatus.BAD_REQUEST)
             }
             // Generate jwt token
             const jwt  = await this.jwtService.signAsync({id: found.id});
@@ -41,13 +39,11 @@ export class AuthService {
         try{
             const found = await this.MemberModel.findOne({email: payload.email});
             if(found){
-                // return toJson(false, 'Email already in use!');
                 throw new BadRequestException('Email already in use!');
             }
             const hash = await onCrypt(payload.password);
             const saved = await this.MemberModel.create({...payload, password: hash});
             if(!saved){
-                // return toJson(false, 'Failed to register!');
                 throw new BadRequestException('Failed to register');
             }
             const jwt = await this.jwtService.signAsync({id: saved.id});

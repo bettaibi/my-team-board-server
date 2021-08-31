@@ -13,7 +13,6 @@ import { SprintModule } from './sprint/sprint.module';
 import { AspectModule } from './aspect/aspect.module';
 import { MessageModule } from './message/message.module';
 import { ChatGateway } from './gateways/chat.gateway';
-import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -29,8 +28,7 @@ import { NotificationModule } from './notification/notification.module';
     SprintModule,
     AspectModule,
     MessageModule,
-    FileModule,
-    NotificationModule
+    FileModule
   ],
   controllers: [AppController],
   providers: [

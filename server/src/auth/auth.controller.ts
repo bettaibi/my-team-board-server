@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Res, Req, Render, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Res, Req, Render, Query, UseGuards, UseFilters } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -6,6 +6,7 @@ import { Response, Request } from 'express';
 import { toJson } from 'src/helpers';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
+import { HttpExceptionFilter } from 'src/http_Exception/httpException.filter';
 
 @ApiTags('Auth')
 @Controller('/auth')
@@ -16,6 +17,7 @@ export class AuthController{
     ){}
 
     @Post('/login')
+    @UseFilters(new HttpExceptionFilter())
     async login(@Body()payload: LoginDto, @Res() response: Response): Promise<any>{
         try{
             const jwt = await this.authService.login(payload);

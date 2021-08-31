@@ -32,7 +32,9 @@
     "@nestjs/schedule": "^1.0.1",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/websockets": "^8.0.6",
+    "@types/web-push": "^3.3.2",
     "bcrypt": "^5.0.1",
+    "cache-manager": "^3.4.4",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "hbs": "^4.1.2",
@@ -43,13 +45,15 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "web-push": "^3.4.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
     "@nestjs/schematics": "^7.3.0",
     "@nestjs/testing": "^7.6.15",
     "@types/bcrypt": "^5.0.0",
+    "@types/cache-manager": "^3.4.2",
     "@types/compression": "^1.7.1",
     "@types/cookie-parser": "^1.4.2",
     "@types/cron": "^1.7.3",
