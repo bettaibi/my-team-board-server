@@ -32,8 +32,6 @@ export const VideoCallProvider = React.memo(({ children }: { children: JSX.Eleme
    const [caller, setCaller] = React.useState<UserModel>({} as UserModel);
    const [isVideo, setIsVideo] = React.useState<boolean>(true);
 
-   console.log('iside video call component')
-
    useEffect(()=> {
     socket.on(SocketEvents.CALL, ({user, isVideo}: {user: UserModel, isVideo: boolean}) => {
         if(user){
@@ -89,7 +87,6 @@ export const VideoCallProvider = React.memo(({ children }: { children: JSX.Eleme
 
 const useDialogComponent = () => {
     const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
-    console.log('Chat dialog rerender')
 
     const DialogComponent: React.FC = useCallback(({children}) => {
         return(

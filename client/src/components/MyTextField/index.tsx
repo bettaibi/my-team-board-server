@@ -1,6 +1,7 @@
 import React from 'react';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { withStyles, fade, Theme } from '@material-ui/core/styles';
+import { withStyles, Theme } from '@material-ui/core/styles';
+import { alpha } from '@material-ui/core/styles';
 
 const CssTextField = withStyles((theme: Theme) =>({
     root: {
@@ -26,7 +27,7 @@ const CssTextField = withStyles((theme: Theme) =>({
         transition: theme.transitions.create(['border-color', 'box-shadow']),
         },
         '&.Mui-focused fieldset': {
-            boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
+            boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
             borderColor: theme.palette.primary.main,
             borderWidth: '1px'
         },

@@ -4,7 +4,6 @@ import {
     Typography,
     Box,
 } from '@material-ui/core';
-import * as yup from "yup";
 import MyTextField from '../../../components/MyTextField';
 import RoundedButton from '../../../components/RoundedButton';
 import axios, { CancelTokenSource } from 'axios';
@@ -20,10 +19,6 @@ const InitialValue = {
     email: '',
     title: '',
 };
-
-const schema = yup.object().shape({
-    email: yup.string().required('Email is required').email('Invalid Email'),
-});
 
 let cancelToken: CancelTokenSource;
 
@@ -41,6 +36,10 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
     const handleSeachChange = async (e: any) => {
         const term = e.target.value;
 
+        if(term === ''){
+            setSelectedUser(InitialValue);
+        }
+
         if (typeof cancelToken != typeof undefined) {
             cancelToken?.cancel('Operation cancled');
         }
@@ -51,7 +50,6 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
             if (term) {
                 setLoading(true);
                 const { data } = await axios.get(`/members/search/${term}`, { cancelToken: cancelToken.token });
-                console.log(data)
                 if(data.success) {
                     setOptions(data.data)
                 }
@@ -60,7 +58,7 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
 
         }
         catch (err) {
-            console.log(err.message || err)
+            console.error(err.message || err)
         }
     };
 
@@ -72,18 +70,20 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
 
     async function submitHandler(){
         try{
-            const res = await onMutate({
-                url: '/workspace/addMember',
-                method: 'PATCH',
-                data: null,
-                params: {
-                    workspaceId: localStorage.getItem('workspace'),
-                    memberId: selectedUser._id
+            if(selectedUser?.email !== ''){
+                const res = await onMutate({
+                    url: '/workspace/addMember',
+                    method: 'PATCH',
+                    data: null,
+                    params: {
+                        workspaceId: localStorage.getItem('workspace'),
+                        memberId: selectedUser._id
+                    }
+                });
+                if(res.success){
+                    setSelectedUser(InitialValue);
+                    dispatch(newMember(res.data));
                 }
-            });
-            if(res.success){
-                setSelectedUser(InitialValue);
-                dispatch(newMember(res.data));
             }
         }
         catch(err){
@@ -92,9 +92,9 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
     }
 
     return (
-        <Formik initialValues={InitialValue} validationSchema={schema} onSubmit={submitHandler}>
+        <Formik initialValues={selectedUser} onSubmit={submitHandler}>
             {
-                ({ handleSubmit, handleChange, handleBlur, errors, touched }) => (
+                ({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit} autoComplete="off" >
                         <Box style={{ backgroundColor: '#f1f5f9', padding: '2.5rem 1rem' }} borderBottom="1px solid #fafafa"
                             display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
@@ -130,10 +130,8 @@ const NewMember: React.FC<NewMemberProps> = ({ onSidenavClose }) => {
                                 selectOnFocus={false}
                                 renderInput={(params) => (
                                     <MyTextField {...params} fullWidth name="email" variant="outlined" size="small" placeholder="member's Email"
-                                    onChange={(e) => { handleChange(e); handleSeachChange(e) }} onBlur={handleBlur}
+                                    onChange={(e) => handleSeachChange(e)}
                                     value={selectedUser.email}
-                                    error={touched.email && !!errors.email}
-                                    helperText={touched.email && errors.email} 
                                     />
                                 )}
                             />

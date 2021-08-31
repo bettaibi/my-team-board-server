@@ -12,7 +12,8 @@ const WorkspaceReducer = (state = [], action: {type: string, payload?: any}) => 
             return [...state, action.payload];
         case ActionType.UPDATE_WORKSPACE:
             return [...state.map((item: WorkspaceModel) => {return item._id == action.payload._id ? action.payload : item})];
-
+        case ActionType.DELETE_WORKSPACE:
+            return [...state.filter((item: WorkspaceModel) => {return item._id != action.payload})]
         default: return [...state];
     }
 };

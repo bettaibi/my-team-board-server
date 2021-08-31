@@ -32,3 +32,11 @@ export const updateWorkspace = (payload: WorkspaceModel) => {
     }
 }
 
+export const deleteWorkspace = (payload: string) => {
+
+    return {
+        payload,
+        type: ActionType.DELETE_WORKSPACE,
+    }
+}
+

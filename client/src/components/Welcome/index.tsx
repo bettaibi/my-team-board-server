@@ -29,23 +29,25 @@ const Welcome = () => {
 
     return (
         <Box px={6} display="flex" flexDirection="column" justifyContent="center" className="bg-intro">
-            <Typography variant="h4" gutterBottom align="left" className = {style.primaryTitle}>
+            <Typography variant="h4" gutterBottom align="left" className={style.primaryTitle}>
                 Welcome to our community
             </Typography>
 
-            <Typography variant="subtitle2" align="left" gutterBottom className = {style.desc}>
-             Fuse helps developers to build organized and well coded dashboards full of beautiful and rich modules. Join us and start building your application today.
+            <Typography variant="subtitle2" align="left" gutterBottom className={style.desc}>
+                Transform the way you work with one place for everyone and everything you need to get stuff done.
+                Give everyone you work with inside or outside your company a more productive way to stay in sync,
+                and simplify all your communination into one place.
             </Typography>
 
             <Box alignSelf="start" mt={3}>
-                <AvatarGroup max={4} style={{marginBottom: '0.5rem'}}>
+                <AvatarGroup max={4} style={{ marginBottom: '0.5rem' }}>
                     <Avatar alt="Remy Sharp" src={avatar1} />
                     <Avatar alt="Remy Sharp" src={avatar2} />
                     <Avatar alt="Remy Sharp" src={avatar3} />
                     <Avatar alt="Remy Sharp" src={avatar4} />
                 </AvatarGroup>
-                <small className = {style.desc}>
-                More than 17k people joined us, it's your turn
+                <small className={style.desc}>
+                    More than 17k people joined us, it's your turn
                 </small>
             </Box>
 

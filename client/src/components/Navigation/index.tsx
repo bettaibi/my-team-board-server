@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
     Box,
     Grid,
@@ -113,7 +113,6 @@ interface PagesNavProps{
 
 const Navigation = React.memo(() => {
     const classes = useStyles();
-    console.log("navigation component")
 
     return (
         <Grid container className={clsx(classes.root, 'content-scroll')}>
@@ -184,7 +183,6 @@ const MemberList: React.FC<PagesNavProps> = React.memo (({classes}) => {
     const history = useHistory();
     const { onlineUsers } = useSocketContext();
 
-    console.log(onlineUsers);
     const navigateTo = (path: string) => {
         history.push(path);
     };

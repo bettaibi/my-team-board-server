@@ -4,20 +4,24 @@ import {
     Box
 } from '@material-ui/core';
 import RoundedButton from '../../../components/RoundedButton';
-import useMutation from '../../../hooks/useMutation';
+import axios from 'axios';
 
 const SessionExpired = ({onDialogClose}: {onDialogClose: () => void}) => {
-    const { loading, onMutate } = useMutation();
+    const [ loading, setLoading ] = React.useState<boolean>(false);
 
     const logout = async () => {
         try{
-            const res = await onMutate({
+            setLoading(true);
+            const {data} = await axios({
                 url: `/auth/logout`,
                 method: 'POST',
             });
-            if(res.success){
+
+            if(data.success){
                 onDialogClose();
                 document.cookie = "jwt=;";
+                localStorage.clear();
+                sessionStorage.clear();
                 setTimeout(() =>{
                     window.location.reload();
                 }, 1000);

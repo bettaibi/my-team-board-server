@@ -63,7 +63,7 @@ const Scrumboard = (props: any) => {
     let projectId = props.match.params.projectId;
     const boards: DynamicBoard = useSelector((state: AppState) => state.boards);
     const board = boards[projectId] || null;
-    console.log("subscription fired")
+
     const { dispatch } = useSharedContext();
     
     useEffect(() => {
@@ -71,8 +71,6 @@ const Scrumboard = (props: any) => {
             try{
                 const {data} = await axios.get(`/aspects/${projectId}`);
                 if(data.success) {
-                    console.log("***** from server *****")
-                    console.log(data)
                     dispatch(newBoard(data.data));
                 }
             }

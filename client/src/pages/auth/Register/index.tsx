@@ -76,6 +76,7 @@ const RegisterForm = () => {
                 }
         }
         catch (err) {
+            showMsg('Invalid Credentials', 'error');
             console.log(err)
         }
     };

@@ -6,6 +6,7 @@ import { Workspace, WorkspaceDocument } from 'src/models/workspace.model';
 import { Member, MemberDocument } from 'src/models/member.model';
 import { Project, ProjectDocument } from 'src/models/project.model';
 import { toJson, toObjectID } from 'src/helpers';
+import { ChatGateway } from 'src/gateways/chat.gateway';
 
 @Injectable()
 export class WorkspaceService{
@@ -13,7 +14,8 @@ export class WorkspaceService{
     constructor(
         @InjectModel(Member.name) private readonly MemberModel: Model<MemberDocument>,
         @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>,
-        @InjectModel(Workspace.name) private readonly workspaceModel: Model<WorkspaceDocument>
+        @InjectModel(Workspace.name) private readonly workspaceModel: Model<WorkspaceDocument>,
+        private chatGateway: ChatGateway
     ){};
 
     async myWorkspaces(userID: string): Promise<any>{
@@ -80,7 +82,12 @@ export class WorkspaceService{
             if(!saved){
                 return toJson(false, 'Failed to create a default workspace!');
             }
-            return toJson(true, 'A new Workspace has been created', saved);
+            const populated = await this.workspaceModel.populate(saved, {
+                path: 'owner',
+                model: 'Member',
+                select: 'name avatar'
+            })
+            return toJson(true, 'A new Workspace has been created', populated);
         }
         catch(err){
             throw err;
@@ -105,6 +112,7 @@ export class WorkspaceService{
     
     async delete(id: string): Promise<any>{
         try{
+            const workspace = await this.workspaceModel.findOne({_id: toObjectID(id)});
             const removed = await this.workspaceModel.findByIdAndDelete({_id: toObjectID(id)});
             if(!removed){
                 return toJson(false, 'Failed to remove');
@@ -113,6 +121,13 @@ export class WorkspaceService{
             const removeProjects = await this.ProjectModel.deleteMany({workspace: toObjectID(id)});
             if(!removeProjects){
                 return toJson(false, 'Failed to remove linked projects')
+            }
+
+            for(let memberId of workspace.members){
+                if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                    const socketId = this.chatGateway.registeredUser[memberId];
+                    this.chatGateway.server.to(socketId).emit('removed_workspace', id);
+                }
             }
             
             return toJson(true, 'Workspace has been deleted successfully, Session Expired!');
@@ -147,6 +162,13 @@ export class WorkspaceService{
             if(!projectsUpdated){
                 return toJson(false, 'Failed to unlink member from projects');
             }
+            if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                const socketId = this.chatGateway.registeredUser[memberId];
+                const res = await this.myWorkspaces(memberId);
+                if(res.success){
+                    this.chatGateway.server.to(socketId).emit('delete_workspace', {workspaces: res.data, workspaceId});
+                }
+            }
             return toJson(true, 'Member has been deleted successfully');
         }
         catch(err){
@@ -172,9 +194,16 @@ export class WorkspaceService{
             const updated = await this.workspaceModel.findByIdAndUpdate({_id: toObjectID(workspaceId)}, {$set:{
                 members: [...workspace.members, member.id]
             }}, {new: true});
-
             if(!updated){
                 return toJson(false, 'Failed to add this member');
+            }
+
+            if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                const socketId = this.chatGateway.registeredUser[memberId];
+                const res = await this.myWorkspaces(memberId);
+                if(res.success){
+                    this.chatGateway.server.to(socketId).emit('new_workspace', res.data);
+                }
             }
             return toJson(true, `A new member has been added to ${workspace.name}`, member);
         }

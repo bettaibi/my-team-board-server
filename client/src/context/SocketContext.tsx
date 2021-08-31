@@ -1,10 +1,15 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { useSharedContext } from '.';
 
 import io, { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
-import { MessageModel } from '../models/app.model';
+import { MessageModel, WorkspaceModel } from '../models/app.model';
 import { PostNewMessage } from '../store/actions/chat.actions';
+import { deleteWorkspace, setWorkspaces } from '../store/actions/workspace.actions';
+import { Dialog } from '@material-ui/core';
+
+import SessionExpired from '../pages/Team/Setting/SessionExpired';
+import useToggle from '../hooks/useToggle';
 
 interface OnlineUserProps{
     [userId: string]: {socketId: string, lastSeen?: Date};
@@ -33,8 +38,11 @@ export const SocketEvents = {
 export const SocketProvider = ({ children }: { children: JSX.Element }) => {
     const { currentUser, selectedWorkspace, dispatch } = useSharedContext();
     const [onlineUsers, setOnlineUsers] = React.useState<OnlineUserProps>({});
+    const { DialogComponent, onDialogOpen, onDialogClose } = useDialogComponent();
 
-    const msgRingTone = new Audio('/audio/wsn.mp3');
+    const msgRingTone = React.useMemo(()=> {
+        return new Audio('/audio/wsn.mp3');
+    }, []);
 
     useEffect(() => {
         msgRingTone.load();
@@ -46,22 +54,16 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
     },[]);
 
     useEffect(()=> {
-        console.log("Socket Members Array");
         if(selectedWorkspace){
             socket.on(SocketEvents.ONLINE_USERS, (users: OnlineUserProps) => {
                 setOnlineUsers(users);
             });
 
-            socket.on(SocketEvents.NEW_MESSAGE, (data: MessageModel)=>{
-                console.log(data);
+            socket.on(SocketEvents.NEW_MESSAGE, (data: MessageModel)=> {
                 dispatch(PostNewMessage(data, data.sender));
                 msgRingTone.play();
             });
 
-            socket.on('disconnect', ()=> {
-                console.log('disconnect')
-                socket.emit('leaveWorkspace', {workspaceId: selectedWorkspace, userId: currentUser._id});
-            });
         }
 
         return () => {
@@ -74,17 +76,47 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
 
     useEffect(() => {
         if(selectedWorkspace){
-            console.log("Socket Context INIT");
             socket.emit('joinWorkspace', {workspaceId: selectedWorkspace, userId: currentUser._id});
         }
 
         return () => {
            if(selectedWorkspace){
-            console.log("destroy");
             socket.emit('leaveWorkspace', {workspaceId: selectedWorkspace, userId: currentUser._id});
            }
         }
     }, [selectedWorkspace]);
+
+    useEffect(() => {
+        // LISTEN TO REALTIME CHANGES
+        socket.on('new_workspace', (data: WorkspaceModel[])=> {
+            dispatch(setWorkspaces(data));
+        });
+
+        socket.on('delete_workspace', ({workspaces, workspaceId}: {workspaces:  WorkspaceModel[], workspaceId: string}) => {
+            console.log(workspaceId, selectedWorkspace)
+            if(selectedWorkspace == workspaceId){
+                onDialogOpen();
+            }
+            else{
+                dispatch(setWorkspaces(workspaces));
+            }
+        });
+
+        socket.on('removed_workspace', (id: string)=> {
+            if(id == selectedWorkspace ){
+                onDialogOpen();
+            }
+            else{
+                dispatch(deleteWorkspace(id))
+            }
+        });
+
+        return () => {
+            socket.off('new_workspace');
+            socket.off('delete_workspace');
+            socket.off('removed_workspace');
+        };
+    }, []);
 
     function sendMessage(workspaceId:string | null, receiverId: string, data: MessageModel): void{
         if(workspaceId){
@@ -101,6 +133,9 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
     return (
         <SocketContext.Provider value = {value}>
             <React.Fragment>
+                <DialogComponent>
+                    <SessionExpired onDialogClose = {onDialogClose} />
+                </DialogComponent>
                 {children}
             </React.Fragment>
         </SocketContext.Provider>
@@ -111,4 +146,26 @@ export const useSocketContext = () => {
     const values = useContext(SocketContext);
     return values;
 };
+
+const useDialogComponent = () => {
+    const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
+
+    const DialogComponent: React.FC = useCallback(({children}) => {
+        return(
+        <Dialog 
+            onClose={onDialogClose} 
+            aria-labelledby="session-expired-dialog" 
+            open={show}>
+            {children}
+        </Dialog>)
+    }, [show]);
+
+    return {
+        DialogComponent,
+        onDialogClose,
+        onDialogOpen,
+        show
+    }
+};
+
 

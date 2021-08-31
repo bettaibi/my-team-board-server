@@ -26,7 +26,6 @@ const useDialog = (fullSize?: boolean) => {
     const { handleClose: onDialogClose, handleOpen: onDialogOpen, show } = useToggle();
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down('xs'));
-    console.log('dialog rerender')
     const fullScreen = fullSize || isXs;
 
 

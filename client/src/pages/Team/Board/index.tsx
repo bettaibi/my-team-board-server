@@ -49,7 +49,6 @@ const Board = () => {
   const projects = useSelector((state: AppState) => state.projects);
   const classes = useStyle();
   const history = useHistory();
-  console.log('board component')
 
   const goToScrumboard = (id: string) => {
     if(id){

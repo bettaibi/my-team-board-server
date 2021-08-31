@@ -14,7 +14,6 @@ import { UserModel } from '../../../models/app.model';
 import MyAccordion from '../../../components/MyAccordion';
 import MyTextField from '../../../components/MyTextField';
 
-
 const useStyles = makeStyles((theme: Theme) => ({
     lightGrayIcons: {
         backgroundColor: '#f5f4f4'

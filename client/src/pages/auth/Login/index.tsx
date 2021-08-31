@@ -79,7 +79,7 @@ const LoginForm = () => {
                 }
         }
         catch (err) {
-            console.log(err.status);
+            showMsg("No valid credentials", 'error');
         }
     };
 

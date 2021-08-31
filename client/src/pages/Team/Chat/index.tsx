@@ -180,7 +180,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
             }
         }
         catch (err) {
-            console.log(err)
+            console.error(err);
         }
     }
 
@@ -233,7 +233,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
             }
         }
         catch (err) {
-            console.log(err)
+            console.error(err)
         }
     }
 
@@ -254,7 +254,7 @@ const MessageEditor = ({ memberId }: { memberId: string }) => {
             }
         }
         catch (err) {
-            console.log(err)
+            console.error(err)
         }
     }
 

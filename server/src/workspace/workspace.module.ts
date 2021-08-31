@@ -6,6 +6,7 @@ import { Workspace, WorkspaceSchema } from 'src/models/workspace.model';
 import { Member, MemberSchema } from 'src/models/member.model';
 import { Project, ProjectSchema } from 'src/models/project.model';
 import { JwtGuardModule } from 'src/shared/jwtGuard.module';
+import { ChatModule } from 'src/gateways/chat.module';
 
 @Module({
     imports: [
@@ -14,7 +15,8 @@ import { JwtGuardModule } from 'src/shared/jwtGuard.module';
             {name: Workspace.name, schema: WorkspaceSchema},
             {name: Project.name, schema: ProjectSchema}
         ]),
-        JwtGuardModule
+        JwtGuardModule,
+        ChatModule
     ],
     providers: [WorkspaceService],
     controllers: [WorkspaceController]

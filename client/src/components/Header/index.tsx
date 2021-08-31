@@ -15,7 +15,7 @@ import {
     Tooltip,
     useMediaQuery
 } from '@material-ui/core';
-import { Menu, CloseOutlined, NotificationsOutlined, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined } from '@material-ui/icons';
+import { Menu, CloseOutlined, NotificationsOutlined, SearchOutlined, AccountCircleOutlined, ExitToAppOutlined, SettingsApplicationsOutlined, NotificationsNoneOutlined } from '@material-ui/icons';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { useSharedContext } from '../../context';
@@ -107,7 +107,7 @@ const SideBarComponent = () => {
                 main.style.marginLeft = `${0}px`;
             }
         }
-    }, [show, matches]);
+    }, [show, matches, main]);
  
     return (
         <React.Fragment>
@@ -131,9 +131,10 @@ const NotificationMenu = () => {
         <React.Fragment>
             <IconButton aria-describedby="notification-menu" edge="start" color="inherit" aria-label="messages"
                 className={classes.menuButton} onClick={handleClick}>
-                <Badge badgeContent={4} color="secondary">
                     <NotificationsOutlined className={classes.icons} />
-                </Badge>
+                {/* <Badge badgeContent={4} color="secondary">
+                    <NotificationsOutlined className={classes.icons} />
+                </Badge> */}
             </IconButton>
 
             <PopoverComponent id="notification-menu">
@@ -149,7 +150,7 @@ const NotificationMenu = () => {
 const AccountMenu = () => {
     const history = useHistory();
     const classes = useStyles();
-    const {currentUser} = useSharedContext();
+    const { currentUser } = useSharedContext();
     const { PopoverComponent, handleClick, handleClose } = UsePopover();
 
     const navigateTo = (path: string) => {
@@ -162,6 +163,8 @@ const AccountMenu = () => {
             const { data } = await axios.post(`/auth/logout`);
             if(data.success){
                 document.cookie = "jwt=;";
+                localStorage.clear();
+                sessionStorage.clear();
                 history.push('/login');
             }
             else{
@@ -217,8 +220,8 @@ const Notifications = () => {
                     Notifications
                 </Typography>
             </Box>
-            <Box className="content-scroll" minWidth="350px" maxWidth="420px" height="400px" overflow="auto">
-                <List className="bg-white p-0">
+            <Box className="content-scroll" minWidth="350px" maxWidth="420px" maxHeight="400px" overflow="auto">
+                {/* <List className="bg-white p-0">
                     <ListItem alignItems="flex-start" className={clsx(classes.listItem,classes.activeItem)}>
                         <ListItemAvatar>
                             <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
@@ -277,7 +280,14 @@ const Notifications = () => {
                         </ListItemSecondaryAction>
                     </ListItem>
 
-                </List>
+                </List> */}
+                <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center"
+                width="100%" height="250px">
+                    <NotificationsNoneOutlined color="disabled" style={{fontSize: '55px', marginBottom: '.5rem'}} />
+                    <Typography component="div" variant="body2" color="textSecondary">
+                        No notifications found
+                    </Typography>
+                </Box>
             </Box>
         </Box>
     )
