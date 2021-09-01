@@ -4,10 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
     imports: [
-        MongooseModule.forRoot('mongodb://localhost:27017/team_board', {
+        MongooseModule.forRoot('mongodb+srv://nidhal:bettaibinidhal123@cluster0.yjows.mongodb.net/myBoard?retryWrites=true&w=majority', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useCreateIndex: true
+            useCreateIndex: true,
+            useFindAndModify: true,
         }),
     ]
 })
