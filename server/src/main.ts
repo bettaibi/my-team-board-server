@@ -9,6 +9,8 @@ import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 
+const { wakeDyno } = require('heroku-keep-awake');
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   let configService = app.get(ConfigService);
@@ -34,7 +36,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.PORT || configService.get('PORT'));
+  await app.listen(process.env.PORT || configService.get('PORT'), ()=> {
+    wakeDyno("https://my-team-board.herokuapp.com/");
+  });
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

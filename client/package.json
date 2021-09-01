@@ -1,7 +1,8 @@
 {
-  "name": "client",
+  "name": "my-team-board",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://bettaibi.github.io/my-team-board",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -52,6 +53,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -80,6 +83,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/react-swipeable-views": "^0.13.0",
     "@types/simple-peer": "^9.11.1",
-    "@types/uuid": "^8.3.0"
+    "@types/uuid": "^8.3.0",
+    "gh-pages": "^3.2.3"
   }
 }
