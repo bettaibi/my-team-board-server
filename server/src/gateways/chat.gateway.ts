@@ -120,13 +120,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to(payload.to).emit(SocketEvents.EMIT_SIGNAL, payload.dataSignal);
     }
 
-    //  REALTIME CHANGES
-    @SubscribeMessage('onNewMemberAdded')
-    private onWorkspaceCreated(@MessageBody() {userId: string, workspace: any}) {
-
-    }
-
-
     private onUserDisconnect(socketId: string){
         if(this.registredSockets.hasOwnProperty(socketId)){
             const {workspaceId, userId} = this.registredSockets[socketId];

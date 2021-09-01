@@ -13,9 +13,9 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const EditAspect = ({currentAspect, id, handleClose}: {currentAspect: AspectModel, id: string, handleClose: () => void}) => {
+const EditAspect = ({currentAspect, id, handleClose, members}: {members: string[], currentAspect: AspectModel, id: string, handleClose: () => void}) => {
     const { loading, onMutate } = useMutation();
-    const {dispatch} = useSharedContext();
+    const {dispatch, selectedWorkspace} = useSharedContext();
 
     const defaultValue = {
         title: currentAspect.title,
@@ -26,7 +26,11 @@ const EditAspect = ({currentAspect, id, handleClose}: {currentAspect: AspectMode
             const res = await onMutate({
                 url: `/aspects/${id}`,
                 method: 'PUT',
-                data: {title}
+                data: {
+                    workspace: selectedWorkspace,
+                    aspect: {...currentAspect, title},
+                    members
+                }
             });
 
             if(res.success){

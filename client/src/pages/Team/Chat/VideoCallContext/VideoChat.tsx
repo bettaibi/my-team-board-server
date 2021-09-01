@@ -23,7 +23,7 @@ import { UserModel } from '../../../../models/app.model';
 
 import userAvatar from '../../../../assets/avatars/profile.jpg';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
-import { getSocketId } from '../helpers';
+import { getSocketId } from '../../../../util/helpers';
 import Peer from "simple-peer";
 import posterImg from '../../../../assets/chat/poster.jpg';
 

@@ -13,7 +13,7 @@ import { CallEnd, Call } from '@material-ui/icons';
 import { UserModel } from '../../../../models/app.model';
 import { useVideoCallContext } from '.';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
-import { getSocketId } from '../helpers';
+import { getSocketId } from '../../../../util/helpers';
 import {Howl} from 'howler'
 import clsx from 'clsx';
 import userAvatar from '../../../../assets/avatars/profile.jpg';

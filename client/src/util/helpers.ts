@@ -1,4 +1,4 @@
-
+import axios from 'axios';
 
 export function isMemberConnected(memberId: string, users: any ): boolean {
 
@@ -11,3 +11,16 @@ export async function getSocketId(memberId: string, users: any): Promise<string>
     }
     else return '';
 }
+
+export const fetchBoard = async (projectId: string) => {
+    try{
+        const {data} = await axios.get(`/aspects/${projectId}`);
+        if(data.success) {
+            return data.data;
+        }
+        else return undefined;
+    }
+    catch(err){
+        console.error(err);
+    }
+};

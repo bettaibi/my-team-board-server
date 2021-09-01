@@ -93,15 +93,17 @@ interface CardDetailsProps {
     onDialogClose: () => void;
     sprint: SprintModel,
     projectId: string;
+    members: string[]
 }
-const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projectId }) => {
+const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projectId, members }) => {
     const classes = useStyle();
     const [list, setList] = React.useState<TaskModel[]>(sprint.tasks || []);
     const { onMutate, loading } = useMutation();
-    const {dispatch} = useSharedContext();
+    const { dispatch, selectedWorkspace} = useSharedContext();
 
     const defaultValue = {
-        ...sprint
+        ...sprint,
+        dueDate: sprint.dueDate || new Date()
     };
 
     const ondragend = (result: DropResult) => {
@@ -118,7 +120,12 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projec
             const res = await onMutate({
                 url: `/sprint/${sprint._id}`,
                 method: 'PUT',
-                data: obj
+                data: {
+                    sprint: obj,
+                    workspace: selectedWorkspace,
+                    projectId: projectId,
+                    members
+                }
             });
             if(res.success){
                 onDialogClose();
@@ -141,7 +148,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ onDialogClose, sprint, projec
                         <Box p={2} borderBottom="1px solid lightgray" className={classes.root}
                             display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                             <div>
-                                <CardMenu currentSprint={sprint} projectId = {projectId} />
+                                <CardMenu members={members} currentSprint={sprint} projectId = {projectId} />
                             </div>
 
                             <div>
@@ -322,20 +329,25 @@ const NewCheckList = ({ setList }: { setList: React.Dispatch<React.SetStateActio
     )
 };
 
-const CardMenu = ({ currentSprint, projectId }: { currentSprint: SprintModel, projectId: string }) => {
+const CardMenu = ({ currentSprint, projectId, members }: {members: string[], currentSprint: SprintModel, projectId: string }) => {
     const { PopoverComponent, handleClick, handleClose: closeMenu } = usePopover();
     const { ConfirmDialog, handleOpen, handleClose } = useConfirmDialog({
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this sprint.',
     });
     const { onMutate } = useMutation();
-    const { dispatch } = useSharedContext();
+    const { dispatch, selectedWorkspace } = useSharedContext();
 
     async function onDelete() {
         try {
             const res = await onMutate({
                 url: `/sprint/${currentSprint._id}`,
-                method: 'DELETE'
+                method: 'PATCH',
+                data: {
+                    projectId,
+                    workspace: selectedWorkspace,
+                    members
+                }
             });
 
             if (res.success) {

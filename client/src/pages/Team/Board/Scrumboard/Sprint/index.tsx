@@ -53,8 +53,9 @@ interface CardProps {
     providedDraggable: DraggableProvided;
     value: SprintModel;
     projectId: string;
+    members: string[];
 }
-const Sprint: React.FC<CardProps> = ({ providedDraggable, value, projectId }) => {
+const Sprint: React.FC<CardProps> = ({ providedDraggable, value, projectId, members }) => {
     const classes = useStyle();
     const numberOfDone = some(value.tasks || []);
     const { DialogComponent, onDialogClose, onDialogOpen } = useDialog();
@@ -91,13 +92,13 @@ const Sprint: React.FC<CardProps> = ({ providedDraggable, value, projectId }) =>
             </div>
 
             <DialogComponent>
-                <CardDetails onDialogClose={onDialogClose} sprint = {value} projectId= {projectId} />
+                <CardDetails members={members} onDialogClose={onDialogClose} sprint = {value} projectId= {projectId} />
             </DialogComponent>
         </React.Fragment>
     )
 }
 
-const NewSprintContainer = ({aspect}: {aspect: AspectModel}) => {
+const NewSprintContainer = ({aspect, members}: {aspect: AspectModel, members: string[]}) => {
     const classes = useStyle();
     const { PopoverComponent, handleClick, handleClose} = UsePopover();
 
@@ -111,7 +112,7 @@ const NewSprintContainer = ({aspect}: {aspect: AspectModel}) => {
             </Button>
 
             <PopoverComponent id="new_sprint_menu">
-                <NewSprint aspect = {aspect} handleClose = {handleClose} />
+                <NewSprint aspect = {aspect} handleClose = {handleClose} members={members} />
             </PopoverComponent>
         </React.Fragment>
     )

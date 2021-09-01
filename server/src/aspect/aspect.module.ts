@@ -6,6 +6,7 @@ import { Aspect, AspectSchema } from 'src/models/aspect.model';
 import { Project, ProjectSchema } from 'src/models/project.model';
 import { Sprint, SprintSchema } from 'src/models/sprint.model';
 import { JwtGuardModule } from 'src/shared/jwtGuard.module';
+import { ChatModule } from 'src/gateways/chat.module';
 
 @Module({
     imports: [
@@ -14,7 +15,8 @@ import { JwtGuardModule } from 'src/shared/jwtGuard.module';
             {name: Aspect.name, schema: AspectSchema},
             {name: Sprint.name, schema: SprintSchema}
         ]),
-        JwtGuardModule
+        JwtGuardModule,
+        ChatModule
     ],
     providers: [AspectService],
     controllers: [AspectController]

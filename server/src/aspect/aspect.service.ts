@@ -6,6 +6,7 @@ import { Project, ProjectDocument } from 'src/models/project.model';
 import { Sprint, SprintDocument } from 'src/models/sprint.model';
 import { Model } from 'mongoose';
 import { AspectDto } from './aspect.dto';
+import { ChatGateway } from 'src/gateways/chat.gateway';
 
 @Injectable()
 export class AspectService {
@@ -13,7 +14,8 @@ export class AspectService {
     constructor(
         @InjectModel(Aspect.name) private readonly AspectModel: Model<AspectDocument>,
         @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>,
-        @InjectModel(Sprint.name) private readonly SprintModel: Model<SprintDocument>
+        @InjectModel(Sprint.name) private readonly SprintModel: Model<SprintDocument>,
+        private chatGateway: ChatGateway
     ){}
 
     async all(id: string): Promise<any> {
@@ -60,11 +62,17 @@ export class AspectService {
        }
     };
 
-    async create(payload: AspectDto): Promise<any> {
+    async create(payload: AspectDto, members: string[], workspace: string): Promise<any> {
        try{
             const created = await this.AspectModel.create({...payload});
             if(!created){
                 return toJson(false, 'Failed to create');
+            }
+            for(let memberId of members){
+                if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                    const socketId = this.chatGateway.registeredUser[memberId];
+                    this.chatGateway.server.to(socketId).emit('new_aspect', {workspace, aspect: created});
+                }
             }
             return toJson(true, 'A new Aspect has been created', created);
        }
@@ -73,13 +81,20 @@ export class AspectService {
        }
     };
 
-    async update(id: string, payload: AspectDto): Promise<any> {
+    async update(id: string, aspect: AspectDto, workspace: string, members: string[]): Promise<any> {
        try{
             const updated = await this.AspectModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set:{
-                title : payload.title,
+                title : aspect.title,
             }}, {new: true});
+
             if(!updated){
                 return toJson(false, 'Failed to update');
+            }
+            for(let memberId of members){
+                if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                    const socketId = this.chatGateway.registeredUser[memberId];
+                    this.chatGateway.server.to(socketId).emit('edit_aspect', {workspace, aspect});
+                }
             }
             return toJson(true, 'A new Aspect has been updated');
        }
@@ -88,7 +103,7 @@ export class AspectService {
        }
     };
 
-    async delete(id: string): Promise<any> {
+    async delete(id: string, members: string[], workspace: string, projectId: string): Promise<any> {
        try{
         const deleted = await this.AspectModel.deleteOne({_id: toObjectID(id)});
         if(!deleted){
@@ -98,6 +113,12 @@ export class AspectService {
         const sprints = await this.SprintModel.deleteMany({aspect: toObjectID(id)});
         if(!sprints){
             toJson(false, 'Failed to delete related aspects');
+        }
+        for(let memberId of members){
+            if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                const socketId = this.chatGateway.registeredUser[memberId];
+                this.chatGateway.server.to(socketId).emit('delete_aspect', {workspace, aspectId: id, projectId});
+            }
         }
         return toJson(true, 'Aspect has been Successfully deleted');
        }

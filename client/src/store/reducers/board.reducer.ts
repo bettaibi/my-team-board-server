@@ -13,7 +13,7 @@ const BoardReducer = (state: DynamicBoard = {}, action: ActionPayload) => {
             return {...state};
 
         case ActionType.NEW_BOARD:
-            return {...action.payload, ...state};
+            return {...state, ...action.payload};
 
         case ActionType.EDIT_BOARD: {
             if(action.id){

@@ -15,7 +15,7 @@ import { useVideoCallContext } from '.';
 import clsx from 'clsx';
 import userAvatar from '../../../../assets/avatars/profile.jpg';
 import { SocketEvents, useSocketContext } from '../../../../context/SocketContext';
-import { getSocketId } from '../helpers';
+import { getSocketId } from '../../../../util/helpers';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 

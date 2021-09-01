@@ -4,13 +4,15 @@ import { SprintService } from './sprint.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Sprint, SprintSchema } from 'src/models/sprint.model';
 import { JwtGuardModule } from 'src/shared/jwtGuard.module';
+import { ChatModule } from 'src/gateways/chat.module';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
             {name: Sprint.name, schema: SprintSchema}
         ]),
-        JwtGuardModule
+        JwtGuardModule,
+        ChatModule
     ],
     providers: [SprintService],
     controllers: [SprintController]

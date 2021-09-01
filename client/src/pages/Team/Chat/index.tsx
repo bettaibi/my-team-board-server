@@ -39,7 +39,7 @@ import useMutation from '../../../hooks/useMutation';
 
 import "./chat.css";
 import { useVideoCallContext } from './VideoCallContext';
-import { isMemberConnected } from './helpers';
+import { isMemberConnected } from '../../../util/helpers';
 import { useNotificationContext } from '../../../context/NotificationContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;

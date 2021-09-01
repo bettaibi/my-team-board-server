@@ -3,13 +3,16 @@ import { useSharedContext } from '.';
 
 import io, { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
-import { MessageModel, WorkspaceModel } from '../models/app.model';
+import { MessageModel, ProjectModel, WorkspaceModel } from '../models/app.model';
 import { PostNewMessage } from '../store/actions/chat.actions';
 import { deleteWorkspace, setWorkspaces } from '../store/actions/workspace.actions';
 import { Dialog } from '@material-ui/core';
 
 import SessionExpired from '../pages/Team/Setting/SessionExpired';
 import useToggle from '../hooks/useToggle';
+import { newProject, updateProject } from '../store/actions/project.actions';
+import { deleteAspect, editAspect, newAspect, newBoard } from '../store/actions/board.actions';
+import { fetchBoard } from '../util/helpers';
 
 interface OnlineUserProps{
     [userId: string]: {socketId: string, lastSeen?: Date};
@@ -86,14 +89,14 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
         }
     }, [selectedWorkspace]);
 
+    // LISTEN TO REALTIME CHANGES
     useEffect(() => {
-        // LISTEN TO REALTIME CHANGES
+
         socket.on('new_workspace', (data: WorkspaceModel[])=> {
             dispatch(setWorkspaces(data));
         });
 
         socket.on('delete_workspace', ({workspaces, workspaceId}: {workspaces:  WorkspaceModel[], workspaceId: string}) => {
-            console.log(workspaceId, selectedWorkspace)
             if(selectedWorkspace == workspaceId){
                 onDialogOpen();
             }
@@ -111,10 +114,56 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
             }
         });
 
+        socket.on('new_project', (project: ProjectModel) => {
+            if(project.workspace == selectedWorkspace){
+                dispatch(newProject(project))
+            }
+        });
+
+        socket.on('edit_project', (project: ProjectModel) => {
+            if(project.workspace == selectedWorkspace){
+                dispatch(updateProject(project))
+            }
+        });
+
+        socket.on('new_aspect', ({workspace, aspect})=> {
+            if(workspace == selectedWorkspace){
+                dispatch(newAspect(aspect.project, aspect));
+            }
+        });
+
+        socket.on('delete_aspect', ({workspace, aspectId, projectId}) => {
+            if(workspace == selectedWorkspace){
+                dispatch(deleteAspect(projectId, aspectId));
+            }
+        });
+
+        socket.on('edit_aspect', ({workspace, aspect})=> {
+            if(workspace == selectedWorkspace){
+                dispatch(editAspect(aspect.project, aspect));     
+            }
+        });
+
+        socket.on('sprint_change', ({workspace, projectId}) => {
+            if(workspace == selectedWorkspace){
+                fetchBoard(projectId).then((data)=> {
+                    if(data){
+                        dispatch(newBoard(data));
+                    }
+                }).catch((err)=> console.error(err));
+            }
+        });
+
         return () => {
             socket.off('new_workspace');
             socket.off('delete_workspace');
             socket.off('removed_workspace');
+            socket.off('new_project');
+            socket.off('edit_project');
+            socket.off('new_aspect');
+            socket.off('delete_aspect');
+            socket.off('edit_aspect');
+            socket.off('sprint_change');
         };
     }, []);
 

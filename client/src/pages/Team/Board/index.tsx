@@ -64,7 +64,9 @@ const Board = () => {
       <Typography align="center" variant="h4" className="bg-text-primary fw-700" gutterBottom>
         Workspace's projects
       </Typography>
-      <NewProjectDialog />
+      <div className={classes.mb}>
+        <NewProjectDialog />  
+      </div> 
 
       <Grid container spacing={2} className={classes.gridContainer}>
         {
@@ -124,10 +126,12 @@ const NewProjectDialog = () => {
       <WithTooltip title="New Project"
         text="Only the owner of the selected workspace has the ability to add or remove projects.">
 
-        <RoundedButton disabled={disabled} onClick={onSidenavOpen} variant="outlined" color="default" size="large"
-          className={clsx('bg-text-secondary', classes.mb)}>
-          CREATE NEW PROJECT
-        </RoundedButton>
+        <span>
+          <RoundedButton disabled={disabled} onClick={onSidenavOpen} variant="outlined" color="default" size="large"
+            className={clsx('bg-text-secondary')}>
+            CREATE NEW PROJECT
+          </RoundedButton>
+        </span>
       </WithTooltip>
 
       <SidenavComponent>

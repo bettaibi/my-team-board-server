@@ -17,7 +17,7 @@ import { DropResult, DragDropContext, Droppable, DroppableProvided } from "react
 import { NewSprintContainer } from './Sprint';
 import { useSharedContext } from '../../../../context';
 import { useSelector } from 'react-redux';
-import { AppState, BoardModel, DynamicBoard, ProjectModel } from '../../../../models/app.model';
+import { AppState, DynamicBoard, ProjectModel, UserModel } from '../../../../models/app.model';
 import { newBoard } from '../../../../store/actions/board.actions';
 
 import useSidenav from '../../../../hooks/useSidenav';
@@ -63,15 +63,20 @@ const Scrumboard = (props: any) => {
     let projectId = props.match.params.projectId;
     const boards: DynamicBoard = useSelector((state: AppState) => state.boards);
     const board = boards[projectId] || null;
+    const [members, setMembers] = React.useState<string[]>([]);
 
-    const { dispatch } = useSharedContext();
-    
+    const { dispatch, currentUser } = useSharedContext();
+    console.log("scrumboard rerender")
     useEffect(() => {
-        const fetchBoard = async () =>{
+        const fetchBoard = async () => {
             try{
                 const {data} = await axios.get(`/aspects/${projectId}`);
                 if(data.success) {
                     dispatch(newBoard(data.data));
+                    let projectMembers: string[] = data.data[projectId].project.members.map((item: UserModel) => {
+                        return currentUser._id != item._id ? item._id : ''
+                    });
+                    setMembers(projectMembers);
                 }
             }
             catch(err){
@@ -81,6 +86,12 @@ const Scrumboard = (props: any) => {
 
         if(!boards.hasOwnProperty(projectId)){
             fetchBoard();
+        }
+        else{
+            let projectMembers: string[] = boards[projectId].project.members.map((item: UserModel) => {
+                return currentUser._id != item._id ? (item._id || '') : ''
+            });
+            setMembers(projectMembers);
         }
     }, []);
 
@@ -96,22 +107,6 @@ const Scrumboard = (props: any) => {
         if (destination.index === source.index && destination.droppableId === source.droppableId) {
             return
         }
-
-        // const dropbaleId: string = source.droppableId;
-        // // Creating a copy of item before removing it from state
-        // const itemCopy = state[dropbaleId].cards[source.index]
-
-        // setState(prev => {
-        //   prev = {...prev}
-        //   // Remove from previous items array
-        //   prev[source.droppableId].items.splice(source.index, 1)
-
-
-        //   // Adding to new items array location
-        //   prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
-
-        //   return prev
-        // })
     }
 
     if(!board) return null;
@@ -145,10 +140,10 @@ const Scrumboard = (props: any) => {
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}>
 
-                                            <Aspect aspect = {item} />
+                                            <Aspect aspect = {item} members={members} />
                                             {provided.placeholder}
 
-                                            <NewSprintContainer aspect = {item} />
+                                            <NewSprintContainer aspect = {item} members={members} />
                                         </div>
                                     )
                                 }
@@ -158,7 +153,7 @@ const Scrumboard = (props: any) => {
                 </DragDropContext>
                 {/* New Aspect */}
                 <div className = {classes.aspect}>
-                 <NewAspectContainer projectId = {projectId} />
+                 <NewAspectContainer projectId = {projectId} members = {members} />
                 </div>
             </Box>
 
@@ -168,11 +163,13 @@ const Scrumboard = (props: any) => {
 
 const EditProjectDialog = ({project}: {project: ProjectModel}) => {
     const { onSidenavClose, onSidenavOpen, SidenavComponent } = useSidenav('right', 'persistent');
+    const { currentUser, owner } = useSharedContext();
     const classes = useStyle();
+    let isDisabled = !(currentUser._id == owner);
 
     return (
         <React.Fragment>
-            <RoundedButton onClick={onSidenavOpen}
+            <RoundedButton onClick={onSidenavOpen} disabled={isDisabled}
              disableElevation variant="contained" color="primary" size="medium">
                 <EditOutlined className={classes.mr}></EditOutlined>
                 <span>Edit Board</span>

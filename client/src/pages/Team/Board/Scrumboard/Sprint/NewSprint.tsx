@@ -17,16 +17,21 @@ const schema = yup.object().shape({
     title: yup.string().required('Title is required')
 });
 
-const NewSprint = ({aspect, handleClose}: {aspect: AspectModel, handleClose: () => void}) => {
+const NewSprint = ({aspect, handleClose, members}: {members: string[], aspect: AspectModel, handleClose: () => void}) => {
     const { loading, onMutate } = useMutation();
-    const { dispatch } = useSharedContext();
+    const { dispatch, selectedWorkspace } = useSharedContext();
 
     async function onSubmitHandler({title}: {title: string}){
         try{
             const res = await onMutate({
                 url: '/sprint',
                 method: 'POST',
-                data: {title, aspect: aspect._id}
+                data: {
+                    sprint: {title, aspect: aspect._id},
+                    workspace: selectedWorkspace,
+                    projectId: aspect.project,
+                    members
+                }
             });
 
             if(res.success){

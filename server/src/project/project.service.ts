@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Project, ProjectDocument } from 'src/models/project.model';
 import { Aspect, AspectDocument } from 'src/models/aspect.model';
 import { toJson, toObjectID } from 'src/helpers';
+import { ChatGateway } from 'src/gateways/chat.gateway';
 
 @Injectable()
 export class ProjectService{
@@ -12,6 +13,7 @@ export class ProjectService{
     constructor(
         @InjectModel(Project.name) private readonly ProjectModel: Model<ProjectDocument>,
         @InjectModel(Aspect.name) private readonly AspectModel: Model<AspectDocument>,
+        private chatGateway: ChatGateway
     ){};
 
     async all(workspaceID: string, userID: string): Promise<any>{
@@ -44,6 +46,12 @@ export class ProjectService{
                 model: 'Member',
                 select: 'name avatar'
             });
+            for(let memberId of payload.members){
+                if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                    const socketId = this.chatGateway.registeredUser[memberId];
+                    this.chatGateway.server.to(socketId).emit('new_project', populated);
+                }
+            }
             return toJson(true, 'A new Workspace has been created', populated);
         }
         catch(err){
@@ -68,6 +76,12 @@ export class ProjectService{
             });
             if(!populated){
                 return toJson(false, 'Failed to update');
+            }
+            for(let memberId of payload.members){
+                if(this.chatGateway.registeredUser.hasOwnProperty(memberId)){
+                    const socketId = this.chatGateway.registeredUser[memberId];
+                    this.chatGateway.server.to(socketId).emit('edit_project', populated);
+                }
             }
             return toJson(true, 'Project has been updated successfully', populated);
         }

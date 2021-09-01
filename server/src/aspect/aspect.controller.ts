@@ -1,4 +1,4 @@
-import { Controller, Body, Put, UseGuards, Post, Param, Delete, Get } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards, Post, Param, Patch, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { AspectDto } from './aspect.dto';
@@ -19,18 +19,18 @@ export class AspectController {
     }
 
     @Post()
-    async create(@Body() payload: AspectDto): Promise<any>{
-        return await this.aspectService.create(payload);
+    async create(@Body() payload: {aspect: AspectDto, members: string[], workspace: string}): Promise<any>{
+        return await this.aspectService.create(payload.aspect, payload.members, payload.workspace);
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() payload: AspectDto): Promise<any>{
-        return await this.aspectService.update(id, payload);
+    async update(@Param('id') id: string, @Body() payload: {aspect: AspectDto, workspace: string, members: string[]}): Promise<any>{
+        return await this.aspectService.update(id, payload.aspect, payload.workspace, payload.members);
     }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string): Promise<any>{
-        return await this.aspectService.delete(id);
+    @Patch(':id')
+    async delete(@Param('id') id: string, @Body() payload: {members: string[], workspace: string, projectId: string}): Promise<any>{
+        return await this.aspectService.delete(id, payload.members, payload.workspace, payload.projectId);
     }
 
 }

@@ -1,6 +1,5 @@
-import { Controller, Body, Put, UseGuards, Post, Param, Delete, Get } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards, Post, Param, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from 'src/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { SprintDto } from './sprint.dto';
 import { SprintService } from './sprint.service';
@@ -16,18 +15,18 @@ export class SprintController {
 
 
     @Post()
-    async create(@Body() payload: SprintDto): Promise<any>{
-        return await this.sprintService.create(payload);
+    async create(@Body() payload: {sprint: SprintDto, workspace: string, members: string[], projectId: string}): Promise<any>{
+        return await this.sprintService.create(payload.sprint, payload.workspace, payload.projectId, payload.members);
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() payload: SprintDto): Promise<any>{
-        return await this.sprintService.update(id, payload);
+    async update(@Param('id') id: string, @Body() payload: {sprint: SprintDto, workspace: string, members: string[], projectId: string}): Promise<any>{
+        return await this.sprintService.update(id, payload.sprint, payload.workspace, payload.projectId, payload.members);
     }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string): Promise<any>{
-        return await this.sprintService.delete(id);
+    @Patch(':id')
+    async delete(@Param('id') id: string, @Body() payload: {workspace: string, members: string[], projectId: string}): Promise<any>{
+        return await this.sprintService.delete(id, payload.workspace, payload.projectId, payload.members);
     }
 
 }
