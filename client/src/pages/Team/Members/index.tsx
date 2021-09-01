@@ -20,6 +20,7 @@ import { Add, SearchOutlined } from '@material-ui/icons';
 import { AppState, UserModel } from '../../../models/app.model';
 import { useSharedContext } from '../../../context';
 import { deleteMember } from '../../../store/actions/members.actions';
+import { useNotificationContext } from '../../../context/NotificationContext';
 
 import useConfirmDialog from '../../../hooks/useConfirmDialog';
 import useSidenav from '../../../hooks/useSidenav';
@@ -27,7 +28,6 @@ import MyTextField from '../../../components/MyTextField';
 import NewMember from './NewMember';
 import userAvatar from '../../../assets/avatars/profile.jpg'
 import axios from 'axios';
-import { useNotificationContext } from '../../../context/NotificationContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -61,6 +61,24 @@ const useStyles = makeStyles((theme: Theme) =>
 const Members = () => {
     const classes = useStyles();
     const members = useSelector((state: AppState) => state.members);
+    const [list, setList] = React.useState<UserModel[]>(members);
+    const [term, setTerm] = React.useState<string>('');
+
+    React.useEffect(()=> {
+        if(term === ''){
+            setList(members);
+        }
+        else{
+            let newState = [...members].filter((item: UserModel) => { return item.name.toLowerCase().includes(term.toLowerCase())});
+            setList(newState);
+        }
+    }, [members, term]);
+
+    function onChangeHandler(e: React.ChangeEvent<HTMLInputElement>){
+        if(e){
+            setTerm(e.target.value);
+        }
+    }
 
     return (
         <Box className="bg-white" width="100%" height="100%">
@@ -72,7 +90,8 @@ const Members = () => {
                     {members.length > 0 ? members.length : 'Add a new '} contacts
                 </Typography>
                 <Box display="flex" flexDirection="row" my={2} className={classes.search}>
-                    <MyTextField style={{ marginBottom: '0.5rem' }} fullWidth variant="outlined" placeholder="Search members" size="small"
+                    <MyTextField onChange={onChangeHandler} style={{ marginBottom: '0.5rem' }} value={term}
+                    fullWidth variant="outlined" placeholder="Search members" size="small"
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -86,7 +105,7 @@ const Members = () => {
             </Box>
 
             <List component="nav" className={classes.root} aria-label="Members list">
-                {members.map((item: UserModel) => (
+                {list.map((item: UserModel) => (
                     <React.Fragment key={item._id}>
                         <ListItem className={classes.listItem}>
                             <ListItemAvatar>
@@ -104,10 +123,13 @@ const Members = () => {
             </List>
 
             {
-                members.length === 0 && (
+                list.length === 0 && (
                     <Box mt={4} p={3}>
-                        <Typography variant="subtitle1" component="span" style={{ color: 'lightgray' }} gutterBottom>
+                        <Typography variant="subtitle2" component="div" color="textSecondary" gutterBottom>
                             No Members found
+                        </Typography>
+                        <Typography variant="body2" component="small" color="textSecondary" gutterBottom>
+                            Only the owner of the selected workspace has the ability to add or remove members.
                         </Typography>
                     </Box>
                 )
@@ -119,10 +141,13 @@ const Members = () => {
 const AddMember = () => {
     const classes = useStyles();
     const { onSidenavClose, onSidenavOpen, SidenavComponent } = useSidenav('right', 'persistent');
-
+    const { currentUser, owner } = useSharedContext();
+    let disabled = !(owner === currentUser._id);
+    
     return (
         <React.Fragment>
-            <Fab onClick={onSidenavOpen} className={classes.searchFabButton} variant="extended" color="primary" size="medium" style={{ marginLeft: '1rem', minWidth: '120px' }}>
+            <Fab onClick={onSidenavOpen} className={classes.searchFabButton} variant="extended" color="primary" size="medium" 
+             disabled={disabled} style={{ marginLeft: '1rem', minWidth: '120px' }}>
                 <Add style={{ marginRight: '0.4rem' }} />
                 <span>Add</span>
             </Fab>
@@ -141,7 +166,8 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
         onConfirmClick: onDelete,
         message: 'Are you sure you want to delete this member? This member would be unlinked to all related projects.'
     });
-    const { dispatch, selectedWorkspace } = useSharedContext();
+    const { dispatch, selectedWorkspace, owner, currentUser } = useSharedContext();
+    let disabled = !(owner === currentUser._id);
     const { showMsg } = useNotificationContext();
 
     async function onDelete() {
@@ -170,7 +196,7 @@ const DeleteMember = ({ memberId }: { memberId: string }) => {
 
     return (
         <React.Fragment>
-            <IconButton onClick={handleOpen}>
+            <IconButton onClick={handleOpen} disabled={disabled}>
                 <DeleteOutline />
             </IconButton>
 

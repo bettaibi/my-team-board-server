@@ -14,6 +14,7 @@ interface ContextProps{
     setSelectedWorkspace: (w: string) => void;
     currentUser: UserModel;
     updateCurrentUser: (u: UserModel) => void;
+    owner: string;
 }
 
 const defaultUserState: UserModel = {
@@ -33,6 +34,7 @@ const Shared = React.createContext({} as ContextProps);
 export const ContextProvider = ({children}: {children: JSX.Element}) => {
     const [selectedWorkspace, setSelectedWorkspace] = React.useState<string | null>(localStorage.getItem('workspace'))
     const [ appLoading, setAppLoading ] = React.useState<boolean>(true);
+    const [ owner, setOwner ] = React.useState<string>('');
     const [ currentUser, setCurrentUser ] = React.useState<UserModel>(defaultUserState);
 
     const dispatch = useDispatch();
@@ -62,6 +64,7 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
 
                     if(selectedWorkspace === null && data.data.length > 0) {
                         setSelectedWorkspace(data.data[0]._id);
+                        setOwner(data.data[0].owner._id);
                     }
                 }
             }
@@ -84,6 +87,7 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
                         dispatch(setProjects(data.data.projects));
                         dispatch(setWorkspaceMembers(data.data.members));
                         dispatch(initChat());
+                        setOwner(data.data.owner);
                         setAppLoading(false);
                     }
                 }
@@ -105,7 +109,8 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
         selectedWorkspace,
         setSelectedWorkspace,
         currentUser,
-        updateCurrentUser
+        updateCurrentUser,
+        owner
     };
 
     return(

@@ -38,7 +38,8 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
         project.members.map((item: UserModel) => item._id || '')
     );
     const { loading, onMutate } = useMutation();
-    const { dispatch } = useSharedContext();
+    const { dispatch, currentUser, owner } = useSharedContext();
+    let isOwner = (owner === currentUser._id);
 
     const InitialValue = {
         title: project.title,
@@ -95,7 +96,7 @@ const EditProject: React.FC<EditProjectProps> = ({ onSidenavClose, project }) =>
                             </RoundedButton>
 
                             <Box>
-                                <DeleteProjectButton projectId = {project._id || ''} />
+                                {isOwner && <DeleteProjectButton projectId = {project._id || ''} />}
                                 <RoundedButton disabled={members.length===0} disableElevation size="medium" type="submit" style={{ marginLeft: '0.5rem' }} variant="contained" color="primary">
                                   {loading? 'Loading...':'Save'}
                                 </RoundedButton>

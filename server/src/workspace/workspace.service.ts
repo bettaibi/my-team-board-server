@@ -67,6 +67,7 @@ export class WorkspaceService{
             });
 
             return toJson(true, `Switch to ${workspace.name}`, {
+                owner: workspace.owner,
                 members: populated.members,
                 projects
             });

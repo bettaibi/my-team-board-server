@@ -3,7 +3,7 @@ import {
     withStyles,
     Theme
 } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { Button, ButtonProps } from '@material-ui/core';
 
 const CustomRoundedButton = withStyles((theme: Theme) => ({
     root: {
@@ -15,10 +15,10 @@ const CustomRoundedButton = withStyles((theme: Theme) => ({
 }))(Button);
 
 
-const RoundedButton: React.FC<any> = (props) => {
+const RoundedButton: React.FC<ButtonProps> = React.forwardRef ((props, ref: any) => {
     return (
-        <CustomRoundedButton {...props} />
+        <CustomRoundedButton {...props} ref = {ref} />
     )
-}
+});
 
-export default RoundedButton
+export default RoundedButton;
