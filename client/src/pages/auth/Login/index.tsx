@@ -7,21 +7,20 @@ import {
     IconButton,
     InputAdornment,
     Fab
-
 } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
-
+import { LoginModel } from '../../../models/auth.model';
+import { Formik, Form } from 'formik';
+import { Link, useHistory } from 'react-router-dom';
 import { useTheme } from '@material-ui/core/styles';
+
 import Welcome from '../../../components/Welcome';
 import logo from '../../../assets/logo48.png';
-import { Link, useHistory } from 'react-router-dom';
-import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import useToggle from '../../../hooks/useToggle';
 import MyTextField from '../../../components/MyTextField';
 import axios from 'axios';
 import useSnackbar from '../../../hooks/useSnackbar';
-import { LoginModel } from '../../../models/auth.model';
 
 const schema = yup.object().shape({
     email: yup.string().required('Email is required').email('Invalid Email'),
@@ -62,10 +61,12 @@ const Login = () => {
 const LoginForm = () => {
     const { show, toggle } = useToggle();
     const { SnackbarComponent, showMsg } = useSnackbar();
+    const [loading, setLoading] = React.useState<boolean>(false);
     const history = useHistory();
 
     async function handleSubmit(values: LoginModel, resetForm: () => void) {
         try {
+                setLoading(true)
                 const { data } = await axios.post(`/auth/login`, values);
                 if(data.success) {
                     showMsg(data.message, 'success');
@@ -75,10 +76,12 @@ const LoginForm = () => {
                     },1000);
                 }
                 else{
+                    setLoading(false);
                     showMsg(data.message, 'error');
                 }
         }
         catch (err) {
+            setLoading(false);
             showMsg("No valid credentials", 'error');
         }
     };
@@ -129,7 +132,7 @@ const LoginForm = () => {
                                 <Link to='/forgot-password'>Forgot password?</Link>
                             </Box>
 
-                            <Fab type="submit" className="w-100" variant="extended" color="primary">Sign in</Fab>
+                            <Fab disabled={loading} type="submit" className="w-100" variant="extended" color="primary">{loading?'Loading...':'Sign in'}</Fab>
                         </Form>
                     )
                 }

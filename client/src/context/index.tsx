@@ -40,6 +40,31 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        async function onSwitch (){
+            try{
+                if(selectedWorkspace){
+                    setAppLoading(true);
+                    const {data} = await axios.get(`/workspace/switch/${selectedWorkspace}`);
+                    if(data.success){
+                        localStorage.setItem('workspace', selectedWorkspace);
+                        dispatch(setProjects(data.data.projects));
+                        dispatch(setWorkspaceMembers(data.data.members));
+                        dispatch(initChat());
+                        setOwner(data.data.owner);
+                        setAppLoading(false);
+                    }
+                }
+                
+            }
+            catch(err){
+                console.error(err);
+            }
+        }
+        
+        onSwitch()
+    }, [selectedWorkspace]);
+
+    useEffect(() => {
         async function getConnectedUser(){
             try{
                 const {data} = await axios.get('/auth/user');
@@ -66,6 +91,7 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
                         setSelectedWorkspace(data.data[0]._id);
                         setOwner(data.data[0].owner._id);
                     }
+                    setAppLoading(false);
                 }
             }
             catch (err) {
@@ -76,29 +102,6 @@ export const ContextProvider = ({children}: {children: JSX.Element}) => {
         getWorkspaces()
     }, []);
 
-    useEffect(() => {
-        async function onSwitch (){
-            try{
-                if(selectedWorkspace){
-                    setAppLoading(true);
-                    const {data} = await axios.get(`/workspace/switch/${selectedWorkspace}`);
-                    if(data.success){
-                        localStorage.setItem('workspace', selectedWorkspace);
-                        dispatch(setProjects(data.data.projects));
-                        dispatch(setWorkspaceMembers(data.data.members));
-                        dispatch(initChat());
-                        setOwner(data.data.owner);
-                        setAppLoading(false);
-                    }
-                }
-                
-            }
-            catch(err){
-                console.error(err);
-            }
-        }
-        onSwitch()
-    }, [selectedWorkspace]);
 
     function updateCurrentUser(u: UserModel){
         setCurrentUser(state => {return {...state, ...u}});

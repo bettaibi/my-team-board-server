@@ -58,10 +58,12 @@ const Register: React.FC = () => {
 
 const RegisterForm = () => {
     const { SnackbarComponent, showMsg } = useSnackbar();
+    const [loading, setLoading] = React.useState<boolean>(false);
     const history = useHistory();
 
     async function handleSubmit(values: RegisterModel, resetForm: () => void) {
         try {
+                setLoading(true)
                 const {confirmPassword, ...payload} = values;
                 const { data } = await axios.post(`/auth/register`, payload);
                 if(data.success) {
@@ -72,10 +74,12 @@ const RegisterForm = () => {
                     },1000);
                 }
                 else{
+                    setLoading(false);
                     showMsg(data.message, 'error');
                 }
         }
         catch (err) {
+            setLoading(false);
             showMsg('Invalid Credentials', 'error');
             console.log(err)
         }
@@ -148,8 +152,8 @@ const RegisterForm = () => {
                             <Box className="text-right" mb={2}>
                                 <Link to='/forgot-password'>Forgot password?</Link>
                             </Box>
-                            <Fab type="submit" className="w-100" variant="extended" color="primary">
-                                Create your free account
+                            <Fab disabled={loading} type="submit" className="w-100" variant="extended" color="primary">
+                                {loading ? 'Loading...' : 'Create your free account'}
                             </Fab>
                         </Form>
                     )
