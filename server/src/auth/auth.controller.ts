@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Get, Res, Req, Render, Query, UseGuards, UseFilters } from '@nestjs/common';
+import { Controller, Post, Body, Get, Res, Render, Query, UseGuards, UseFilters } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { toJson } from 'src/helpers';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
@@ -21,8 +21,9 @@ export class AuthController{
     async login(@Body()payload: LoginDto, @Res() response: Response): Promise<any>{
         try{
             const jwt = await this.authService.login(payload);
-            response.cookie('jwt', jwt, {maxAge: 6.048e+8});
-            return response.json({success: true, message: 'Welcome back'});
+            const expiredAt = 6.048e+8;
+            response.cookie('jwt', jwt, {maxAge: expiredAt, sameSite: 'none', secure: true, domain: 'my-team-board.herokuapp.com', httpOnly: true});
+            return response.json({success: true, message: 'Welcome back', expiredAt});
         }
         catch(err){
             throw err;
@@ -33,8 +34,9 @@ export class AuthController{
     async register(@Body()payload: RegisterDto, @Res({passthrough: true}) response: Response): Promise<any>{
         try{
             const jwt = await this.authService.register(payload);
-            response.cookie('jwt', jwt, {maxAge: 6.048e+8});
-            return toJson(true, 'Welcome back');
+            const expiredAt = 6.048e+8;
+            response.cookie('jwt', jwt, {maxAge: expiredAt, sameSite: 'none', secure: true, domain: 'my-team-board.herokuapp.com', httpOnly: true});
+            return response.json({success: true, message: 'Welcome, you have been successfully registred', expiredAt});
         }
         catch(err){
             throw err;
@@ -55,7 +57,7 @@ export class AuthController{
     @Post('/logout')
     async logout(@Res({passthrough: true}) response: Response): Promise<any>{
         try{
-            response.clearCookie('jwt');
+            response.clearCookie('jwt', {sameSite: 'none', secure: true});
             return toJson(true, 'User logged out successfully');
         }
         catch(err){

@@ -6,6 +6,7 @@ import { FileService } from './file.service';
 import { Response } from 'express';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
+import { join } from 'path';
 
 @UseGuards(AuthGuard)
 @ApiTags('File upload')
@@ -71,7 +72,7 @@ export class FileController {
     @Get(':filename')
     getFile(@Param('filename') filename: string, @Res() res: Response) {
         try{
-            return res.sendFile(filename, { root: './upload' });
+            return res.sendFile(filename, { root: join(process.cwd(), 'upload') });
         }
         catch(err){
             throw err;

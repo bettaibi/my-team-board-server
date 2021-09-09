@@ -18,8 +18,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(helmet());
   app.enableCors({
-    origin: configService.get('ORIGIN'),
-    credentials: true
+    origin: 'https://bettaibi.github.io',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+    allowedHeaders: ['X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept'],
   });
   app.use(compression());
   app.use(cookieParser());
@@ -36,9 +39,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.PORT || configService.get('PORT'), ()=> {
+  const PORT = process.env.PORT || configService.get('PORT');
+
+  app.listen(PORT, ()=> {
     wakeDyno("https://my-team-board.herokuapp.com/");
+    console.log(`Application is running on: ${PORT}`);
   });
-  console.log(`Application is running on: ${await app.getUrl()}`);
+
 }
+
 bootstrap();

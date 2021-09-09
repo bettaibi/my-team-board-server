@@ -8,7 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true,
-            useFindAndModify: true,
+            useFindAndModify: false,
         }),
     ]
 })

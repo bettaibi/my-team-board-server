@@ -13,7 +13,7 @@ import { JwtGuardModule } from 'src/shared/jwtGuard.module';
   imports: [
     MulterModule.register({
        storage: diskStorage({
-        destination: CustomFile.destinationPath,
+        destination: './upload',
         filename: CustomFile.customFileName,
       }),
     }),

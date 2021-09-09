@@ -5,6 +5,7 @@ import { Message, MessageDocument } from 'src/models/message.model';
 import { Model } from 'mongoose';
 import { toJson, toObjectID } from 'src/helpers';
 import * as fs from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class FileService {
@@ -21,7 +22,8 @@ export class FileService {
                 return toJson(false, 'User Not found');
             }
             if(found.avatar !== ''){
-                fs.unlinkSync(`./upload/${found.avatar}`);
+                const path = join(process.cwd(), 'upload');
+                fs.unlinkSync(`${path}/${found.avatar}`);
             }
 
             const updated = await this.MemberModel.findByIdAndUpdate({_id: toObjectID(id)}, {$set: {
